@@ -23,23 +23,24 @@ describe("Cubit", () => {
 
   it("should return new state from actions", (done) => {
     const states: CounterState[] = [];
-    state$.subscribe({
-      next: (state) => {
-        states.push(state);
-      },
+    state$.pipe(tap((state) => states.push(state))).subscribe({
       complete: () => {
+        const [first, second, third] = states;
         expect(states.length).toBe(3);
-        expect(states[0]).toBeInstanceOf(CounterStateInitial);
-        expect(states[0].data).toBe(0);
-        expect(states[1]).toBeInstanceOf(CounterStateIncrement);
-        expect(states[1].data).toBe(1);
-        expect(states[2]).toBeInstanceOf(CounterStateDecrement);
-        expect(states[2].data).toBe(0);
+        expect(first).toBeInstanceOf(CounterStateInitial);
+        expect(first.data).toBe(0);
+        expect(second).toBeInstanceOf(CounterStateIncrement);
+        expect(second.data).toBe(1);
+        expect(third).toBeInstanceOf(CounterStateDecrement);
+        expect(third.data).toBe(0);
         done();
       },
     });
+    expect(cubit.state.data).toBe(0);
     cubit.increment();
+    expect(cubit.state.data).toBe(1);
     cubit.decrement();
+    expect(cubit.state.data).toBe(0);
     cubit.close();
   });
 
@@ -52,9 +53,7 @@ describe("Cubit", () => {
         })
       )
       .subscribe({
-        complete: () => {
-          done();
-        },
+        complete: done
       });
 
     cubit.increment();
@@ -63,15 +62,8 @@ describe("Cubit", () => {
   });
 
   it("should freeze state objects and make them immutable", (done) => {
-    const states: CounterState[] = [];
-    state$.subscribe({
-      next: (state) => {
-        expect(Object.isFrozen(state)).toBe(true);
-        states.push(state);
-      },
-      complete: () => {
-        done();
-      },
+    state$.pipe(tap((state) => expect(Object.isFrozen(state)))).subscribe({
+      complete: done
     });
     cubit.increment();
     cubit.decrement();

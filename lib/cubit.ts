@@ -16,11 +16,15 @@ export abstract class Cubit<T extends BlocState> {
     this.onError$ = this._error$.asObservable();
   }
 
+  /*on<E extends typeof Event>(handler: (e: Event, emit: )) {
+
+  }*/
+
   /**
    * * Getter to retrive the current snapshot of our state directly from the subject
    *  @returns {T}
    */
-  protected get state(): T {
+   get state(): T {
     return this._state$.getValue();
   }
 
