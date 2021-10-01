@@ -1,5 +1,5 @@
 import { BlocError } from "../lib/error";
-import { CounterState, CounterStateIncrement, CounterStateDecrement } from "./examples";
+import { CounterState, CounterStateIncrement } from "./examples";
 
 describe("BlocState", () => {
   let state: CounterState;

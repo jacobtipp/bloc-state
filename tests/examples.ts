@@ -29,5 +29,3 @@ export class CounterCubit extends Cubit<CounterState> {
     this.emit(CounterStateDecrement.ready(this.state.data - 1));
   }
 }
-
-const counterCubit = new CounterCubit();

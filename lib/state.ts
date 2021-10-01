@@ -17,7 +17,7 @@ export abstract class BlocState<T = any> {
   error?: BlocError;
 
   /**
-   * * Typescript constructor overriding implementation, use static factory methods to instantiate.
+   * * Typescript constructor overriding implementation, use static factory methods to create instances.
    * * 
    * @example
    * ! Don't do this -> new BlocState()

@@ -11,7 +11,7 @@ export abstract class Cubit<T extends BlocState> {
   onError$: Observable<BlocError>;
 
   constructor(initialT: T) {
-    this._state$ = new BehaviorSubject<T>(initialT);
+    this._state$ = new BehaviorSubject<T>(Object.freeze(initialT));
     this.state$ = this.select((state) => state).pipe(shareReplay({ refCount: true, bufferSize: 1 }));
     this.onError$ = this._error$.asObservable();
   }
@@ -21,7 +21,7 @@ export abstract class Cubit<T extends BlocState> {
    *  @returns {T}
    */
   protected get state(): T {
-    return Object.freeze(this._state$.getValue());
+    return this._state$.getValue();
   }
 
   /**
@@ -43,6 +43,10 @@ export abstract class Cubit<T extends BlocState> {
    */
   protected emit(newState: T): void {
     this._state$.next(Object.freeze(newState));
+  }
+
+  close() {
+    this.dispose()
   }
 
   /**
