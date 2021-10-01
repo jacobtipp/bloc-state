@@ -1,68 +1,76 @@
-import { CounterState } from "./helper";
+import { BlocError } from "../lib/error";
+import { CounterState, CounterStateIncrement, CounterStateDecrement } from "./examples";
 
 describe("BlocState", () => {
-  it("should create a new State object with default values", () => {
-    let state = new CounterState();
+  let state: CounterState;
 
-    expect(state.data).toBeNull();
-    expect(state.error).toBeNull();
-    expect(state.isLoading).toBeFalsy();
-    expect(state.hasError).toBeFalsy();
-    expect(state.initial).toBeTruthy();
-    expect(state.message).toBe("");
+  describe("BlocState.initializing", () => {
+    it("should set state to initialized", () => {
+      state = CounterStateIncrement.initialize(0);
+      expect(state).toBeInstanceOf(CounterState);
+      expect(state.initial).toBe(true);
+      expect(state.data).toBe(0);
+      expect(state.isLoading).toBe(false);
+      expect(state.hasError).toBe(false);
+      expect(state.message).toBe("");
+      expect(state.error).toBeUndefined();
+    });
   });
 
-  it("should create a new State object with initial data values", () => {
-    let state = new CounterState({ value: 1 });
-    let state2 = new CounterState({ value: 20 });
+  describe("BlocState.loading", () => {
+    it("should set state to loading", () => {
+      state = CounterStateIncrement.loading();
+      expect(state.initial).toBe(false);
+      expect(state.data).toBeUndefined();
+      expect(state.isLoading).toBe(true);
+      expect(state.hasError).toBe(false);
+      expect(state.message).toBe("");
+      expect(state.error).toBeUndefined();
+    });
 
-    expect(state.data?.value).toBe(1);
-    expect(state2.data?.value).toBe(20);
+    it("should optionally set a loading message", () => {
+      state = CounterStateIncrement.loading("hello world");
+      expect(state.initial).toBe(false);
+      expect(state.data).toBeUndefined();
+      expect(state.isLoading).toBe(true);
+      expect(state.hasError).toBe(false);
+      expect(state.message).toBe("hello world");
+      expect(state.error).toBeUndefined();
+    });
   });
 
-  it("should set correct state when ready", () => {
-    let state = new CounterState();
-    state.ready({ value: 1 });
+  describe("BlocState.ready", () => {
+    it("should set state to ready", () => {
+      state = CounterStateIncrement.ready();
+      expect(state.initial).toBe(false);
+      expect(state.data).toBeUndefined();
+      expect(state.isLoading).toBe(false);
+      expect(state.hasError).toBe(false);
+      expect(state.message).toBe("");
+      expect(state.error).toBeUndefined();
+    });
 
-    expect(state.hasData).toBeTruthy();
-    expect(state.data?.value).toBe(1);
-    expect(state.isLoading).toBeFalsy();
-    expect(state.hasError).toBeFalsy();
-    expect(state.initial).toBeFalsy();
-    expect(state.message).toBe("");
-    expect(state.isReady).toBeTruthy();
+    it("should optionally set data on ready", () => {
+      state = CounterStateIncrement.ready(0);
+      expect(state.initial).toBe(false);
+      expect(state.data).toBe(0);
+      expect(state.isLoading).toBe(false);
+      expect(state.hasError).toBe(false);
+      expect(state.message).toBe("");
+      expect(state.error).toBeUndefined();
+    });
   });
 
-  it("should set correct state when loading", () => {
-    let state = new CounterState();
-    state.loading();
-
-    expect(state.data).toBeNull();
-    expect(state.isLoading).toBeTruthy();
-    expect(state.hasError).toBeFalsy();
-    expect(state.initial).toBeFalsy();
-    expect(state.message).toBe("");
+  describe("BlocState.failed", () => {
+    it("should set state to failed", () => {
+      const error = new BlocError("failed bloc state");
+      state = CounterStateIncrement.failed(error.message, error);
+      expect(state.initial).toBe(false);
+      expect(state.data).toBeUndefined();
+      expect(state.isLoading).toBe(false);
+      expect(state.hasError).toBe(true);
+      expect(state.message).toBe("failed bloc state");
+      expect(state.error).toBeInstanceOf(BlocError);
+    });
   });
-
-  it("should set correct state when failed", () => {
-    let state = new CounterState();
-		const errorMessage = "Something bad happened!"
-    state.failed(errorMessage, new Error (errorMessage));
-
-		expect(state.isReady).toBeFalsy()
-    expect(state.data).toBeNull();
-    expect(state.isLoading).toBeFalsy();
-    expect(state.hasError).toBeTruthy();
-    expect(state.initial).toBeFalsy();
-    expect(state.message).toBe(errorMessage);
-  });
-
-	it("should only be ready when ready is invoked", () => {
-		let state = new CounterState()
-		expect(state.isReady).toBeFalsy()
-		state.ready({ value: 1 })
-		expect(state.isReady).toBeTruthy()
-		state.loading()
-		expect(state.isReady).toBeFalsy()
-	})
 });
