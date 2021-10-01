@@ -37,7 +37,9 @@ export abstract class Bloc<Event, State extends BlocState> extends Cubit<State> 
    * @param {Event} event
    */
   addEvent(event: Event): void {
-    this._events$.next(event);
+    if (this._events$.closed) {
+      this._events$.next(event);
+    }
   }
 
   /**

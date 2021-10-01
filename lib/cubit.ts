@@ -3,6 +3,7 @@ import { filter, shareReplay } from "rxjs/operators";
 import { distinctUntilChanged, map } from "rxjs/operators";
 import { BlocState } from ".";
 import { BlocError } from "./error";
+import * as deepEqual from "fast-deep-equal";
 
 export abstract class Cubit<T extends BlocState> {
   private readonly _state$: BehaviorSubject<T>;
@@ -24,7 +25,7 @@ export abstract class Cubit<T extends BlocState> {
    * * Getter to retrive the current snapshot of our state directly from the subject
    *  @returns {T}
    */
-   get state(): T {
+  get state(): T {
     return this._state$.getValue();
   }
 
@@ -37,20 +38,20 @@ export abstract class Cubit<T extends BlocState> {
   protected select<K = Partial<T>>(mapCallback: (state: T) => K): Observable<K> {
     return this._state$.asObservable().pipe(
       map((state: T) => mapCallback(state)),
-      distinctUntilChanged()
+      distinctUntilChanged((previous, current) => deepEqual(previous, current))
     );
   }
 
   /**
    * * Push a new immutable state snapshot of our previous state merged with partial new state
-   * @param {Partial<T>} newT
+   * @param {Partial<T>} newState
    */
   protected emit(newState: T): void {
     this._state$.next(Object.freeze(newState));
   }
 
   close() {
-    this.dispose()
+    this.dispose();
   }
 
   /**
