@@ -36,11 +36,8 @@ describe("Cubit", () => {
         done();
       },
     });
-    expect(cubit.state.data).toBe(0);
-    cubit.increment();
-    expect(cubit.state.data).toBe(1);
-    cubit.decrement();
-    expect(cubit.state.data).toBe(0);
+    cubit.increment()
+    cubit.decrement()
     cubit.close();
   });
 

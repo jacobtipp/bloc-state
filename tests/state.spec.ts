@@ -1,4 +1,4 @@
-import { BlocError } from "../lib/error";
+import { BlocError, InvalidConstructorArgumentsError } from "../lib/error";
 import { CounterState, CounterStateIncrement } from "./examples";
 
 describe("BlocState", () => {
@@ -63,13 +63,13 @@ describe("BlocState", () => {
 
   describe("BlocState.failed", () => {
     it("should set state to failed", () => {
-      const error = new BlocError("failed bloc state");
+      const error = new InvalidConstructorArgumentsError()
       state = CounterStateIncrement.failed(error.message, error);
       expect(state.initial).toBe(false);
       expect(state.data).toBeUndefined();
       expect(state.isLoading).toBe(false);
       expect(state.hasError).toBe(true);
-      expect(state.message).toBe("failed bloc state");
+      expect(state.message).toBe("Invalid constructor arguments for Bloc State.");
       expect(state.error).toBeInstanceOf(BlocError);
     });
   });

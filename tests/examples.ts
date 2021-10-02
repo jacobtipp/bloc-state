@@ -1,4 +1,6 @@
-import { BlocState, Cubit } from "../lib";
+import { Cubit } from "../lib/cubit";
+import { BlocState } from "../lib/state";
+
 
 export abstract class CounterState extends BlocState<number> {}
 export class CounterStateInitial extends CounterState {}

@@ -20,7 +20,7 @@ export abstract class Cubit<T extends BlocState> {
    * * Getter to retrive the current snapshot of our state directly from the subject
    *  @returns {T}
    */
-  get state(): T {
+  protected get state(): T {
     return this._state$.getValue();
   }
 
@@ -38,7 +38,7 @@ export abstract class Cubit<T extends BlocState> {
   }
 
   /**
-   * * Push a new immutable state snapshot of our previous state merged with partial new state
+   * * Push a new immutable state snapshot
    * @param {Partial<T>} newState
    */
   protected emit(newState: T): void {

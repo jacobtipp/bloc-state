@@ -28,8 +28,8 @@ export abstract class Bloc<E, State extends BlocState> extends Cubit<State> {
    * * Returns the current state snapshot from the subject.
    * @returns {State}
    */
-  get state(): State {
-    return super.state;
+  protected get state(): State {
+    return this.state;
   }
 
   /**
