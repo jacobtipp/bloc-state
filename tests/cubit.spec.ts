@@ -66,4 +66,6 @@ describe("Cubit", () => {
     cubit.decrement();
     cubit.close();
   });
+
+  it("should detect ")
 });

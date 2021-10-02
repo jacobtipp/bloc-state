@@ -2,10 +2,16 @@
   "name": "blocstate",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/bloc-state.umd.js",
+  "module": "dist/bloc-state.cjs.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "test": "jest --verbose",
-    "build": "bili lib/index.ts --format esm-min --format cjs-min  --format umd-min --module-name blocstate"
+    "build": "bili",
+    "prepublishOnly": "npm run build"
   },
   "keywords": [],
   "author": "",
