@@ -6,7 +6,10 @@ import { Observable, Observer, Subscriber } from "rxjs";
  * @param {AsyncGenerator<T>} iterator
  * @returns {Promise<void>}
  */
-const emitToObserver = async <T>(observer: Subscriber<T>, iterator: AsyncGenerator<T>): Promise<void> => {
+const emitToObserver = async <T>(
+  observer: Subscriber<T>,
+  iterator: AsyncGenerator<T>
+): Promise<void> => {
   try {
     for await (let item of iterator) {
       if (observer.closed) return;

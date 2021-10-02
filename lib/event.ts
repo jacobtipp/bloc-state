@@ -5,7 +5,10 @@ export abstract class BlocEvent<T = any> {
     this._payload = payload;
   }
 
-  static create<D, T extends InstanceType<typeof BlocEvent>>(this: new (payload?: D) => T, data?: D): T {
+  static create<D, T extends InstanceType<typeof BlocEvent>>(
+    this: new (payload?: D) => T,
+    data?: D
+  ): T {
     return new this(data);
   }
 
