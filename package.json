@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest --verbose"
+    "test": "jest --verbose",
+    "build": "bili lib/index.ts --format esm-min --format cjs-min  --format umd-min --module-name blocstate"
   },
   "keywords": [],
   "author": "",
@@ -14,9 +15,10 @@
     "rxjs": "^7.3.0"
   },
   "devDependencies": {
-    "@rollup/plugin-typescript": "^8.2.5",
     "@types/jest": "^27.0.2",
+    "bili": "^5.0.5",
     "jest": "^27.2.2",
+    "rollup-plugin-typescript2": "^0.30.0",
     "ts-jest": "^27.0.5",
     "typedoc": "^0.22.4",
     "typescript": "^4.4.3"
