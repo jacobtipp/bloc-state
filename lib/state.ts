@@ -1,7 +1,7 @@
 import { BlocError, InvalidConstructorArgumentsError } from "./error";
 
 /**
- * @description 
+ * @description
  * * BlocState is abstract but it's factory methods are static
  */
 export type BlocStateConstructorArguments<T> = {
@@ -37,11 +37,11 @@ export abstract class BlocState<T = any> {
   }
 
   get hasError() {
-    return this.error !== undefined
+    return this.error !== undefined;
   }
 
   get isReady() {
-    return !this.initial && !this.hasError && !this.isLoading
+    return !this.initial && !this.hasError && !this.isLoading;
   }
 
   /**
@@ -80,7 +80,6 @@ export abstract class BlocState<T = any> {
     return new this({ error, message });
   }
 
-
   private _mapConstructorToState(args?: BlocStateConstructorArguments<T>) {
     if (args?.initial) {
       this._initialize(args.data);
@@ -91,27 +90,27 @@ export abstract class BlocState<T = any> {
     } else if (args?.loading) {
       this._loading(args.message);
     } else {
-      throw new InvalidConstructorArgumentsError()
+      throw new InvalidConstructorArgumentsError();
     }
   }
 
   private _initialize(data?: T) {
     if (data !== undefined) {
-      this.data = data
+      this.data = data;
     }
     this.initial = true;
     this.isLoading = false;
-    this.message = ""
+    this.message = "";
     this.error = undefined;
   }
 
   private _ready(data?: T) {
     if (data !== undefined) {
-      this.data = data
+      this.data = data;
     }
     this.initial = false;
     this.isLoading = false;
-    this.message = ""
+    this.message = "";
     this.error = undefined;
   }
 

@@ -9,12 +9,10 @@ export abstract class Cubit<T extends BlocState> {
   private readonly _state$: BehaviorSubject<T>;
   state$: Observable<T>;
 
-
   constructor(initialT: T) {
     this._state$ = new BehaviorSubject<T>(Object.freeze(initialT));
     this.state$ = this.select((state) => state).pipe(shareReplay({ refCount: true, bufferSize: 1 }));
   }
-
 
   /**
    * * Getter to retrive the current snapshot of our state directly from the subject
