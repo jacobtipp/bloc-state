@@ -1,7 +1,7 @@
 import { EMPTY, Observable, Subject } from "rxjs";
-import { catchError, mergeMap, shareReplay, tap } from "rxjs/operators";
-import { BlocState } from ".";
+import { catchError, mergeMap, tap } from "rxjs/operators";
 import { Cubit } from "./cubit";
+import { BlocState } from "./state";
 import { asyncGeneratorToObservable } from "./util";
 
 export interface Transition {
@@ -10,11 +10,11 @@ export interface Transition {
   next: BlocState;
 }
 
-export abstract class Bloc<Event, State extends BlocState> extends Cubit<State> {
-  private readonly _events$ = new Subject<Event>();
+export abstract class Bloc<E, State extends BlocState> extends Cubit<State> {
+  private readonly _events$ = new Subject<E>();
   private readonly _transition$ = new Subject<Transition>();
 
-  public onEvent$: Observable<Event>;
+  public onEvent$: Observable<E>;
   public onTransition: Observable<Transition>;
 
   constructor(state: State) {
@@ -36,8 +36,8 @@ export abstract class Bloc<Event, State extends BlocState> extends Cubit<State> 
    * * Add a Event by pushing an Event object into the stream.
    * @param {Event} event
    */
-  addEvent(event: Event): void {
-    if (this._events$.closed) {
+  addEvent(event: E): void {
+    if (!this._events$.closed) {
       this._events$.next(event);
     }
   }
@@ -64,7 +64,7 @@ export abstract class Bloc<Event, State extends BlocState> extends Cubit<State> 
    * @param {Event} event
    * @yields {State} State
    */
-  abstract mapEventToState(event: Event): AsyncGenerator<State>;
+  abstract mapEventToState(event: E): AsyncGenerator<State>;
 
   /**
    * @access private

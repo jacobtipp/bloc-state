@@ -1,5 +1,9 @@
 import { BlocError, InvalidConstructorArgumentsError } from "./error";
 
+/**
+ * @description 
+ * * BlocState is abstract but it's factory methods are static
+ */
 export type BlocStateConstructorArguments<T> = {
   data?: T;
   initial?: boolean;
@@ -17,8 +21,7 @@ export abstract class BlocState<T = any> {
   error?: BlocError;
 
   /**
-   * * Typescript constructor overriding implementation, use static factory methods to create instances.
-   * * 
+   * @description use static factory methods to create instances.
    * @example
    * ! Don't do this -> new BlocState()
    * * Do this -> BlocState.initialize(T)
@@ -29,10 +32,22 @@ export abstract class BlocState<T = any> {
     this._mapConstructorToState(args);
   }
 
+  get hasData() {
+    return this.data !== undefined;
+  }
+
+  get hasError() {
+    return this.error !== undefined
+  }
+
+  get isReady() {
+    return !this.initial && !this.hasError && !this.isLoading
+  }
+
   /**
    * * These are the static methods to create new instances of our state.
    * * There are only 4 different states a BlocState can be in
-   * * {initialized, ready, loading, failed}
+   * * {initialize, ready, loading, failed}
    *
    */
 
@@ -65,17 +80,6 @@ export abstract class BlocState<T = any> {
     return new this({ error, message });
   }
 
-  get hasData() {
-    return this.data !== undefined;
-  }
-
-  get hasError() {
-    return this.error !== undefined
-  }
-
-  get isReady() {
-    return !this.initial && !this.hasError && !this.isLoading
-  }
 
   private _mapConstructorToState(args?: BlocStateConstructorArguments<T>) {
     if (args?.initial) {

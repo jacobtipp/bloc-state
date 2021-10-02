@@ -7,19 +7,14 @@ import * as deepEqual from "fast-deep-equal";
 
 export abstract class Cubit<T extends BlocState> {
   private readonly _state$: BehaviorSubject<T>;
-  private readonly _error$ = new Subject<BlocError>();
   state$: Observable<T>;
-  onError$: Observable<BlocError>;
+
 
   constructor(initialT: T) {
     this._state$ = new BehaviorSubject<T>(Object.freeze(initialT));
     this.state$ = this.select((state) => state).pipe(shareReplay({ refCount: true, bufferSize: 1 }));
-    this.onError$ = this._error$.asObservable();
   }
 
-  /*on<E extends typeof Event>(handler: (e: Event, emit: )) {
-
-  }*/
 
   /**
    * * Getter to retrive the current snapshot of our state directly from the subject
@@ -59,6 +54,5 @@ export abstract class Cubit<T extends BlocState> {
    */
   protected dispose(): void {
     this._state$.complete();
-    this._error$.complete();
   }
 }

@@ -1,17 +1,6 @@
 import { BlocState, Cubit } from "../lib";
 
-/**
- * @class
- * @description
- * * CounterState is a BlocState of type number
- */
 export abstract class CounterState extends BlocState<number> {}
-
-/**
- * @class
- * @description
- * * Child classes of CounterState
- */
 export class CounterStateInitial extends CounterState {}
 export class CounterStateIncrement extends CounterState {}
 export class CounterStateDecrement extends CounterState {}
