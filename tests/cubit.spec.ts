@@ -53,7 +53,7 @@ describe("Cubit", () => {
         })
       )
       .subscribe({
-        complete: done
+        complete: done,
       });
 
     cubit.increment();
@@ -63,7 +63,7 @@ describe("Cubit", () => {
 
   it("should freeze state objects and make them immutable", (done) => {
     state$.pipe(tap((state) => expect(Object.isFrozen(state)))).subscribe({
-      complete: done
+      complete: done,
     });
     cubit.increment();
     cubit.decrement();
