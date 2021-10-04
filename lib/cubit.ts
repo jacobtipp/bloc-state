@@ -30,9 +30,9 @@ export abstract class Cubit<T extends BlocState> {
    * @param mapFn
    * @returns {Observable<K>} Observable<K>
    */
-  protected select<K = Partial<T>>(mapCallback: (state: T) => K): Observable<K> {
+  protected select<K = Partial<T>>(filterState: (state: T) => K): Observable<K> {
     return this._state$.asObservable().pipe(
-      map((state: T) => mapCallback(state)),
+      map((state) => filterState(state)),
       distinctUntilChanged((previous, current) => deepEqual(previous, current))
     );
   }

@@ -1,5 +1,5 @@
 {
-  "name": "blocstate",
+  "name": "bloc-state",
   "version": "1.0.0",
   "description": "",
   "main": "dist/bloc-state.umd.js",
