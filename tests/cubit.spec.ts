@@ -1,9 +1,6 @@
 import { Observable, scan, tap } from "rxjs";
 import { Bloc, BlocState, Cubit } from "../lib";
-import {
-  CounterCubit,
-  CounterState,
-} from "./examples/counter";
+import { CounterCubit, CounterState } from "./examples/counter";
 
 describe("Cubit", () => {
   let cubit: CounterCubit;
@@ -18,13 +15,20 @@ describe("Cubit", () => {
     expect(cubit).toBeInstanceOf(Cubit);
   });
 
+  it("should close a cubit", (done) => {
+    cubit.close();
+    cubit.state$.subscribe({
+      complete: () => done(),
+    });
+  });
+
   it("should return new state from actions", (done) => {
     const states: CounterState[] = [];
     state$.pipe(tap((state) => states.push(state))).subscribe({
       complete: () => {
         const [first, second, third] = states;
         expect(states.length).toBe(3);
-        expect(first).toBeInstanceOf(CounterState);
+        expect(first).toBeInstanceOf(BlocState);
         expect(first.data).toBe(0);
         expect(second).toBeInstanceOf(CounterState);
         expect(second.data).toBe(1);
@@ -38,23 +42,6 @@ describe("Cubit", () => {
     cubit.close();
   });
 
-  it("should return different instances of same type", (done) => {
-    state$
-      .pipe(
-        scan((current, next) => {
-          expect(current).not.toStrictEqual(next);
-          return next;
-        })
-      )
-      .subscribe({
-        complete: done,
-      });
-
-    cubit.increment();
-    cubit.increment();
-    cubit.close();
-  });
-
   it("should freeze state objects and make them immutable", (done) => {
     state$.pipe(tap((state) => expect(Object.isFrozen(state)))).subscribe({
       complete: done,
@@ -62,5 +49,24 @@ describe("Cubit", () => {
     cubit.increment();
     cubit.decrement();
     cubit.close();
+  });
+
+  it("should handle async actions", done => {
+    void (async () => {
+      const states: CounterState[] = [];
+      state$.pipe(tap((state) => states.push(state))).subscribe({
+        complete: () => {
+          const [first, second, third] = states;
+          expect(states.length).toBe(3);
+          expect(second.isLoading).toBe(true);
+          expect(second.hasData).toBe(false);
+          expect(third.hasData).toBe(true);
+          expect(third.isLoading).toBe(false);
+          done()
+        },
+      });
+      await cubit.asyncIncrement();
+      cubit.close();
+    })();
   });
 });

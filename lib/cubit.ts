@@ -1,22 +1,24 @@
-import { AsyncSubject, BehaviorSubject, Observable, ReplaySubject, Subject } from "rxjs";
-import { catchError, filter, shareReplay, tap } from "rxjs/operators";
+import { BehaviorSubject, Observable } from "rxjs";
+import { shareReplay, tap } from "rxjs/operators";
 import { distinctUntilChanged, map } from "rxjs/operators";
 import { BlocState } from ".";
 import * as deepEqual from "fast-deep-equal";
-import { BlocEvent } from "./event";
-import { BlocError } from "./error";
 
 export abstract class Cubit<T extends BlocState> {
-  private readonly _stateSubject$: BehaviorSubject<T>;
-  private readonly _state$: Observable<T>;
-  state$: Observable<T>;
-
   constructor(private _state: T) {
     this._stateSubject$ = new BehaviorSubject(_state);
     this._state$ = this._buildStatePipeline();
     this.state$ = this.select((state) => state);
     this._listen();
   }
+
+  public state$: Observable<T>;
+  public close() {
+    this.dispose();
+  }
+
+  private readonly _stateSubject$: BehaviorSubject<T>;
+  private readonly _state$: Observable<T>;
 
   private _buildStatePipeline() {
     return this._stateSubject$.asObservable().pipe(
@@ -33,16 +35,16 @@ export abstract class Cubit<T extends BlocState> {
     });
   }
 
+  protected transitionHandler(current: T, next: T) {}
+  protected errorHandler(error: Error) {}
+
   /**
-   * * Getter to retrive the current snapshot of our state directly from the subject
+   * * Getter to retrieve the current snapshot of the state directly from the subject
    *  @returns {T}
    */
   protected get state(): T {
     return this._state;
   }
-
-  protected transitionHandler(current: T, next: T) {}
-  protected errorHandler(error: Error) {}
 
   /**
    * * Creates an Observable stream mapped to only a selected part of the state.
@@ -50,6 +52,7 @@ export abstract class Cubit<T extends BlocState> {
    * @param mapFn
    * @returns {Observable<K>} Observable<K>
    */
+
   protected select(filterState: (state: T) => T): Observable<T> {
     return this._state$.pipe(
       map((state) => filterState(state)),
@@ -62,11 +65,9 @@ export abstract class Cubit<T extends BlocState> {
    * @param {T} newState
    */
   protected emit(newState: T): void {
-    this._stateSubject$.next(Object.freeze(newState));
-  }
-
-  close() {
-    this.dispose();
+    if (!this._stateSubject$.closed) {
+      this._stateSubject$.next(Object.freeze(newState));
+    }
   }
 
   /**

@@ -5,13 +5,13 @@ import { BlocState } from "./state";
 import { asyncGeneratorToObservable } from "./util";
 
 export abstract class Bloc<E, State extends BlocState> extends Cubit<State> {
-  private readonly _events$ = new Subject<E>();
-  private _event: E;
-
   constructor(state: State) {
     super(state);
     this._subscribeStateoEvents();
   }
+
+  private readonly _events$ = new Subject<E>();
+  private _event: E;
 
   /**
    * * Returns the current state snapshot from the subject.
