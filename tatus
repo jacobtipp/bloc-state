@@ -1,0 +1,318 @@
+warning: LF will be replaced by CRLF in lib/cubit.ts.
+The file will have its original line endings in your working directory
+warning: LF will be replaced by CRLF in tests/cubit.spec.ts.
+The file will have its original line endings in your working directory
+warning: LF will be replaced by CRLF in tests/state.spec.ts.
+The file will have its original line endings in your working directory
+[1mdiff --git a/lib/bloc.ts b/lib/bloc.ts[m
+[1mindex 83363ff..c7a6499 100644[m
+[1m--- a/lib/bloc.ts[m
+[1m+++ b/lib/bloc.ts[m
+[36m@@ -1,26 +1,15 @@[m
+[31m-import { EMPTY, Observable, Subject } from "rxjs";[m
+[32m+[m[32mimport { EMPTY, Subject } from "rxjs";[m
+ import { catchError, mergeMap, tap } from "rxjs/operators";[m
+ import { Cubit } from "./cubit";[m
+ import { BlocState } from "./state";[m
+ import { asyncGeneratorToObservable } from "./util";[m
+ [m
+[31m-export interface Transition {[m
+[31m-  event: Event;[m
+[31m-  previous: BlocState;[m
+[31m-  next: BlocState;[m
+[31m-}[m
+[31m-[m
+ export abstract class Bloc<E, State extends BlocState> extends Cubit<State> {[m
+   private readonly _events$ = new Subject<E>();[m
+[31m-  private readonly _transition$ = new Subject<Transition>();[m
+[31m-[m
+[31m-  public onEvent$: Observable<E>;[m
+[31m-  public onTransition: Observable<Transition>;[m
+[32m+[m[32m  private _event: E;[m
+ [m
+   constructor(state: State) {[m
+     super(state);[m
+[31m-    this.onEvent$ = this._events$.asObservable();[m
+[31m-    this.onTransition = this._transition$.asObservable();[m
+     this._subscribeStateoEvents();[m
+   }[m
+ [m
+[36m@@ -32,6 +21,10 @@[m [mexport abstract class Bloc<E, State extends BlocState> extends Cubit<State> {[m
+     return this.state;[m
+   }[m
+ [m
+[32m+[m[32m  /**[m
+[32m+[m[32m   * * overridable handler methods[m
+[32m+[m[32m   */[m
+[32m+[m
+   /**[m
+    * * Add a Event by pushing an Event object into the stream.[m
+    * @param {Event} event[m
+[36m@@ -54,7 +47,6 @@[m [mexport abstract class Bloc<E, State extends BlocState> extends Cubit<State> {[m
+    */[m
+   private _dispose(): void {[m
+     this._events$.complete();[m
+[31m-    this._transition$.complete();[m
+     super.dispose();[m
+   }[m
+ [m
+[36m@@ -64,7 +56,14 @@[m [mexport abstract class Bloc<E, State extends BlocState> extends Cubit<State> {[m
+    * @param {Event} event[m
+    * @yields {State} State[m
+    */[m
+[31m-  abstract mapEventToState(event: E): AsyncGenerator<State>;[m
+[32m+[m[32m  protected abstract mapEventToState(event: E): AsyncGenerator<State>;[m
+[32m+[m
+[32m+[m[32m  protected onTransition(current: State, next: State, event: E) {}[m
+[32m+[m[32m  protected onEvent(event: E) {}[m
+[32m+[m
+[32m+[m[32m  protected transition(current: State, next: State) {[m
+[32m+[m[32m    this.onTransition(current, next, this._event);[m
+[32m+[m[32m  }[m
+ [m
+   /**[m
+    * @access private[m
+[36m@@ -73,6 +72,7 @@[m [mexport abstract class Bloc<E, State extends BlocState> extends Cubit<State> {[m
+   private _subscribeStateoEvents(): void {[m
+     this._events$[m
+       .pipe([m
+[32m+[m[32m        tap((event) => this.onEvent(event)),[m
+         mergeMap((e) => asyncGeneratorToObservable(this.mapEventToState(e))),[m
+         tap((state) => this.emit(state)),[m
+         catchError((error) => this._handleError(error))[m
+[36m@@ -81,6 +81,7 @@[m [mexport abstract class Bloc<E, State extends BlocState> extends Cubit<State> {[m
+   }[m
+ [m
+   private _handleError(error: Error) {[m
+[32m+[m[32m    console.error(error);[m
+     return EMPTY;[m
+   }[m
+ }[m
+[1mdiff --git a/lib/cubit.ts b/lib/cubit.ts[m
+[1mindex 9895465..84df0cb 100644[m
+[1m--- a/lib/cubit.ts[m
+[1m+++ b/lib/cubit.ts[m
+[36m@@ -1,37 +1,57 @@[m
+[31m-import { BehaviorSubject, Observable, Subject } from "rxjs";[m
+[31m-import { filter, shareReplay } from "rxjs/operators";[m
+[32m+[m[32mimport { AsyncSubject, BehaviorSubject, Observable, ReplaySubject, Subject } from "rxjs";[m
+[32m+[m[32mimport { catchError, filter, shareReplay, tap } from "rxjs/operators";[m
+ import { distinctUntilChanged, map } from "rxjs/operators";[m
+ import { BlocState } from ".";[m
+[31m-import { BlocError } from "./error";[m
+ import * as deepEqual from "fast-deep-equal";[m
+[32m+[m[32mimport { BlocEvent } from "./event";[m
+[32m+[m[32mimport { BlocError } from "./error";[m
+ [m
+ export abstract class Cubit<T extends BlocState> {[m
+[31m-  private readonly _state$: BehaviorSubject<T>;[m
+[32m+[m[32m  private readonly _stateSubject$: BehaviorSubject<T>;[m
+[32m+[m[32m  private readonly _state$: Observable<T>;[m
+   state$: Observable<T>;[m
+ [m
+[31m-  constructor(initialT: T) {[m
+[31m-    this._state$ = new BehaviorSubject<T>(Object.freeze(initialT));[m
+[31m-    this.state$ = this.select((state) => state).pipe([m
+[32m+[m[32m  constructor(private _state: T) {[m
+[32m+[m[32m    this._stateSubject$ = new BehaviorSubject(_state);[m
+[32m+[m[32m    this._state$ = this._buildStatePipeline();[m
+[32m+[m[32m    this.state$ = this.select((state) => state);[m
+[32m+[m[32m    this._listen();[m
+[32m+[m[32m  }[m
+[32m+[m
+[32m+[m[32m  private _buildStatePipeline() {[m
+[32m+[m[32m    return this._stateSubject$.asObservable().pipe([m
+[32m+[m[32m      distinctUntilChanged((previous, current) => deepEqual(previous, current)),[m
+[32m+[m[32m      tap((state) => this.transitionHandler(this._state, state)),[m
+[32m+[m[32m      tap((state) => (this._state = state)),[m
+       shareReplay({ refCount: true, bufferSize: 1 })[m
+     );[m
+   }[m
+ [m
+[32m+[m[32m  private _listen() {[m
+[32m+[m[32m    this._state$.subscribe({[m
+[32m+[m[32m      error: (error) => this.errorHandler(error),[m
+[32m+[m[32m    });[m
+[32m+[m[32m  }[m
+[32m+[m
+   /**[m
+    * * Getter to retrive the current snapshot of our state directly from the subject[m
+    *  @returns {T}[m
+    */[m
+   protected get state(): T {[m
+[31m-    return this._state$.getValue();[m
+[32m+[m[32m    return this._state;[m
+   }[m
+ [m
+[32m+[m[32m  protected transitionHandler(current: T, next: T) {}[m
+[32m+[m[32m  protected errorHandler(error: Error) {}[m
+[32m+[m
+   /**[m
+    * * Creates an Observable stream mapped to only a selected part of the state.[m
+    * * The stream will emit data only when the mapped portion has changed.[m
+    * @param mapFn[m
+    * @returns {Observable<K>} Observable<K>[m
+    */[m
+[31m-  protected select<K = Partial<T>>(filterState: (state: T) => K): Observable<K> {[m
+[31m-    return this._state$.asObservable().pipe([m
+[32m+[m[32m  protected select(filterState: (state: T) => T): Observable<T> {[m
+[32m+[m[32m    return this._state$.pipe([m
+       map((state) => filterState(state)),[m
+       distinctUntilChanged((previous, current) => deepEqual(previous, current))[m
+     );[m
+[36m@@ -39,10 +59,10 @@[m [mexport abstract class Cubit<T extends BlocState> {[m
+ [m
+   /**[m
+    * * Push a new immutable state snapshot[m
+[31m-   * @param {Partial<T>} newState[m
+[32m+[m[32m   * @param {T} newState[m
+    */[m
+   protected emit(newState: T): void {[m
+[31m-    this._state$.next(Object.freeze(newState));[m
+[32m+[m[32m    this._stateSubject$.next(Object.freeze(newState));[m
+   }[m
+ [m
+   close() {[m
+[36m@@ -53,6 +73,6 @@[m [mexport abstract class Cubit<T extends BlocState> {[m
+    * * Dispose the cubit by setting the state to complete, closing the stream[m
+    */[m
+   protected dispose(): void {[m
+[31m-    this._state$.complete();[m
+[32m+[m[32m    this._stateSubject$.complete();[m
+   }[m
+ }[m
+[1mdiff --git a/tests/cubit.spec.ts b/tests/cubit.spec.ts[m
+[1mindex ca70637..01f4cdc 100644[m
+[1m--- a/tests/cubit.spec.ts[m
+[1m+++ b/tests/cubit.spec.ts[m
+[36m@@ -1,12 +1,9 @@[m
+ import { Observable, scan, tap } from "rxjs";[m
+[31m-import { Cubit } from "../lib";[m
+[32m+[m[32mimport { Bloc, BlocState, Cubit } from "../lib";[m
+ import {[m
+   CounterCubit,[m
+   CounterState,[m
+[31m-  CounterStateDecrement,[m
+[31m-  CounterStateIncrement,[m
+[31m-  CounterStateInitial,[m
+[31m-} from "./examples";[m
+[32m+[m[32m} from "./examples/counter";[m
+ [m
+ describe("Cubit", () => {[m
+   let cubit: CounterCubit;[m
+[36m@@ -27,17 +24,17 @@[m [mdescribe("Cubit", () => {[m
+       complete: () => {[m
+         const [first, second, third] = states;[m
+         expect(states.length).toBe(3);[m
+[31m-        expect(first).toBeInstanceOf(CounterStateInitial);[m
+[32m+[m[32m        expect(first).toBeInstanceOf(CounterState);[m
+         expect(first.data).toBe(0);[m
+[31m-        expect(second).toBeInstanceOf(CounterStateIncrement);[m
+[32m+[m[32m        expect(second).toBeInstanceOf(CounterState);[m
+         expect(second.data).toBe(1);[m
+[31m-        expect(third).toBeInstanceOf(CounterStateDecrement);[m
+[31m-        expect(third.data).toBe(0);[m
+[32m+[m[32m        expect(third).toBeInstanceOf(CounterState);[m
+[32m+[m[32m        expect(third.data).toBe(2);[m
+         done();[m
+       },[m
+     });[m
+[31m-    cubit.increment()[m
+[31m-    cubit.decrement()[m
+[32m+[m[32m    cubit.increment();[m
+[32m+[m[32m    cubit.increment();[m
+     cubit.close();[m
+   });[m
+ [m
+[1mdiff --git a/tests/examples.ts b/tests/examples.ts[m
+[1mdeleted file mode 100644[m
+[1mindex 23bfb6c..0000000[m
+[1m--- a/tests/examples.ts[m
+[1m+++ /dev/null[m
+[36m@@ -1,22 +0,0 @@[m
+[31m-import { Cubit } from "../lib/cubit";[m
+[31m-import { BlocState } from "../lib/state";[m
+[31m-[m
+[31m-[m
+[31m-export abstract class CounterState extends BlocState<number> {}[m
+[31m-export class CounterStateInitial extends CounterState {}[m
+[31m-export class CounterStateIncrement extends CounterState {}[m
+[31m-export class CounterStateDecrement extends CounterState {}[m
+[31m-[m
+[31m-export class CounterCubit extends Cubit<CounterState> {[m
+[31m-  constructor() {[m
+[31m-    super(CounterStateInitial.initialize(0));[m
+[31m-  }[m
+[31m-[m
+[31m-  increment() {[m
+[31m-    this.emit(CounterStateIncrement.ready(this.state.data + 1));[m
+[31m-  }[m
+[31m-[m
+[31m-  decrement() {[m
+[31m-    this.emit(CounterStateDecrement.ready(this.state.data - 1));[m
+[31m-  }[m
+[31m-}[m
+[1mdiff --git a/tests/state.spec.ts b/tests/state.spec.ts[m
+[1mindex e881cb5..3a8dbf8 100644[m
+[1m--- a/tests/state.spec.ts[m
+[1m+++ b/tests/state.spec.ts[m
+[36m@@ -1,12 +1,12 @@[m
+ import { BlocError, InvalidConstructorArgumentsError } from "../lib/error";[m
+[31m-import { CounterState, CounterStateIncrement } from "./examples";[m
+[32m+[m[32mimport { CounterState } from "./examples/counter";[m
+ [m
+ describe("BlocState", () => {[m
+   let state: CounterState;[m
+ [m
+   describe("BlocState.initializing", () => {[m
+     it("should set state to initialized", () => {[m
+[31m-      state = CounterStateIncrement.initialize(0);[m
+[32m+[m[32m      state = CounterState.initialize(0);[m
+       expect(state).toBeInstanceOf(CounterState);[m
+       expect(state.initial).toBe(true);[m
+       expect(state.data).toBe(0);[m
+[36m@@ -19,7 +19,7 @@[m [mdescribe("BlocState", () => {[m
+ [m
+   describe("BlocState.loading", () => {[m
+     it("should set state to loading", () => {[m
+[31m-      state = CounterStateIncrement.loading();[m
+[32m+[m[32m      state = CounterState.loading();[m
+       expect(state.initial).toBe(false);[m
+       expect(state.data).toBeUndefined();[m
+       expect(state.isLoading).toBe(true);[m
+[36m@@ -29,7 +29,7 @@[m [mdescribe("BlocState", () => {[m
+     });[m
+ [m
+     it("should optionally set a loading message", () => {[m
+[31m-      state = CounterStateIncrement.loading("hello world");[m
+[32m+[m[32m      state = CounterState.loading("hello world");[m
+       expect(state.initial).toBe(false);[m
+       expect(state.data).toBeUndefined();[m
+       expect(state.isLoading).toBe(true);[m
+[36m@@ -41,7 +41,7 @@[m [mdescribe("BlocState", () => {[m
+ [m
+   describe("BlocState.ready", () => {[m
+     it("should set state to ready", () => {[m
+[31m-      state = CounterStateIncrement.ready();[m
+[32m+[m[32m      state = CounterState.ready();[m
+       expect(state.initial).toBe(false);[m
+       expect(state.data).toBeUndefined();[m
+       expect(state.isLoading).toBe(false);[m
+[36m@@ -51,7 +51,7 @@[m [mdescribe("BlocState", () => {[m
+     });[m
+ [m
+     it("should optionally set data on ready", () => {[m
+[31m-      state = CounterStateIncrement.ready(0);[m
+[32m+[m[32m      state = CounterState.ready(0);[m
+       expect(state.initial).toBe(false);[m
+       expect(state.data).toBe(0);[m
+       expect(state.isLoading).toBe(false);[m
+[36m@@ -64,7 +64,7 @@[m [mdescribe("BlocState", () => {[m
+   describe("BlocState.failed", () => {[m
+     it("should set state to failed", () => {[m
+       const error = new InvalidConstructorArgumentsError()[m
+[31m-      state = CounterStateIncrement.failed(error.message, error);[m
+[32m+[m[32m      state = CounterState.failed(error.message, error);[m
+       expect(state.initial).toBe(false);[m
+       expect(state.data).toBeUndefined();[m
+       expect(state.isLoading).toBe(false);[m

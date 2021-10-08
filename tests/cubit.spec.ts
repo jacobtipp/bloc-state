@@ -1,12 +1,9 @@
 import { Observable, scan, tap } from "rxjs";
-import { Cubit } from "../lib";
+import { Bloc, BlocState, Cubit } from "../lib";
 import {
   CounterCubit,
   CounterState,
-  CounterStateDecrement,
-  CounterStateIncrement,
-  CounterStateInitial,
-} from "./examples";
+} from "./examples/counter";
 
 describe("Cubit", () => {
   let cubit: CounterCubit;
@@ -27,17 +24,17 @@ describe("Cubit", () => {
       complete: () => {
         const [first, second, third] = states;
         expect(states.length).toBe(3);
-        expect(first).toBeInstanceOf(CounterStateInitial);
+        expect(first).toBeInstanceOf(CounterState);
         expect(first.data).toBe(0);
-        expect(second).toBeInstanceOf(CounterStateIncrement);
+        expect(second).toBeInstanceOf(CounterState);
         expect(second.data).toBe(1);
-        expect(third).toBeInstanceOf(CounterStateDecrement);
-        expect(third.data).toBe(0);
+        expect(third).toBeInstanceOf(CounterState);
+        expect(third.data).toBe(2);
         done();
       },
     });
-    cubit.increment()
-    cubit.decrement()
+    cubit.increment();
+    cubit.increment();
     cubit.close();
   });
 

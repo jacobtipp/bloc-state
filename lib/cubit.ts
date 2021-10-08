@@ -1,19 +1,36 @@
-import { BehaviorSubject, Observable, Subject } from "rxjs";
-import { filter, shareReplay } from "rxjs/operators";
+import { AsyncSubject, BehaviorSubject, Observable, ReplaySubject, Subject } from "rxjs";
+import { catchError, filter, shareReplay, tap } from "rxjs/operators";
 import { distinctUntilChanged, map } from "rxjs/operators";
 import { BlocState } from ".";
-import { BlocError } from "./error";
 import * as deepEqual from "fast-deep-equal";
+import { BlocEvent } from "./event";
+import { BlocError } from "./error";
 
 export abstract class Cubit<T extends BlocState> {
-  private readonly _state$: BehaviorSubject<T>;
+  private readonly _stateSubject$: BehaviorSubject<T>;
+  private readonly _state$: Observable<T>;
   state$: Observable<T>;
 
-  constructor(initialT: T) {
-    this._state$ = new BehaviorSubject<T>(Object.freeze(initialT));
-    this.state$ = this.select((state) => state).pipe(
+  constructor(private _state: T) {
+    this._stateSubject$ = new BehaviorSubject(_state);
+    this._state$ = this._buildStatePipeline();
+    this.state$ = this.select((state) => state);
+    this._listen();
+  }
+
+  private _buildStatePipeline() {
+    return this._stateSubject$.asObservable().pipe(
+      distinctUntilChanged((previous, current) => deepEqual(previous, current)),
+      tap((state) => this.transitionHandler(this._state, state)),
+      tap((state) => (this._state = state)),
       shareReplay({ refCount: true, bufferSize: 1 })
     );
+  }
+
+  private _listen() {
+    this._state$.subscribe({
+      error: (error) => this.errorHandler(error),
+    });
   }
 
   /**
@@ -21,8 +38,11 @@ export abstract class Cubit<T extends BlocState> {
    *  @returns {T}
    */
   protected get state(): T {
-    return this._state$.getValue();
+    return this._state;
   }
+
+  protected transitionHandler(current: T, next: T) {}
+  protected errorHandler(error: Error) {}
 
   /**
    * * Creates an Observable stream mapped to only a selected part of the state.
@@ -30,8 +50,8 @@ export abstract class Cubit<T extends BlocState> {
    * @param mapFn
    * @returns {Observable<K>} Observable<K>
    */
-  protected select<K = Partial<T>>(filterState: (state: T) => K): Observable<K> {
-    return this._state$.asObservable().pipe(
+  protected select(filterState: (state: T) => T): Observable<T> {
+    return this._state$.pipe(
       map((state) => filterState(state)),
       distinctUntilChanged((previous, current) => deepEqual(previous, current))
     );
@@ -39,10 +59,10 @@ export abstract class Cubit<T extends BlocState> {
 
   /**
    * * Push a new immutable state snapshot
-   * @param {Partial<T>} newState
+   * @param {T} newState
    */
   protected emit(newState: T): void {
-    this._state$.next(Object.freeze(newState));
+    this._stateSubject$.next(Object.freeze(newState));
   }
 
   close() {
@@ -53,6 +73,6 @@ export abstract class Cubit<T extends BlocState> {
    * * Dispose the cubit by setting the state to complete, closing the stream
    */
   protected dispose(): void {
-    this._state$.complete();
+    this._stateSubject$.complete();
   }
 }
