@@ -1,35 +1,40 @@
-import { EMPTY, Subject } from "rxjs";
-import { catchError, mergeMap, tap } from "rxjs/operators";
+import { EMPTY, Subject, throwError } from "rxjs";
+import { catchError, concatMap, mergeMap, tap } from "rxjs/operators";
 import { Cubit } from "./cubit";
 import { BlocState } from "./state";
 import { asyncGeneratorToObservable } from "./util";
 
-export abstract class Bloc<E, State extends BlocState> extends Cubit<State> {
+export abstract class Bloc<BlocEvent, State extends BlocState> extends Cubit<State> {
   constructor(state: State) {
     super(state);
-    this._subscribeStateoEvents();
+    this._subscribeStateToEvents();
   }
 
-  private readonly _events$ = new Subject<E>();
-  private _event: E;
+  /**
+   * @description
+   * * event Subject where events get pushed into the Bloc
+   */
+  private readonly _events$ = new Subject<BlocEvent>();
+
+  /** 
+   * @description
+   * * local event variable
+   */
+  private _event: BlocEvent;
 
   /**
    * * Returns the current state snapshot from the subject.
    * @returns {State}
    */
   protected get state(): State {
-    return this.state;
+    return super.state;
   }
 
   /**
-   * * overridable handler methods
-   */
-
-  /**
-   * * Add a Event by pushing an Event object into the stream.
+   * * Add an Event by pushing an Event object into the stream.
    * @param {Event} event
    */
-  addEvent(event: E): void {
+  addEvent(event: BlocEvent): void {
     if (!this._events$.closed) {
       this._events$.next(event);
     }
@@ -56,32 +61,90 @@ export abstract class Bloc<E, State extends BlocState> extends Cubit<State> {
    * @param {Event} event
    * @yields {State} State
    */
-  protected abstract mapEventToState(event: E): AsyncGenerator<State>;
+  protected abstract mapEventToState(event: BlocEvent): AsyncGenerator<State>;
 
-  protected onTransition(current: State, next: State, event: E) {}
-  protected onEvent(event: E) {}
+  /**
+   * 
+   * @param current 
+   * @param next 
+   * @param event 
+   * 
+   * @override
+   * @description
+   * * onTransition handler
+   */
+  protected onTransition(current: State, next: State, event: BlocEvent) {}
 
-  protected transition(current: State, next: State) {
+  /**
+   * 
+   * @param event 
+   * 
+   * @override
+   * @description
+   * * onEvent handler
+   */
+  protected onEvent(event: BlocEvent) {}
+
+  /**
+   * 
+   * @param error 
+   * 
+   * @override
+   * @description
+   * * onError handler
+   */
+  protected onError(error: Error) {}
+
+  /**
+   * 
+   * @param current 
+   * @param next 
+   * 
+   * @description
+   * * transitionHandler is a method override from parent class
+   */
+  protected transitionHandler(current: State, next: State) {
     this.onTransition(current, next, this._event);
   }
 
   /**
-   * @access private
-   * * Subscribe to Events stream
+   * @description
+   * * Subscribe to eventSubject 
    */
-  private _subscribeStateoEvents(): void {
+  private _subscribeStateToEvents(): void {
     this._events$
       .pipe(
         tap((event) => this.onEvent(event)),
-        mergeMap((e) => asyncGeneratorToObservable(this.mapEventToState(e))),
-        tap((state) => this.emit(state)),
-        catchError((error) => this._handleError(error))
+        concatMap((event) => this._mapEventToState(event)),
+        tap((state) => this.emit(state))
       )
       .subscribe();
   }
 
-  private _handleError(error: Error) {
-    console.error(error);
-    return EMPTY;
+  /**
+   * 
+   * @param event 
+   * 
+   * @description
+   * * convert async generator to an observable and catch any errors
+   * 
+   * @returns {Observable<State>}
+   */
+  private _mapEventToState(event: BlocEvent) {
+    return asyncGeneratorToObservable(this.mapEventToState(event)).pipe(
+      catchError((error) => this._mapEventToStateError(error)),
+      tap(() => (this._event = event)),
+      catchError(() => EMPTY)
+    );
+  }
+
+  /**
+   * 
+   * @param error 
+   * @returns {Observable<never>}
+   */
+  private _mapEventToStateError(error: Error) {
+    this.onError(error);
+    return throwError(() => error);
   }
 }

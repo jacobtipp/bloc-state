@@ -1,5 +1,5 @@
 import { BlocError, InvalidConstructorArgumentsError } from "../lib/error";
-import { CounterState } from "./examples/counter";
+import { CounterState } from "./examples/counter/counter.state";
 
 describe("BlocState", () => {
   let state: CounterState;

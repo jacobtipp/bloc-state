@@ -1,6 +1,7 @@
 import { Observable, scan, tap } from "rxjs";
 import { Bloc, BlocState, Cubit } from "../lib";
-import { CounterCubit, CounterState } from "./examples/counter";
+import { CounterCubit } from "./examples/counter/counter.cubit";
+import { CounterState } from "./examples/counter/counter.state";
 
 describe("Cubit", () => {
   let cubit: CounterCubit;

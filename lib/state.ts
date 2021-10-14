@@ -1,9 +1,5 @@
 import { BlocError, InvalidConstructorArgumentsError } from "./error";
 
-/**
- * @description
- * * BlocState is abstract but it's factory methods are static
- */
 export type BlocStateConstructorArguments<T> = {
   data?: T;
   initial?: boolean;
@@ -13,6 +9,8 @@ export type BlocStateConstructorArguments<T> = {
   error?: BlocError;
 };
 
+export type BlocStateInstanceType = InstanceType<typeof BlocState>;
+1;
 export abstract class BlocState<T = any> {
   data: T;
   initial: boolean;
@@ -23,8 +21,9 @@ export abstract class BlocState<T = any> {
   /**
    * @description use static factory methods to create instances.
    * @example
-   * ! Don't do this -> new BlocState()
-   * * Do this -> BlocState.initialize(T)
+   *  class TestState extends BlocState {}
+   *  Don't do this -> new TestState()
+   *  Do this -> TestState.initialize(T)
    *
    * @param {BlocStateConstructorArguments<T>} args
    */
@@ -51,28 +50,28 @@ export abstract class BlocState<T = any> {
    *
    */
 
-  static initialize<D, T extends InstanceType<typeof BlocState>>(
+  static initialize<D, T extends BlocStateInstanceType>(
     this: new (args: BlocStateConstructorArguments<D>) => T,
     data: D
   ): T {
     return new this({ initial: true, data: data });
   }
 
-  static ready<D, T extends InstanceType<typeof BlocState>>(
+  static ready<D, T extends BlocStateInstanceType>(
     this: new (args: BlocStateConstructorArguments<D>) => T,
     data?: D
   ): T {
     return new this({ data, ready: true });
   }
 
-  static loading<D, T extends InstanceType<typeof BlocState>>(
+  static loading<D, T extends BlocStateInstanceType>(
     this: new (args: BlocStateConstructorArguments<D>) => T,
     message = ""
   ): T {
     return new this({ message, loading: true });
   }
 
-  static failed<D, T extends InstanceType<typeof BlocState>>(
+  static failed<D, T extends BlocStateInstanceType>(
     this: new (args: BlocStateConstructorArguments<D>) => T,
     message: string,
     error: BlocError
