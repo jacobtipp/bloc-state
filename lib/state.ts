@@ -50,9 +50,9 @@ export abstract class BlocState<T = any> {
    *
    */
 
-  static initialize<D, T extends BlocStateInstanceType>(
+  static make<D, T extends BlocStateInstanceType>(
     this: new (args: BlocStateConstructorArguments<D>) => T,
-    data: D
+    data?: D
   ): T {
     return new this({ initial: true, data: data });
   }
@@ -81,7 +81,7 @@ export abstract class BlocState<T = any> {
 
   private _mapConstructorToState(args?: BlocStateConstructorArguments<T>) {
     if (args?.initial) {
-      this._initialize(args.data);
+      this._make(args.data);
     } else if (args?.ready) {
       this._ready(args.data);
     } else if (args?.error) {
@@ -93,7 +93,7 @@ export abstract class BlocState<T = any> {
     }
   }
 
-  private _initialize(data?: T) {
+  private _make(data?: T) {
     if (data !== undefined) {
       this.data = data;
     }

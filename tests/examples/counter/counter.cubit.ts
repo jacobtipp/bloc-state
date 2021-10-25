@@ -4,7 +4,7 @@ import { delay } from "./delay";
 
 export class CounterCubit extends Cubit<CounterState> {
   constructor() {
-    super(CounterState.initialize(0));
+    super(CounterState.make(0));
   }
 
   increment() {

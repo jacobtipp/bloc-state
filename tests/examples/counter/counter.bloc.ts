@@ -3,8 +3,10 @@ import { CounterEvent, DecrementCounterEvent, IncrementCounterEvent } from "./co
 import { CounterState } from "./counter.state";
 
 export class CounterBloc extends Bloc<CounterEvent, CounterState> {
-  onTransition(current: CounterState, next: CounterState, event: CounterEvent) {
+  constructor(state: CounterState) {
+    super(state);
   }
+  onTransition(current: CounterState, next: CounterState, event: CounterEvent) {}
 
   protected async *mapEventToState(event: CounterEvent) {
     switch (event.constructor.name) {

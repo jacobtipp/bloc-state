@@ -1,7 +1,5 @@
-import { isEqual } from "lodash";
 import { BehaviorSubject, Observable } from "rxjs";
-import { shareReplay, skip, tap } from "rxjs/operators";
-import { distinctUntilChanged, map } from "rxjs/operators";
+import { distinctUntilChanged, filter, map, shareReplay, skip, tap } from "rxjs/operators";
 import { BlocState } from ".";
 
 export abstract class Cubit<T extends BlocState> {
@@ -12,37 +10,37 @@ export abstract class Cubit<T extends BlocState> {
     this._listen();
   }
 
-  /** 
+  /**
    * @description
    * * public state observable
    */
   state$: Observable<T>;
 
-  /** 
+  /**
    * @description
    * * private _state observable used to build a pipeline for stateSubject
    */
   private readonly _state$: Observable<T>;
 
-  /** 
+  /**
    * @description
    * * the BehaviorSubject of a Cubit
    */
   private readonly _stateSubject$: BehaviorSubject<T>;
 
   /**
-   * @description 
+   * @description
    * * State that is pushed to a Cubit passes through this pipeline
-   * 
+   *
    * @returns {Observable<T>}
    */
   private _buildStatePipeline(): Observable<T> {
     return this._stateSubject$.asObservable().pipe(
       distinctUntilChanged(),
-      tap((state) => {
-        if (state !== this._state) {
-          this.transitionHandler(this._state, state);
-          this._state = state
+      tap((newState) => {
+        if (newState !== this._state) {
+          this.transitionHandler(this._state, newState);
+          this._state = newState;
         }
       }),
       shareReplay({ refCount: true, bufferSize: 1 })
@@ -59,28 +57,35 @@ export abstract class Cubit<T extends BlocState> {
     });
   }
 
+  protected onTransition(current: T, next: T) {}
+  protected onError(error: Error) {}
+
   /**
-   * 
+   *
    * @param current: T
    * @param next: T
-   * 
+   *
    * @override
    * @description
    * * before the next state is emitted, provide a transition handler function that a
    * * derived class can implement
    */
-  protected transitionHandler(current: T, next: T) {}
+  protected transitionHandler(current: T, next: T) {
+    this.onTransition(current, next);
+  }
 
   /**
-   * 
-   * @param error 
-   * 
+   *
+   * @param error
+   *
    * @override
    * @description
    * * Uncaught Cubit errors will be emitted to an erroHandler of a derived class
-   * * 
+   * *
    */
-  protected errorHandler(error: Error) {}
+  protected errorHandler(error: Error) {
+    this.onError(error);
+  }
 
   /**
    * * Getter to retrieve the current snapshot of the state
@@ -92,14 +97,28 @@ export abstract class Cubit<T extends BlocState> {
 
   /**
    * * Creates an Observable stream mapped to only a selected part of the state.
-   * * The stream will emit data only when the mapped portion has changed.
-   * @param mapFn
-   * @returns {Observable<K>} Observable<K>
+   * * The stream will emit data only when the mapped portion has changed. An optional source
+   * * stream can be provided as a second parameter as long as it returns <T>.
+   * @param mapState
+   * @param {Observable<T>} source
+   * @returns {Observable<T>} Observable<T>
    */
+  protected select(mapState: (state: T) => T, source?: Observable<T>): Observable<T> {
+    const stream$ = source || this._state$;
+    return stream$.pipe(
+      map((state) => mapState(state)),
+      distinctUntilChanged()
+    );
+  }
 
-  protected select(filterState: (state: T) => T): Observable<T> {
+  /**
+   * * Filter any newly emitted state based on filter function criteria
+   * @param filterState
+   * @returns  {Observable<T>}
+   */
+  protected filter(filterState: (state: T) => boolean): Observable<T> {
     return this._state$.pipe(
-      map((state) => filterState(state)),
+      filter((state) => filterState(state)),
       distinctUntilChanged()
     );
   }
@@ -124,10 +143,9 @@ export abstract class Cubit<T extends BlocState> {
 
   /**
    * @description
-   * * close Bloc, 
+   * * close Bloc,
    */
   close() {
     this.dispose();
   }
-
 }

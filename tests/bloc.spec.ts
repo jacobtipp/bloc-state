@@ -8,7 +8,7 @@ describe("bloc", () => {
   let bloc: CounterBloc;
 
   beforeEach(() => {
-    bloc = new CounterBloc(CounterState.initialize(0));
+    bloc = new CounterBloc(CounterState.make(0));
   });
 
   it("should be defined", () => {
@@ -40,8 +40,8 @@ describe("bloc", () => {
 				done()
       },
     });
-    bloc.addEvent(IncrementCounterEvent.create());
-    bloc.addEvent(IncrementCounterEvent.create());
-    bloc.addEvent(IncrementCounterEvent.create());
+    bloc.addEvent(IncrementCounterEvent.make());
+    bloc.addEvent(IncrementCounterEvent.make());
+    bloc.addEvent(IncrementCounterEvent.make());
   });
 });

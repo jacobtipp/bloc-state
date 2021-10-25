@@ -16,9 +16,8 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "dependencies": {
-    "lodash.isequal": "^4.5.0",
-    "rxjs": "^7.3.0"
+  "peerDependencies": {
+    "rxjs": "7.x.x"
   },
   "devDependencies": {
     "@types/jest": "^27.0.2",
