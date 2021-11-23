@@ -1,16 +1,11 @@
 import { Observable, scan, tap } from "rxjs";
-import { Cubit } from "../lib";
-import {
-  CounterCubit,
-  CounterState,
-  CounterStateDecrement,
-  CounterStateIncrement,
-  CounterStateInitial,
-} from "./examples";
+import { CounterCubit } from "../examples/counter/counter.cubit";
+import { CounterState } from "../examples/counter/counter.state";
+import { Bloc, BlocState, Cubit } from "../lib";
 
 describe("Cubit", () => {
   let cubit: CounterCubit;
-  let state$: Observable<CounterState>;
+  let state$: Observable<number>;
 
   beforeEach(() => {
     cubit = new CounterCubit();
@@ -21,38 +16,25 @@ describe("Cubit", () => {
     expect(cubit).toBeInstanceOf(Cubit);
   });
 
+  it("should close a cubit", (done) => {
+    cubit.close();
+    cubit.state$.subscribe({
+      complete: () => done(),
+    });
+  });
+
   it("should return new state from actions", (done) => {
-    const states: CounterState[] = [];
+    const states: number[] = [];
     state$.pipe(tap((state) => states.push(state))).subscribe({
       complete: () => {
         const [first, second, third] = states;
         expect(states.length).toBe(3);
-        expect(first).toBeInstanceOf(CounterStateInitial);
-        expect(first.data).toBe(0);
-        expect(second).toBeInstanceOf(CounterStateIncrement);
-        expect(second.data).toBe(1);
-        expect(third).toBeInstanceOf(CounterStateDecrement);
-        expect(third.data).toBe(0);
+        expect(first).toBe(0);
+        expect(second).toBe(1);
+        expect(third).toBe(2);
         done();
       },
     });
-    cubit.increment()
-    cubit.decrement()
-    cubit.close();
-  });
-
-  it("should return different instances of same type", (done) => {
-    state$
-      .pipe(
-        scan((current, next) => {
-          expect(current).not.toStrictEqual(next);
-          return next;
-        })
-      )
-      .subscribe({
-        complete: done,
-      });
-
     cubit.increment();
     cubit.increment();
     cubit.close();
@@ -65,5 +47,24 @@ describe("Cubit", () => {
     cubit.increment();
     cubit.decrement();
     cubit.close();
+  });
+
+  it("should handle async actions", done => {
+    void (async () => {
+      const states: number[] = [];
+      state$.pipe(tap((state) => states.push(state))).subscribe({
+        complete: () => {
+        const [first, second, third, fourth] = states;
+          expect(states.length).toBe(4);
+          expect(first).toBe(0)
+          expect(second).toBe(1)
+          expect(third).toBe(0)
+          expect(fourth).toBe(1)
+          done()
+        },
+      });
+      await cubit.asyncIncrement();
+      cubit.close();
+    })();
   });
 });

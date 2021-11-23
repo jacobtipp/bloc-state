@@ -1,86 +1,92 @@
-import { EMPTY, Observable, Subject } from "rxjs";
-import { catchError, mergeMap, tap } from "rxjs/operators";
+import { EMPTY, Observable, Subject, throwError } from "rxjs";
+import { catchError, concatMap, mergeMap, tap } from "rxjs/operators";
 import { Cubit } from "./cubit";
 import { BlocState } from "./state";
 import { asyncGeneratorToObservable } from "./util";
 
-export interface Transition {
-  event: Event;
-  previous: BlocState;
-  next: BlocState;
-}
-
-export abstract class Bloc<E, State extends BlocState> extends Cubit<State> {
-  private readonly _events$ = new Subject<E>();
-  private readonly _transition$ = new Subject<Transition>();
-
-  public onEvent$: Observable<E>;
-  public onTransition: Observable<Transition>;
-
+export abstract class Bloc<Event, State> extends Cubit<State> {
   constructor(state: State) {
     super(state);
-    this.onEvent$ = this._events$.asObservable();
-    this.onTransition = this._transition$.asObservable();
-    this._subscribeStateoEvents();
+    this._subscribeToEvents();
   }
 
   /**
-   * * Returns the current state snapshot from the subject.
-   * @returns {State}
+   * local
    */
-  protected get state(): State {
-    return this.state;
-  }
+
+  private readonly _events$ = new Subject<Event>();
+  private _event: Event | undefined;
 
   /**
-   * * Add a Event by pushing an Event object into the stream.
-   * @param {Event} event
+   * public
    */
-  addEvent(event: E): void {
+
+  addEvent(event: Event): void {
     if (!this._events$.closed) {
       this._events$.next(event);
     }
   }
 
-  /**
-   * * Close the bloc stream by calling dispose
-   */
   close(): void {
     this._dispose();
   }
 
   /**
-   * * Dispose the bloc by completing all subscribed streams
+   * protected
    */
-  private _dispose(): void {
-    this._events$.complete();
-    this._transition$.complete();
-    super.dispose();
+
+  protected override onTransition?(current: State, next: State, event?: Event): void;
+
+  protected override onError?(error: Error): void;
+
+  protected onEvent?(event: Event): void;
+
+  protected transitionHandler(current: State, next: State) {
+    if (this.onTransition) {
+      this.onTransition(current, next, this._event);
+    }
+  }
+
+  protected abstract mapEventToState(event: Event): AsyncGenerator<State>;
+
+  protected get state(): State {
+    return this._state;
   }
 
   /**
-   * * Map Events to State using an async generator function.
-   * @abstract
-   * @param {Event} event
-   * @yields {State} State
+   * private
    */
-  abstract mapEventToState(event: E): AsyncGenerator<State>;
 
-  /**
-   * @access private
-   * * Subscribe to Events stream
-   */
-  private _subscribeStateoEvents(): void {
+  private _subscribeToEvents(): void {
     this._events$
       .pipe(
-        mergeMap((e) => asyncGeneratorToObservable(this.mapEventToState(e))),
-        tap((state) => this.emit(state)),
-        catchError((error) => this._handleError(error))
+        tap((event) => {
+          if (this.onEvent) {
+            this.onEvent(event);
+          }
+        }),
+        concatMap((event) => this._mapEventToState(event)),
+        tap((state) => this.emit(state))
       )
       .subscribe();
   }
 
-  private _handleError(error: Error) {
+  private _mapEventToState(event: Event): Observable<State> {
+    return asyncGeneratorToObservable(this.mapEventToState(event)).pipe(
+      catchError((error) => this._mapEventToStateError(error)),
+      tap(() => (this._event = event))
+    );
+  }
+
+  private _mapEventToStateError(error: Error): Observable<never> {
+    if (this.onError) {
+      this.onError(error);
+    }
     return EMPTY;
+  }
+
+  private _dispose(): void {
+    this._events$.complete();
+    super.dispose();
   }
 }

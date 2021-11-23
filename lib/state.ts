@@ -1,35 +1,18 @@
-import { BlocError, InvalidConstructorArgumentsError } from "./error";
+export type BlocStateInstanceType = InstanceType<typeof BlocState>;
 
-/**
- * @description
- * * BlocState is abstract but it's factory methods are static
- */
-export type BlocStateConstructorArguments<T> = {
-  data?: T;
-  initial?: boolean;
-  loading?: boolean;
-  ready?: boolean;
-  message?: string;
-  error?: BlocError;
-};
-
-export abstract class BlocState<T = any> {
-  data: T;
+export abstract class BlocState<Data = any> {
   initial: boolean;
   isLoading: boolean;
-  message: string;
-  error?: BlocError;
+  message?: string;
+  error?: Error;
+  data?: Data;
 
-  /**
-   * @description use static factory methods to create instances.
-   * @example
-   * ! Don't do this -> new BlocState()
-   * * Do this -> BlocState.initialize(T)
-   *
-   * @param {BlocStateConstructorArguments<T>} args
-   */
-  constructor(args: BlocStateConstructorArguments<T>) {
-    this._mapConstructorToState(args);
+  constructor(initial: boolean, isLoading: boolean, error?: Error, message?: string, data?: Data) {
+    this.initial = initial;
+    this.isLoading = isLoading;
+    this.error = error;
+    this.message = message;
+    this.data = data;
   }
 
   get hasData() {
@@ -44,87 +27,50 @@ export abstract class BlocState<T = any> {
     return !this.initial && !this.hasError && !this.isLoading;
   }
 
-  /**
-   * * These are the static methods to create new instances of our state.
-   * * There are only 4 different states a BlocState can be in
-   * * {initialize, ready, loading, failed}
-   *
-   */
-
-  static initialize<D, T extends InstanceType<typeof BlocState>>(
-    this: new (args: BlocStateConstructorArguments<D>) => T,
-    data: D
-  ): T {
-    return new this({ initial: true, data: data });
-  }
-
-  static ready<D, T extends InstanceType<typeof BlocState>>(
-    this: new (args: BlocStateConstructorArguments<D>) => T,
+  static init<T extends BlocStateInstanceType, D>(
+    this: new (
+      intial: boolean,
+      isLoading: boolean,
+      error?: Error,
+      message?: string,
+      data?: D
+    ) => T,
     data?: D
   ): T {
-    return new this({ data, ready: true });
+    return new this(true, false, undefined, undefined, data);
   }
 
-  static loading<D, T extends InstanceType<typeof BlocState>>(
-    this: new (args: BlocStateConstructorArguments<D>) => T,
-    message = ""
+  static ready<T extends BlocStateInstanceType, D>(
+    this: new (intial: boolean, isLoading: boolean, error?: Error, message?: string, data?: D) => T,
+    data?: D
   ): T {
-    return new this({ message, loading: true });
+    return new this(false, false, undefined, undefined, data);
   }
 
-  static failed<D, T extends InstanceType<typeof BlocState>>(
-    this: new (args: BlocStateConstructorArguments<D>) => T,
+  static loading<T extends BlocStateInstanceType, D>(
+    this: new (
+      intial: boolean,
+      isLoading: boolean,
+      error?: Error,
+      message?: string,
+      data?: D
+    ) => T,
+    message?: string
+  ): T {
+    return new this(false, true, undefined, message, undefined);
+  }
+
+  static failed<T extends BlocStateInstanceType, D>(
+    this: new (
+      intial: boolean,
+      isLoading: boolean,
+      error?: Error,
+      message?: string,
+      data?: D
+    ) => T,
     message: string,
-    error: BlocError
+    error: Error
   ): T {
-    return new this({ error, message });
-  }
-
-  private _mapConstructorToState(args?: BlocStateConstructorArguments<T>) {
-    if (args?.initial) {
-      this._initialize(args.data);
-    } else if (args?.ready) {
-      this._ready(args.data);
-    } else if (args?.error) {
-      this._failed(args.message, args.error);
-    } else if (args?.loading) {
-      this._loading(args.message);
-    } else {
-      throw new InvalidConstructorArgumentsError();
-    }
-  }
-
-  private _initialize(data?: T) {
-    if (data !== undefined) {
-      this.data = data;
-    }
-    this.initial = true;
-    this.isLoading = false;
-    this.message = "";
-    this.error = undefined;
-  }
-
-  private _ready(data?: T) {
-    if (data !== undefined) {
-      this.data = data;
-    }
-    this.initial = false;
-    this.isLoading = false;
-    this.message = "";
-    this.error = undefined;
-  }
-
-  private _loading(message = "") {
-    this.initial = false;
-    this.isLoading = true;
-    this.message = message;
-    this.error = undefined;
-  }
-
-  private _failed(message = "", error: BlocError) {
-    this.initial = false;
-    this.isLoading = false;
-    this.message = message;
-    this.error = error;
+    return new this(false, false, error, message, undefined);
   }
 }

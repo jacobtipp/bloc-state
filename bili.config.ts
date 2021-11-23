@@ -7,7 +7,7 @@ const config: Config = {
   },
   output: {
     fileName: "bloc-state.[format].js",
-    format: ["esm", "cjs", "umd"],
+    format: ["umd", "esm"],
 		sourceMap: true, 
     moduleName: "bloc-state",
   },
