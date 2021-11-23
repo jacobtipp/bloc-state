@@ -1,18 +1,17 @@
-import { BlocError, InvalidConstructorArgumentsError } from "../lib/error";
-import { CounterState } from "./examples/counter/counter.state";
+import { CounterState } from "../examples/counter/counter.state";
 
 describe("BlocState", () => {
   let state: CounterState;
 
   describe("BlocState.initializing", () => {
     it("should set state to maked", () => {
-      state = CounterState.make(0);
+      state = CounterState.init(0);
       expect(state).toBeInstanceOf(CounterState);
       expect(state.initial).toBe(true);
       expect(state.data).toBe(0);
       expect(state.isLoading).toBe(false);
       expect(state.hasError).toBe(false);
-      expect(state.message).toBe("");
+      expect(state.message).toBeUndefined();
       expect(state.error).toBeUndefined();
     });
   });
@@ -24,7 +23,7 @@ describe("BlocState", () => {
       expect(state.data).toBeUndefined();
       expect(state.isLoading).toBe(true);
       expect(state.hasError).toBe(false);
-      expect(state.message).toBe("");
+      expect(state.message).toBeUndefined();
       expect(state.error).toBeUndefined();
     });
 
@@ -46,7 +45,7 @@ describe("BlocState", () => {
       expect(state.data).toBeUndefined();
       expect(state.isLoading).toBe(false);
       expect(state.hasError).toBe(false);
-      expect(state.message).toBe("");
+      expect(state.message).toBeUndefined();
       expect(state.error).toBeUndefined();
     });
 
@@ -56,21 +55,20 @@ describe("BlocState", () => {
       expect(state.data).toBe(0);
       expect(state.isLoading).toBe(false);
       expect(state.hasError).toBe(false);
-      expect(state.message).toBe("");
+      expect(state.message).toBeUndefined();
       expect(state.error).toBeUndefined();
     });
   });
 
   describe("BlocState.failed", () => {
     it("should set state to failed", () => {
-      const error = new InvalidConstructorArgumentsError()
+      const error = new Error("Invalid constructor arguments for Bloc State.");
       state = CounterState.failed(error.message, error);
       expect(state.initial).toBe(false);
       expect(state.data).toBeUndefined();
       expect(state.isLoading).toBe(false);
       expect(state.hasError).toBe(true);
       expect(state.message).toBe("Invalid constructor arguments for Bloc State.");
-      expect(state.error).toBeInstanceOf(BlocError);
     });
   });
 });

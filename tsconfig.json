@@ -2,19 +2,21 @@
   "compilerOptions": {
     "esModuleInterop": true,
     "moduleResolution": "node",
-    "module": "commonjs",
+    "module": "umd",
     "declaration": true,
     "removeComments": true,
     "strictNullChecks": true,
+    "strictPropertyInitialization": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
-    "target": "es2017",
+    "target": "es2018",
     "sourceMap": true,
     "outDir": "./dist",
     "baseUrl": "./",
     "incremental": true,
-    "typeRoots": ["@types", "./node_modules/@types"]
+    "typeRoots": ["@types", "./node_modules/@types"],
+    "lib": ["es2018", "dom"]
   },
   "include": ["lib"]
 }

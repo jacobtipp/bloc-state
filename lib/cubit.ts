@@ -2,8 +2,8 @@ import { BehaviorSubject, Observable } from "rxjs";
 import { distinctUntilChanged, filter, map, shareReplay, skip, tap } from "rxjs/operators";
 import { BlocState } from ".";
 
-export abstract class Cubit<T extends BlocState> {
-  constructor(private _state: T) {
+export abstract class Cubit<T = any> {
+  constructor(protected _state: T) {
     this._stateSubject$ = new BehaviorSubject(_state);
     this._state$ = this._buildStatePipeline();
     this.state$ = this.select((state) => state);
@@ -15,6 +15,14 @@ export abstract class Cubit<T extends BlocState> {
    * * public state observable
    */
   state$: Observable<T>;
+
+  /**
+   * * Getter to retrieve the current snapshot of the state
+   *  @returns {T}
+   */
+  protected get state(): T {
+    return this._state;
+  }
 
   /**
    * @description
@@ -57,8 +65,8 @@ export abstract class Cubit<T extends BlocState> {
     });
   }
 
-  protected onTransition(current: T, next: T) {}
-  protected onError(error: Error) {}
+  protected onTransition?(current: T, next: T): void;
+  protected onError?(error: Error): void;
 
   /**
    *
@@ -71,7 +79,9 @@ export abstract class Cubit<T extends BlocState> {
    * * derived class can implement
    */
   protected transitionHandler(current: T, next: T) {
-    this.onTransition(current, next);
+    if (this.onTransition) {
+      this.onTransition(current, next);
+    }
   }
 
   /**
@@ -84,15 +94,9 @@ export abstract class Cubit<T extends BlocState> {
    * *
    */
   protected errorHandler(error: Error) {
-    this.onError(error);
-  }
-
-  /**
-   * * Getter to retrieve the current snapshot of the state
-   *  @returns {T}
-   */
-  protected get state(): T {
-    return this._state;
+    if (this.onError) {
+      this.onError(error);
+    }
   }
 
   /**
@@ -100,12 +104,10 @@ export abstract class Cubit<T extends BlocState> {
    * * The stream will emit data only when the mapped portion has changed. An optional source
    * * stream can be provided as a second parameter as long as it returns <T>.
    * @param mapState
-   * @param {Observable<T>} source
-   * @returns {Observable<T>} Observable<T>
+   * @returns {Observable<K>} Observable<T>
    */
-  protected select(mapState: (state: T) => T, source?: Observable<T>): Observable<T> {
-    const stream$ = source || this._state$;
-    return stream$.pipe(
+  protected select<K>(mapState: (state: T) => K): Observable<K> {
+    return this._state$.pipe(
       map((state) => mapState(state)),
       distinctUntilChanged()
     );
@@ -129,8 +131,7 @@ export abstract class Cubit<T extends BlocState> {
    */
   protected emit(newState: T): void {
     if (!this._stateSubject$.closed) {
-      const frozen = Object.freeze(newState);
-      this._stateSubject$.next(frozen);
+      this._stateSubject$.next(newState);
     }
   }
 

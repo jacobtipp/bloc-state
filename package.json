@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "",
   "main": "dist/bloc-state.umd.js",
-  "module": "dist/bloc-state.cjs.js",
   "types": "dist/index.d.ts",
   "files": [
     "dist"

@@ -1,11 +1,11 @@
 import { Observable, scan, tap } from "rxjs";
+import { CounterCubit } from "../examples/counter/counter.cubit";
+import { CounterState } from "../examples/counter/counter.state";
 import { Bloc, BlocState, Cubit } from "../lib";
-import { CounterCubit } from "./examples/counter/counter.cubit";
-import { CounterState } from "./examples/counter/counter.state";
 
 describe("Cubit", () => {
   let cubit: CounterCubit;
-  let state$: Observable<CounterState>;
+  let state$: Observable<number>;
 
   beforeEach(() => {
     cubit = new CounterCubit();
@@ -24,17 +24,14 @@ describe("Cubit", () => {
   });
 
   it("should return new state from actions", (done) => {
-    const states: CounterState[] = [];
+    const states: number[] = [];
     state$.pipe(tap((state) => states.push(state))).subscribe({
       complete: () => {
         const [first, second, third] = states;
         expect(states.length).toBe(3);
-        expect(first).toBeInstanceOf(BlocState);
-        expect(first.data).toBe(0);
-        expect(second).toBeInstanceOf(CounterState);
-        expect(second.data).toBe(1);
-        expect(third).toBeInstanceOf(CounterState);
-        expect(third.data).toBe(2);
+        expect(first).toBe(0);
+        expect(second).toBe(1);
+        expect(third).toBe(2);
         done();
       },
     });
@@ -54,15 +51,15 @@ describe("Cubit", () => {
 
   it("should handle async actions", done => {
     void (async () => {
-      const states: CounterState[] = [];
+      const states: number[] = [];
       state$.pipe(tap((state) => states.push(state))).subscribe({
         complete: () => {
-          const [first, second, third] = states;
-          expect(states.length).toBe(3);
-          expect(second.isLoading).toBe(true);
-          expect(second.hasData).toBe(false);
-          expect(third.hasData).toBe(true);
-          expect(third.isLoading).toBe(false);
+        const [first, second, third, fourth] = states;
+          expect(states.length).toBe(4);
+          expect(first).toBe(0)
+          expect(second).toBe(1)
+          expect(third).toBe(0)
+          expect(fourth).toBe(1)
           done()
         },
       });
