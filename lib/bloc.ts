@@ -1,7 +1,6 @@
-import { EMPTY, Observable, Subject, throwError } from "rxjs";
-import { catchError, concatMap, mergeMap, tap } from "rxjs/operators";
+import { EMPTY, Observable, Subject } from "rxjs";
+import { catchError, concatMap, tap } from "rxjs/operators";
 import { Cubit } from "./cubit";
-import { BlocState } from "./state";
 import { asyncGeneratorToObservable } from "./util";
 
 export abstract class Bloc<TEvent, TState> extends Cubit<TState> {

@@ -1,5 +1,4 @@
 import { Cubit } from "../../lib/cubit";
-import { CounterState } from "./counter.state";
 import { delay } from "./delay";
 
 export class CounterCubit extends Cubit<number> {

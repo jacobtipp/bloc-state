@@ -1,6 +1,5 @@
 import { BehaviorSubject, Observable } from "rxjs";
-import { distinctUntilChanged, filter, map, shareReplay, skip, tap } from "rxjs/operators";
-import { BlocState } from ".";
+import { distinctUntilChanged, map, shareReplay, tap } from "rxjs/operators";
 
 export abstract class Cubit<T = any> {
   private readonly _state$: Observable<T>;

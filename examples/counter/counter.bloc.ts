@@ -1,4 +1,3 @@
-import { map } from "rxjs";
 import { Bloc } from "../../lib";
 import { CounterEvent, DecrementCounterEvent, IncrementCounterEvent } from "./counter.event";
 
