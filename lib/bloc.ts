@@ -1,7 +1,7 @@
 import { EMPTY, Observable, Subject, throwError } from "rxjs";
 import { catchError, concatMap, mergeMap, tap } from "rxjs/operators";
 import { Cubit } from "./cubit";
-import { BlocTState } from "./state";
+import { BlocState } from "./state";
 import { asyncGeneratorToObservable } from "./util";
 
 export abstract class Bloc<TEvent, TState> extends Cubit<TState> {
@@ -11,14 +11,14 @@ export abstract class Bloc<TEvent, TState> extends Cubit<TState> {
 
   constructor(state: TState) {
     super(state);
-    this._subscribeToTEvents();
+    this._subscribeToEvents();
   }
 
   protected get state(): TState {
     return this._state;
   }
 
-  addTEvent(event: TEvent): void {
+  addEvent(event: TEvent): void {
     if (!this._events$.closed) {
       this._events$.next(event);
     }
@@ -28,7 +28,7 @@ export abstract class Bloc<TEvent, TState> extends Cubit<TState> {
 
   protected override onError?(error: Error): void;
 
-  protected onTEvent?(event: TEvent): void;
+  protected onEvent?(event: TEvent): void;
 
   protected transitionHandler(current: TState, next: TState) {
     if (this.onTransition) {
@@ -36,30 +36,30 @@ export abstract class Bloc<TEvent, TState> extends Cubit<TState> {
     }
   }
 
-  protected abstract mapTEventToTState(event: TEvent): AsyncGenerator<TState>;
+  protected abstract mapEventToState(event: TEvent): AsyncGenerator<TState>;
 
-  private _subscribeToTEvents(): void {
+  private _subscribeToEvents(): void {
     this._events$
       .pipe(
         tap((event) => {
-          if (this.onTEvent) {
-            this.onTEvent(event);
+          if (this.onEvent) {
+            this.onEvent(event);
           }
         }),
-        concatMap((event) => this._mapTEventToTState(event)),
+        concatMap((event) => this._mapEventToState(event)),
         tap((state) => this.emit(state))
       )
       .subscribe();
   }
 
-  private _mapTEventToTState(event: TEvent): Observable<TState> {
-    return asyncGeneratorToObservable(this.mapTEventToTState(event)).pipe(
-      catchError((error) => this._mapTEventToTStateError(error)),
+  private _mapEventToState(event: TEvent): Observable<TState> {
+    return asyncGeneratorToObservable(this.mapEventToState(event)).pipe(
+      catchError((error) => this._mapEventToStateError(error)),
       tap(() => (this._event = event))
     );
   }
 
-  private _mapTEventToTStateError(error: Error): Observable<never> {
+  private _mapEventToStateError(error: Error): Observable<never> {
     if (this.onError) {
       this.onError(error);
     }

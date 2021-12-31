@@ -1,23 +1,22 @@
 export type BlocStateInstanceType = InstanceType<typeof BlocState>;
 
-export abstract class BlocState<Data = any> {
+export abstract class BlocState<T = any> {
   initial: boolean;
   isLoading: boolean;
   message?: string;
   error?: Error;
-  data?: Data;
+  data?: T;
+  hasData: boolean;
 
-  constructor(initial: boolean, isLoading: boolean, error?: Error, message?: string, data?: Data) {
+  constructor(initial: boolean, isLoading: boolean, error?: Error, message?: string, data?: T) {
     this.initial = initial;
     this.isLoading = isLoading;
     this.error = error;
     this.message = message;
     this.data = data;
+    this.hasData = data ? true: false
   }
 
-  get hasData() {
-    return this.data !== undefined;
-  }
 
   get hasError() {
     return this.error !== undefined;
