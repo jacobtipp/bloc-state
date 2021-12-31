@@ -1,6 +1,6 @@
 {
   "name": "bloc-state",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "State managemenet library implementing the Bloc pattern",
   "main": "dist/bloc-state.umd.js",
   "types": "dist/index.d.ts",
@@ -12,15 +12,17 @@
     "email": "jacobtipp@gmail.com"
   },
   "repository": {
-      "type": "git",
-      "url": "https://github.com/jacobtipp/bloc-state"
+    "type": "git",
+    "url": "https://github.com/jacobtipp/bloc-state"
   },
   "scripts": {
     "test": "jest --verbose",
     "build": "bili",
     "prepublishOnly": "npm run test && npm run build"
   },
-  "keywords": [""],
+  "keywords": [
+    ""
+  ],
   "license": "ISC",
   "peerDependencies": {
     "rxjs": "7.x.x"
