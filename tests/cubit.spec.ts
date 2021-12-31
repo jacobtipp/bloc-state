@@ -1,7 +1,6 @@
-import { Observable, scan, tap } from "rxjs";
+import { Observable, tap } from "rxjs";
 import { CounterCubit } from "../examples/counter/counter.cubit";
-import { CounterState } from "../examples/counter/counter.state";
-import { Bloc, BlocState, Cubit } from "../lib";
+import {  Cubit } from "../lib";
 
 describe("Cubit", () => {
   let cubit: CounterCubit;
@@ -37,15 +36,6 @@ describe("Cubit", () => {
     });
     cubit.increment();
     cubit.increment();
-    cubit.close();
-  });
-
-  it("should freeze state objects and make them immutable", (done) => {
-    state$.pipe(tap((state) => expect(Object.isFrozen(state)))).subscribe({
-      complete: done,
-    });
-    cubit.increment();
-    cubit.decrement();
     cubit.close();
   });
 
