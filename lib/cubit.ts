@@ -20,9 +20,9 @@ export abstract class Cubit<T = any> {
     return this._state;
   }
 
-  protected onTransition?(current: T, next: T): void;
+  protected abstract onTransition(current: T, next: T): void;
 
-  protected onError?(error: Error): void;
+  protected abstract onError(error: Error): void;
 
   protected transitionHandler(current: T, next: T) {
     if (this.onTransition) {

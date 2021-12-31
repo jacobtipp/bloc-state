@@ -24,16 +24,14 @@ export abstract class Bloc<TEvent, TState> extends Cubit<TState> {
     }
   }
 
-  protected override onTransition?(current: TState, next: TState, event?: TEvent): void;
+  protected abstract onTransition(current: TState, next: TState, event?: TEvent): void;
 
-  protected override onError?(error: Error): void;
+  protected abstract onError(error: Error): void;
 
-  protected onEvent?(event: TEvent): void;
+  protected abstract onEvent(event: TEvent): void;
 
   protected transitionHandler(current: TState, next: TState) {
-    if (this.onTransition) {
-      this.onTransition(current, next, this._event);
-    }
+    this.onTransition(current, next, this._event);
   }
 
   protected abstract mapEventToState(event: TEvent): AsyncGenerator<TState>;
@@ -41,11 +39,7 @@ export abstract class Bloc<TEvent, TState> extends Cubit<TState> {
   private _subscribeToEvents(): void {
     this._events$
       .pipe(
-        tap((event) => {
-          if (this.onEvent) {
-            this.onEvent(event);
-          }
-        }),
+        tap((event) => this.onEvent(event)),
         concatMap((event) => this._mapEventToState(event)),
         tap((state) => this.emit(state))
       )
@@ -60,9 +54,7 @@ export abstract class Bloc<TEvent, TState> extends Cubit<TState> {
   }
 
   private _mapEventToStateError(error: Error): Observable<never> {
-    if (this.onError) {
-      this.onError(error);
-    }
+    this.onError(error);
     return EMPTY;
   }
 
