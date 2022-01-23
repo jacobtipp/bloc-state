@@ -3,37 +3,37 @@ import { catchError, concatMap, tap } from "rxjs/operators";
 import { Cubit } from "./cubit";
 import { asyncGeneratorToObservable } from "./util";
 
-export abstract class Bloc<TEvent, TState> extends Cubit<TState> {
-  private readonly _events$ = new Subject<TEvent>();
+export abstract class Bloc<Event, State> extends Cubit<State> {
+  private readonly _events$ = new Subject<Event>();
 
-  private _event: TEvent | undefined;
+  private _event: Event | undefined;
 
-  constructor(state: TState) {
+  constructor(state: State) {
     super(state);
     this._subscribeToEvents();
   }
 
-  protected get state(): TState {
+  protected get state(): State {
     return this._state;
   }
 
-  addEvent(event: TEvent): void {
+  addEvent(event: Event): void {
     if (!this._events$.closed) {
       this._events$.next(event);
     }
   }
 
-  protected abstract onTransition(current: TState, next: TState, event?: TEvent): void;
+  protected abstract onTransition(current: State, next: State, event?: Event): void;
 
   protected abstract onError(error: Error): void;
 
-  protected abstract onEvent(event: TEvent): void;
+  protected abstract onEvent(event: Event): void;
 
-  protected transitionHandler(current: TState, next: TState) {
+  protected transitionHandler(current: State, next: State) {
     this.onTransition(current, next, this._event);
   }
 
-  protected abstract mapEventToState(event: TEvent): AsyncGenerator<TState>;
+  protected abstract mapEventToState(event: Event): AsyncGenerator<State>;
 
   private _subscribeToEvents(): void {
     this._events$
@@ -45,7 +45,7 @@ export abstract class Bloc<TEvent, TState> extends Cubit<TState> {
       .subscribe();
   }
 
-  private _mapEventToState(event: TEvent): Observable<TState> {
+  private _mapEventToState(event: Event): Observable<State> {
     return asyncGeneratorToObservable(this.mapEventToState(event)).pipe(
       catchError((error) => this._mapEventToStateError(error)),
       tap(() => (this._event = event))
