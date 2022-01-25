@@ -23,11 +23,11 @@ export abstract class Bloc<Event, State> extends Cubit<State> {
     }
   }
 
-  protected abstract onTransition(current: State, next: State, event?: Event): void;
+  protected onTransition(current: State, next: State, event?: Event): void { }
 
-  protected abstract onError(error: Error): void;
+  protected onError(error: Error): void { }
 
-  protected abstract onEvent(event: Event): void;
+  protected onEvent(event: Event): void { }
 
   protected transitionHandler(current: State, next: State) {
     this.onTransition(current, next, this._event);
