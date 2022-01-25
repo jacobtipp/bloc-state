@@ -37,8 +37,8 @@ describe("bloc", () => {
         done();
       },
     });
-    bloc.addEvent(IncrementCounterEvent.make());
-    bloc.addEvent(IncrementCounterEvent.make());
-    bloc.addEvent(IncrementCounterEvent.make());
+    bloc.addEvent(new IncrementCounterEvent);
+    bloc.addEvent(new IncrementCounterEvent);
+    bloc.addEvent(new IncrementCounterEvent);
   });
 });

@@ -2,10 +2,6 @@ import { Cubit } from "../../lib/cubit";
 import { delay } from "./delay";
 
 export class CounterCubit extends Cubit<number> {
-  protected onTransition(current: number, next: number): void {}
-
-  protected onError(error: Error): void {}
-
   constructor() {
     super(0);
   }
