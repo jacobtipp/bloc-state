@@ -1,6 +1,6 @@
 {
   "name": "bloc-state",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "State managemenet library implementing the Bloc pattern",
   "main": "dist/bloc-state.umd.js",
   "types": "dist/index.d.ts",
