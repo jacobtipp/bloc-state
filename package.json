@@ -1,6 +1,6 @@
 {
   "name": "bloc-state",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "State managemenet library implementing the Bloc pattern",
   "main": "dist/bloc-state.cjs.js",
   "module": "dist/bloc-state.esm.js",
