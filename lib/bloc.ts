@@ -1,16 +1,24 @@
-import { EMPTY, Observable, Subject } from "rxjs";
-import { catchError, concatMap, tap } from "rxjs/operators";
+import { defer, EMPTY, from, iif, Observable, of, Subject } from "rxjs";
+import { catchError, concatMap, mergeMap, tap } from "rxjs/operators";
 import { Cubit } from "./cubit";
-import { asyncGeneratorToObservable } from "./util";
 
-export abstract class Bloc<Event, State> extends Cubit<State> {
+export type Emitter <S> = (state: S) => void
+export type EventMapFunction <E, S> = (event: E, emitter: Emitter<S> ) => void | Promise<void>
+export type EventClass <E> = { new (): E }
+
+export abstract class Bloc<Event extends {}, State> extends Cubit<State> {
   private readonly _events$ = new Subject<Event>();
+  private readonly _eventMap = new Map<string, EventMapFunction<any, State>>()
 
   private _event: Event | undefined;
 
   constructor(state: State) {
     super(state);
     this._subscribeToEvents();
+  }
+
+  protected on<E>(c: EventClass<E>, callback: EventMapFunction<E, State>) {
+    this._eventMap.set(c.name, callback.bind(this))
   }
 
   protected get state(): State {
@@ -29,27 +37,38 @@ export abstract class Bloc<Event, State> extends Cubit<State> {
 
   protected onEvent(event: Event): void { }
 
-  protected transitionHandler(current: State, next: State) {
-    this.onTransition(current, next, this._event);
+
+  protected onChange(current: State, next: State): void {
+      this.onTransition(current, next, this._event)
   }
 
-  protected abstract mapEventToState(event: Event): AsyncGenerator<State>;
+  protected transformEvents(events$: Observable<Event>, next: (event: Event) => Observable<void>) {
+    return events$.pipe(concatMap(next))
+  }
 
   private _subscribeToEvents(): void {
     this._events$
       .pipe(
         tap((event) => this.onEvent(event)),
-        concatMap((event) => this._mapEventToState(event)),
-        tap((state) => this.emit(state))
+        tap((event) => this._event = event),
+        mergeMap((event) => {
+          return this.transformEvents(of(event), this._mapEventToState.bind(this))
+        }),
+        catchError((error: Error) => this._mapEventToStateError(error)),
       )
       .subscribe();
   }
 
-  private _mapEventToState(event: Event): Observable<State> {
-    return asyncGeneratorToObservable(this.mapEventToState(event)).pipe(
-      catchError((error) => this._mapEventToStateError(error)),
-      tap(() => (this._event = event))
-    );
+
+  private _mapEventToState(event: Event): Observable<void> {
+    let eventFunction = this._eventMap.get(event.constructor.name)
+    if (eventFunction === undefined) {
+      return EMPTY
+    }
+
+    let result = eventFunction(event, this.emit.bind(this))
+
+    return result instanceof Promise ? from(result) : EMPTY
   }
 
   private _mapEventToStateError(error: Error): Observable<never> {
@@ -59,6 +78,7 @@ export abstract class Bloc<Event, State> extends Cubit<State> {
 
   private _dispose(): void {
     this._events$.complete();
+    this._eventMap.clear()
     super.dispose();
   }
 

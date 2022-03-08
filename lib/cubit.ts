@@ -19,15 +19,9 @@ export abstract class Cubit<T = any> {
     return this._state;
   }
 
-  protected onTransition(current: T, next: T): void { }
+  protected onChange(current: T, next: T): void { }
 
   protected onError(error: Error): void { }
-
-  protected transitionHandler(current: T, next: T) {
-    if (this.onTransition) {
-      this.onTransition(current, next);
-    }
-  }
 
   protected errorHandler(error: Error) {
     if (this.onError) {
@@ -44,7 +38,11 @@ export abstract class Cubit<T = any> {
 
   protected emit(newState: T): void {
     if (!this._stateSubject$.closed) {
-      this._stateSubject$.next(newState);
+      if (this._state !== newState) {
+        this.onChange(this._state, newState);
+        this._state = newState;
+        this._stateSubject$.next(newState);
+      }
     }
   }
 
@@ -54,13 +52,6 @@ export abstract class Cubit<T = any> {
 
   private _buildStatePipeline(): Observable<T> {
     return this._stateSubject$.asObservable().pipe(
-      distinctUntilChanged(),
-      tap((newState) => {
-        if (newState !== this._state) {
-          this.transitionHandler(this._state, newState);
-          this._state = newState;
-        }
-      }),
       shareReplay({ refCount: true, bufferSize: 1 })
     );
   }

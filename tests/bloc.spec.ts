@@ -1,6 +1,6 @@
-import { take } from "rxjs/operators";
+import { skip, take } from "rxjs/operators";
 import { CounterBloc } from "../examples/counter/counter.bloc";
-import { IncrementCounterEvent } from "../examples/counter/counter.event";
+import { DecrementCounterEvent, IncrementCounterEvent } from "../examples/counter/counter.event";
 
 describe("bloc", () => {
   let bloc: CounterBloc;
@@ -26,13 +26,14 @@ describe("bloc", () => {
 
   it("should map events to state", (done) => {
     const states: number[] = [];
-    bloc.state$.pipe(take(3)).subscribe({
+    bloc.state$.pipe(skip(1),take(4)).subscribe({
       next: (state) => states.push(state),
       complete: () => {
-        const [first, second, third] = states;
-        expect(first).toBe(0);
-        expect(second).toBe(1);
-        expect(third).toBe(2);
+        const [first, second, third, fourth] = states;
+        expect(first).toBe(1);
+        expect(second).toBe(2);
+        expect(third).toBe(3);
+        expect(fourth).toBe(2)
         bloc.close();
         done();
       },
@@ -40,5 +41,6 @@ describe("bloc", () => {
     bloc.addEvent(new IncrementCounterEvent);
     bloc.addEvent(new IncrementCounterEvent);
     bloc.addEvent(new IncrementCounterEvent);
+    bloc.addEvent(new DecrementCounterEvent)
   });
 });
