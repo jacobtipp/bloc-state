@@ -1,7 +1,5 @@
-import { TestScheduler } from "rxjs/testing";
-import { Bloc, Emitter } from "../../lib";
+import { Bloc } from "../../lib";
 import { CounterEvent, DecrementCounterEvent, IncrementCounterEvent } from "./counter.event";
-import { CounterState } from "./counter.state";
 
 export class CounterBloc extends Bloc<CounterEvent, number> {
   constructor() {
