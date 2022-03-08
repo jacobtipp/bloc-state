@@ -14,9 +14,8 @@ export abstract class BlocState<T = any> {
     this.error = error;
     this.message = message;
     this.data = data;
-    this.hasData = data ? true: false
+    this.hasData = data ? true : false;
   }
-
 
   get hasError() {
     return this.error !== undefined;
@@ -27,13 +26,7 @@ export abstract class BlocState<T = any> {
   }
 
   static init<T extends BlocStateInstanceType, D>(
-    this: new (
-      intial: boolean,
-      isLoading: boolean,
-      error?: Error,
-      message?: string,
-      data?: D
-    ) => T,
+    this: new (intial: boolean, isLoading: boolean, error?: Error, message?: string, data?: D) => T,
     data?: D
   ): T {
     return new this(true, false, undefined, undefined, data);
@@ -47,26 +40,14 @@ export abstract class BlocState<T = any> {
   }
 
   static loading<T extends BlocStateInstanceType, D>(
-    this: new (
-      intial: boolean,
-      isLoading: boolean,
-      error?: Error,
-      message?: string,
-      data?: D
-    ) => T,
+    this: new (intial: boolean, isLoading: boolean, error?: Error, message?: string, data?: D) => T,
     message?: string
   ): T {
     return new this(false, true, undefined, message, undefined);
   }
 
   static failed<T extends BlocStateInstanceType, D>(
-    this: new (
-      intial: boolean,
-      isLoading: boolean,
-      error?: Error,
-      message?: string,
-      data?: D
-    ) => T,
+    this: new (intial: boolean, isLoading: boolean, error?: Error, message?: string, data?: D) => T,
     message: string,
     error: Error
   ): T {

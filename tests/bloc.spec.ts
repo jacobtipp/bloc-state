@@ -26,21 +26,21 @@ describe("bloc", () => {
 
   it("should map events to state", (done) => {
     const states: number[] = [];
-    bloc.state$.pipe(skip(1),take(4)).subscribe({
+    bloc.state$.pipe(skip(1), take(4)).subscribe({
       next: (state) => states.push(state),
       complete: () => {
         const [first, second, third, fourth] = states;
         expect(first).toBe(1);
         expect(second).toBe(2);
         expect(third).toBe(3);
-        expect(fourth).toBe(2)
+        expect(fourth).toBe(2);
         bloc.close();
         done();
       },
     });
-    bloc.addEvent(new IncrementCounterEvent);
-    bloc.addEvent(new IncrementCounterEvent);
-    bloc.addEvent(new IncrementCounterEvent);
-    bloc.addEvent(new DecrementCounterEvent)
+    bloc.addEvent(new IncrementCounterEvent());
+    bloc.addEvent(new IncrementCounterEvent());
+    bloc.addEvent(new IncrementCounterEvent());
+    bloc.addEvent(new DecrementCounterEvent());
   });
 });

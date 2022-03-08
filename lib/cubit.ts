@@ -19,9 +19,9 @@ export abstract class Cubit<T = any> {
     return this._state;
   }
 
-  protected onChange(current: T, next: T): void { }
+  protected onChange(current: T, next: T): void {}
 
-  protected onError(error: Error): void { }
+  protected onError(error: Error): void {}
 
   protected errorHandler(error: Error) {
     if (this.onError) {
@@ -51,9 +51,7 @@ export abstract class Cubit<T = any> {
   }
 
   private _buildStatePipeline(): Observable<T> {
-    return this._stateSubject$.asObservable().pipe(
-      shareReplay({ refCount: true, bufferSize: 1 })
-    );
+    return this._stateSubject$.asObservable().pipe(shareReplay({ refCount: true, bufferSize: 1 }));
   }
 
   private _listen() {

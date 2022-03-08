@@ -1,6 +1,6 @@
 import { Observable, tap } from "rxjs";
 import { CounterCubit } from "../examples/counter/counter.cubit";
-import {  Cubit } from "../lib";
+import { Cubit } from "../lib";
 
 describe("Cubit", () => {
   let cubit: CounterCubit;
@@ -39,18 +39,18 @@ describe("Cubit", () => {
     cubit.close();
   });
 
-  it("should handle async actions", done => {
+  it("should handle async actions", (done) => {
     void (async () => {
       const states: number[] = [];
       state$.pipe(tap((state) => states.push(state))).subscribe({
         complete: () => {
-        const [first, second, third, fourth] = states;
+          const [first, second, third, fourth] = states;
           expect(states.length).toBe(4);
-          expect(first).toBe(0)
-          expect(second).toBe(1)
-          expect(third).toBe(0)
-          expect(fourth).toBe(1)
-          done()
+          expect(first).toBe(0);
+          expect(second).toBe(1);
+          expect(third).toBe(0);
+          expect(fourth).toBe(1);
+          done();
         },
       });
       await cubit.asyncIncrement();
@@ -58,18 +58,18 @@ describe("Cubit", () => {
     })();
   });
 
-  it("should handle async actions", done => {
+  it("should handle async actions", (done) => {
     void (async () => {
       const states: number[] = [];
       state$.pipe(tap((state) => states.push(state))).subscribe({
         complete: () => {
-        const [first, second, third, fourth] = states;
+          const [first, second, third, fourth] = states;
           expect(states.length).toBe(4);
-          expect(first).toBe(0)
-          expect(second).toBe(1)
-          expect(third).toBe(0)
-          expect(fourth).toBe(1)
-          done()
+          expect(first).toBe(0);
+          expect(second).toBe(1);
+          expect(third).toBe(0);
+          expect(fourth).toBe(1);
+          done();
         },
       });
       await cubit.asyncIncrement();

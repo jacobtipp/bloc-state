@@ -15,8 +15,8 @@ export class CounterCubit extends Cubit<number> {
   }
 
   async asyncIncrement() {
-    this.emit(this.state + 1)
-    this.emit(this.state - 1)
+    this.emit(this.state + 1);
+    this.emit(this.state - 1);
     await delay(3000);
     this.emit(this.state + 1);
   }

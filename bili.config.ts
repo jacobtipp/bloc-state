@@ -7,10 +7,17 @@ const config: Config = {
   },
   output: {
     fileName: "bloc-state.[format].js",
-    format: ["umd", "esm"],
-		sourceMap: true, 
+    format: ["esm", "cjs-min"],
+    sourceMap: true,
     moduleName: "bloc-state",
   },
+  globals: {
+    rxjs: "rxjs",
+    "rxjs/operators": "rxjs.operators"
+  },
+  externals: [
+    "rxjs", "rxjs/operators"
+  ]
 };
 
 export default config;
