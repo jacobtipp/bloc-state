@@ -4,7 +4,7 @@ import { Cubit } from "./cubit";
 
 export type Emitter<S> = (state: S) => void;
 export type EventHandler<E, S> = (event: E, emitter: Emitter<S>) => void | Promise<void>;
-export type EventClass<E> = { new (): E };
+export type EventClass<E> = { new (...args: any[]): E };
 
 export abstract class Bloc<Event extends {}, State> extends Cubit<State> {
   private readonly _events$ = new Subject<Event>();
@@ -17,11 +17,11 @@ export abstract class Bloc<Event extends {}, State> extends Cubit<State> {
     this._subscribeToEvents();
   }
 
-  protected on<E extends Event>(c: EventClass<E>, eventHandler: EventHandler<E, State>) {
-    if (this._eventMap.get(c.name)) {
-      throw new Error(`Error: ${c.name} can only have one EventHandler`);
+  protected on<E extends Event>(event: EventClass<E>, eventHandler: EventHandler<E, State>) {
+    if (this._eventMap.get(event.name)) {
+      throw new Error(`Error: ${event.name} can only have one EventHandler`);
     }
-    this._eventMap.set(c.name, eventHandler);
+    this._eventMap.set(event.name, eventHandler);
   }
 
   protected get state(): State {
