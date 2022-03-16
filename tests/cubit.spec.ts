@@ -1,6 +1,6 @@
 import { Observable, tap } from "rxjs";
-import { CounterCubit } from "../examples/counter/counter.cubit";
 import { Cubit } from "../lib";
+import { CounterCubit } from "./counter/counter.cubit";
 
 describe("Cubit", () => {
   let cubit: CounterCubit;

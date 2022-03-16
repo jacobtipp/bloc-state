@@ -1,4 +1,4 @@
-import { EMPTY, from, Observable, of, Subject } from "rxjs";
+import { EMPTY, from, Observable, of, Subject, Subscription } from "rxjs";
 import { catchError, concatMap, mergeMap, tap } from "rxjs/operators";
 import { Cubit } from "./cubit";
 
@@ -7,15 +7,18 @@ export type EventHandler<E, S> = (event: E, emitter: Emitter<S>) => void | Promi
 export type EventClass<E> = { new (...args: any[]): E };
 
 export abstract class Bloc<Event extends {}, State> extends Cubit<State> {
-  private readonly _events$ = new Subject<Event>();
-  private readonly _eventMap = new Map<string, EventHandler<Event, State>>();
-
-  private _event: Event | undefined;
-
   constructor(state: State) {
     super(state);
-    this._subscribeToEvents();
+    this._eventsSubscription = this._subscribeToEvents();
+    this._stateSubscription = this._subscribeToState();
   }
+
+  private readonly _events$ = new Subject<Event>();
+  private readonly _eventMap = new Map<string, EventHandler<Event, State>>();
+  private readonly _eventsSubscription: Subscription;
+  private readonly _stateSubscription: Subscription;
+
+  private _event: Event | undefined;
 
   protected on<E extends Event>(event: EventClass<E>, eventHandler: EventHandler<E, State>) {
     if (this._eventMap.get(event.name)) {
@@ -24,7 +27,7 @@ export abstract class Bloc<Event extends {}, State> extends Cubit<State> {
     this._eventMap.set(event.name, eventHandler.bind(this));
   }
 
-  protected get state(): State {
+  protected override get state(): State {
     return this._state;
   }
 
@@ -34,22 +37,32 @@ export abstract class Bloc<Event extends {}, State> extends Cubit<State> {
     }
   }
 
-  protected onTransition(current: State, next: State, event: Event): void {}
+  protected listen(state: State) {
+    return;
+  }
 
-  protected onError(error: Error): void {}
+  protected onTransition(current: State, next: State, event: Event): void {
+    return;
+  }
 
-  protected onEvent(event: Event): void {}
+  protected override onError(error: Error): void {
+    return;
+  }
 
-  protected onChange(current: State, next: State): void {
+  protected override onChange(current: State, next: State): void {
     this.onTransition(current, next, this._event!);
+  }
+
+  protected onEvent(event: Event): void {
+    return;
   }
 
   protected transformEvents(events$: Observable<Event>, next: (event: Event) => Observable<void>) {
     return events$.pipe(concatMap(next));
   }
 
-  private _subscribeToEvents(): void {
-    this._events$
+  private _subscribeToEvents(): Subscription {
+    return this._events$
       .pipe(
         tap((event) => this.onEvent(event)),
         tap((event) => (this._event = event)),
@@ -59,6 +72,12 @@ export abstract class Bloc<Event extends {}, State> extends Cubit<State> {
         catchError((error: Error) => this._mapEventToStateError(error))
       )
       .subscribe();
+  }
+
+  private _subscribeToState(): Subscription {
+    return this.state$.subscribe({
+      next: (state) => this.listen(state),
+    });
   }
 
   private _mapEventToState(event: Event): Observable<void> {
@@ -78,12 +97,13 @@ export abstract class Bloc<Event extends {}, State> extends Cubit<State> {
   }
 
   private _dispose(): void {
-    this._events$.complete();
+    this._eventsSubscription.unsubscribe();
+    this._stateSubscription.unsubscribe();
     this._eventMap.clear();
     super.dispose();
   }
 
-  close(): void {
+  override close(): void {
     this._dispose();
   }
 }

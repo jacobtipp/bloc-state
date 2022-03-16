@@ -1,4 +1,4 @@
-import { CounterState } from "../examples/counter/counter.state";
+import { CounterState } from "./counter/counter.state";
 
 describe("BlocState", () => {
   let state: CounterState;

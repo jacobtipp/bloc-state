@@ -1,6 +1,11 @@
 import { skip, take } from "rxjs/operators";
-import { CounterBloc } from "../examples/counter/counter.bloc";
-import { DecrementCounterEvent, IncrementCounterEvent } from "../examples/counter/counter.event";
+import { Bloc } from "../lib";
+import { CounterBloc } from "./counter/counter.bloc";
+import {
+  CounterEvent,
+  DecrementCounterEvent,
+  IncrementCounterEvent,
+} from "./counter/counter.event";
 
 describe("bloc", () => {
   let bloc: CounterBloc;
@@ -42,5 +47,18 @@ describe("bloc", () => {
     bloc.addEvent(new IncrementCounterEvent());
     bloc.addEvent(new IncrementCounterEvent());
     bloc.addEvent(new DecrementCounterEvent());
+  });
+
+  it("should subscribe to state changes and send them to listen method", (done) => {
+    class TestBloc extends CounterBloc {
+      protected override listen(state: number) {
+        expect(state).toBe(0);
+        done();
+      }
+    }
+
+    const bloc = new TestBloc();
+
+    bloc.close();
   });
 });
