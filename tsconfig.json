@@ -6,6 +6,7 @@
     "declaration": true,
     "removeComments": true,
     "strictNullChecks": true,
+    "noImplicitOverride": true,
     "strictPropertyInitialization": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
