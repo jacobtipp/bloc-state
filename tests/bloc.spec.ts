@@ -32,7 +32,9 @@ describe("bloc", () => {
   it("should map events to state", (done) => {
     const states: number[] = [];
     bloc.state$.pipe(skip(1), take(4)).subscribe({
-      next: (state) => states.push(state),
+      next: (state) => {
+        states.push(state);
+      },
       complete: () => {
         const [first, second, third, fourth] = states;
         expect(first).toBe(1);

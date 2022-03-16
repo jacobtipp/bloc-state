@@ -4,19 +4,17 @@ import { Cubit } from "./cubit";
 
 export type Emitter<S> = (state: S) => void;
 export type EventHandler<E, S> = (event: E, emitter: Emitter<S>) => void | Promise<void>;
-export type EventClass<E> = { new (...args: any[]): E };
+export type EventClass<E> = new (...args: any[]) => E;
 
 export abstract class Bloc<Event extends {}, State> extends Cubit<State> {
   constructor(state: State) {
     super(state);
     this._eventsSubscription = this._subscribeToEvents();
-    this._stateSubscription = this._subscribeToState();
   }
 
   private readonly _events$ = new Subject<Event>();
   private readonly _eventMap = new Map<string, EventHandler<Event, State>>();
   private readonly _eventsSubscription: Subscription;
-  private readonly _stateSubscription: Subscription;
 
   private _event: Event | undefined;
 
@@ -37,11 +35,7 @@ export abstract class Bloc<Event extends {}, State> extends Cubit<State> {
     }
   }
 
-  protected listen(state: State) {
-    return;
-  }
-
-  protected onTransition(current: State, next: State, event: Event): void {
+  protected override listen(state: State) {
     return;
   }
 
@@ -51,6 +45,10 @@ export abstract class Bloc<Event extends {}, State> extends Cubit<State> {
 
   protected override onChange(current: State, next: State): void {
     this.onTransition(current, next, this._event!);
+  }
+
+  protected onTransition(current: State, next: State, event: Event): void {
+    return;
   }
 
   protected onEvent(event: Event): void {
@@ -74,12 +72,6 @@ export abstract class Bloc<Event extends {}, State> extends Cubit<State> {
       .subscribe();
   }
 
-  private _subscribeToState(): Subscription {
-    return this.state$.subscribe({
-      next: (state) => this.listen(state),
-    });
-  }
-
   private _mapEventToState(event: Event): Observable<void> {
     let eventHandler = this._eventMap.get(event.constructor.name);
     if (eventHandler === undefined) {
@@ -98,7 +90,6 @@ export abstract class Bloc<Event extends {}, State> extends Cubit<State> {
 
   private _dispose(): void {
     this._eventsSubscription.unsubscribe();
-    this._stateSubscription.unsubscribe();
     this._eventMap.clear();
     super.dispose();
   }
