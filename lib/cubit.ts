@@ -41,6 +41,7 @@ export abstract class Cubit<T = any> {
 
   protected dispose(): void {
     this._stateSubject$.complete();
+    this._stateSubscription.unsubscribe();
   }
 
   private _buildStatePipeline(): Observable<T> {
@@ -51,7 +52,7 @@ export abstract class Cubit<T = any> {
     return;
   }
 
-  private _subscribeToState() {
+  private _subscribeToState(): Subscription {
     return this.state$.subscribe({
       next: (state) => this.listen(state),
       error: (error) => this.onError(error),

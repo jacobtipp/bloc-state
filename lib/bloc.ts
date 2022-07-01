@@ -1,35 +1,41 @@
 import { EMPTY, from, Observable, of, Subject, Subscription } from "rxjs";
 import { catchError, concatMap, mergeMap, tap } from "rxjs/operators";
 import { Cubit } from "./cubit";
+import { BlocEvent } from "./event";
 
 export type Emitter<S> = (state: S) => void;
-export type EventHandler<E, S> = (event: E, emitter: Emitter<S>) => void | Promise<void>;
-export type EventClass<E> = new (...args: any[]) => E;
 
-export abstract class Bloc<Event extends {}, State> extends Cubit<State> {
+export type EventHandler<E, S> = (event: E, emitter: Emitter<S>) => void | Promise<void>;
+
+export interface Type<T = any> extends Function {
+  new (...args: any[]): T;
+}
+
+export abstract class Bloc<E extends BlocEvent, State> extends Cubit<State> {
   constructor(state: State) {
     super(state);
     this._eventsSubscription = this._subscribeToEvents();
   }
 
-  private readonly _events$ = new Subject<Event>();
-  private readonly _eventMap = new Map<string, EventHandler<Event, State>>();
+  private readonly _events$ = new Subject<E>();
+  private readonly _eventsMap = new Map<string, EventHandler<E, State>>();
   private readonly _eventsSubscription: Subscription;
 
-  private _event: Event | undefined;
+  private _event: E | undefined;
 
-  protected on<E extends Event>(event: EventClass<E>, eventHandler: EventHandler<E, State>) {
-    if (this._eventMap.get(event.name)) {
-      throw new Error(`Error: ${event.name} can only have one EventHandler`);
+  protected on<T extends E>(event: Type<T>, eventHandler: EventHandler<T, State>) {
+    if (this._eventsMap.has(event.name)) {
+      throw new Error(`Error: ${event} can only have one EventHandler`);
     }
-    this._eventMap.set(event.name, eventHandler.bind(this));
+
+    this._eventsMap.set(event.name, eventHandler);
   }
 
   protected override get state(): State {
     return this._state;
   }
 
-  addEvent(event: Event): void {
+  addEvent(event: E): void {
     if (!this._events$.closed) {
       this._events$.next(event);
     }
@@ -47,15 +53,15 @@ export abstract class Bloc<Event extends {}, State> extends Cubit<State> {
     this.onTransition(current, next, this._event!);
   }
 
-  protected onTransition(current: State, next: State, event: Event): void {
+  protected onTransition(current: State, next: State, event: E): void {
     return;
   }
 
-  protected onEvent(event: Event): void {
+  protected onEvent(event: E): void {
     return;
   }
 
-  protected transformEvents(events$: Observable<Event>, next: (event: Event) => Observable<void>) {
+  protected transformEvents(events$: Observable<E>, next: (event: E) => Observable<void>) {
     return events$.pipe(concatMap(next));
   }
 
@@ -72,13 +78,14 @@ export abstract class Bloc<Event extends {}, State> extends Cubit<State> {
       .subscribe();
   }
 
-  private _mapEventToState(event: Event): Observable<void> {
-    let eventHandler = this._eventMap.get(event.constructor.name);
-    if (eventHandler === undefined) {
+  private _mapEventToState(event: E): Observable<void> {
+    const handler = this._eventsMap.get(event.blockEventName);
+
+    if (handler === undefined) {
       return EMPTY;
     }
 
-    let result = eventHandler(event, this.emit.bind(this));
+    let result = handler(event, this.emit.bind(this));
 
     return result instanceof Promise ? from(result) : EMPTY;
   }
@@ -90,7 +97,6 @@ export abstract class Bloc<Event extends {}, State> extends Cubit<State> {
 
   private _dispose(): void {
     this._eventsSubscription.unsubscribe();
-    this._eventMap.clear();
     super.dispose();
   }
 
