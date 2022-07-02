@@ -14,6 +14,8 @@ export interface Type<T = any> extends Function {
 export abstract class Bloc<E extends BlocEvent, State> extends Cubit<State> {
   constructor(state: State) {
     super(state);
+    this._mapEventToState = this._mapEventToState.bind(this);
+    this.emit = this.emit.bind(this);
     this._eventsSubscription = this._subscribeToEvents();
   }
 
@@ -71,7 +73,7 @@ export abstract class Bloc<E extends BlocEvent, State> extends Cubit<State> {
         tap((event) => this.onEvent(event)),
         tap((event) => (this._event = event)),
         mergeMap((event) => {
-          return this.transformEvents(of(event), this._mapEventToState.bind(this));
+          return this.transformEvents(of(event), this._mapEventToState);
         }),
         catchError((error: Error) => this._mapEventToStateError(error))
       )
@@ -85,7 +87,7 @@ export abstract class Bloc<E extends BlocEvent, State> extends Cubit<State> {
       return EMPTY;
     }
 
-    let result = handler(event, this.emit.bind(this));
+    let result = handler(event, this.emit);
 
     return result instanceof Promise ? from(result) : EMPTY;
   }
