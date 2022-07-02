@@ -37,7 +37,7 @@ export abstract class Bloc<E extends BlocEvent, State> extends Cubit<State> {
       throw new Error(`Error: ${event} can only have one EventHandler`);
     }
 
-    this._eventsMap.set(event.name, eventHandler);
+    this._eventsMap.set(event.name, eventHandler.bind(this));
   }
 
   /**
