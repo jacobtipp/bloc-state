@@ -43,7 +43,7 @@ export abstract class Bloc<E extends BlocEvent, State> extends Cubit<State> {
   /**
    * @returns the current state
    */
-  protected override get state(): State {
+  override get state(): State {
     return this._state;
   }
 

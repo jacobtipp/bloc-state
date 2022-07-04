@@ -19,7 +19,7 @@ export abstract class Cubit<T = any> {
   /**
    * @returns the last emitted state in a cubit
    */
-  protected get state(): T {
+  get state(): T {
     return this._state;
   }
 
