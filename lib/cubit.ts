@@ -41,7 +41,7 @@ export abstract class Cubit<T = any> {
    * @param mapState (state: T) => K
    * @returns new mapped selected state
    */
-  protected select<K>(mapState: (state: T) => K): Observable<K> {
+  public select<K>(mapState: (state: T) => K): Observable<K> {
     return this.state$.pipe(
       map((state) => mapState(state)),
       distinctUntilChanged()
