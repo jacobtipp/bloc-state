@@ -1,19 +1,13 @@
 import { EMPTY, from, Observable, of, Subject, Subscription } from "rxjs";
 import { catchError, concatMap, mergeMap, tap } from "rxjs/operators";
+import { BlocBase } from "./base";
 import { Cubit } from "./cubit";
 import { BlocEvent } from "./event";
+import { EventHandler, Type } from "./types";
 
-export type Emitter<S> = (state: S) => void;
-
-export type EventHandler<E, S> = (event: E, emitter: Emitter<S>) => void | Promise<void>;
-
-export interface Type<T = any> extends Function {
-  new (...args: any[]): T;
-}
-
-export abstract class Bloc<E extends BlocEvent, State> extends Cubit<State> {
-  constructor(state: State) {
-    super(state);
+export abstract class Bloc<E extends BlocEvent, State> extends BlocBase<State> {
+  constructor(_state: State) {
+    super(_state);
     this.emit = this.emit.bind(this);
     this._mapEventToState = this._mapEventToState.bind(this);
     this._eventsSubscription = this._subscribeToEvents();
@@ -38,13 +32,6 @@ export abstract class Bloc<E extends BlocEvent, State> extends Cubit<State> {
     }
 
     this._eventsMap.set(event.name, eventHandler.bind(this));
-  }
-
-  /**
-   * @returns the current state
-   */
-  override get state(): State {
-    return this._state;
   }
 
   /**
@@ -134,12 +121,12 @@ export abstract class Bloc<E extends BlocEvent, State> extends Cubit<State> {
     return EMPTY;
   }
 
-  private _dispose(): void {
-    this._eventsSubscription.unsubscribe();
-    super.dispose();
-  }
-
   override close(): void {
     this._dispose();
+  }
+
+  private _dispose(): void {
+    this._eventsSubscription.unsubscribe();
+    super.close();
   }
 }
