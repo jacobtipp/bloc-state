@@ -1,3 +1,5 @@
+import { Type } from "./types";
+
 export type BlocStateInstanceType = InstanceType<typeof BlocState>;
 
 export abstract class BlocState<T = any> {
@@ -52,5 +54,9 @@ export abstract class BlocState<T = any> {
     error: Error
   ): T {
     return new this(false, false, error, message, undefined);
+  }
+
+  ofType<K>(classType: Type<K>): boolean {
+    return this instanceof classType;
   }
 }

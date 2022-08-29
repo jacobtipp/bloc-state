@@ -71,4 +71,16 @@ describe("BlocState", () => {
       expect(state.message).toBe("Invalid constructor arguments for Bloc State.");
     });
   });
+
+  describe("BlocState.ofType", () => {
+    it("should return true if state is an instanceof input classType", () => {
+      class ChildCounterState extends CounterState {}
+      class SiblingCounterState extends CounterState {}
+
+      const child = ChildCounterState.init();
+
+      expect(child.ofType(ChildCounterState)).toBe(true);
+      expect(child.ofType(SiblingCounterState)).toBe(false);
+    });
+  });
 });
