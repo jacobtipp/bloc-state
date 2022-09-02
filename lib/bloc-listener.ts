@@ -1,6 +1,5 @@
 import { merge, Observable, Subscription } from "rxjs";
 import { BlocBase } from "./base";
-import { BlocState } from "./state";
 import { BlocStateType } from "./types";
 
 export interface BlocListenerContructor {
@@ -19,7 +18,7 @@ export abstract class BlocListener<T extends BlocBase<any>> {
     );
   }
 
-  protected build() {
+  protected subscribe() {
     if (!this.active) {
       this.blocListenerStreamSubscription = this.state$.subscribe({
         next: (state) => this.listen(state),

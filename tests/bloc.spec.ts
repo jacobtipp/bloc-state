@@ -84,7 +84,7 @@ describe("bloc", () => {
       class UsernameListener extends BlocListener<UsernameBloc | UpperCaseBloc> {
         constructor(private usernameBloc, private uppercaseBloc: UpperCaseBloc) {
           super(usernameBloc, uppercaseBloc);
-          this.build();
+          this.subscribe();
         }
 
         protected override listen(state: UserState | UpperCaseState): void {
