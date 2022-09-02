@@ -1,11 +1,15 @@
 import { EMPTY, from, Observable, of, Subject, Subscription } from "rxjs";
-import { catchError, concatMap, mergeMap, tap } from "rxjs/operators";
+import { catchError, shareReplay, switchMap, tap, share } from "rxjs/operators";
 import { BlocBase } from "./base";
 import { Cubit } from "./cubit";
 import { BlocEvent } from "./event";
-import { EventHandler, Type } from "./types";
+import { BlocState } from "./state";
+import { Emitter, EmitUpdaterCallback, EventHandler, EventToStateMapper, Type } from "./types";
 
-export abstract class Bloc<E extends BlocEvent, State> extends BlocBase<State> {
+export abstract class Bloc<
+  E extends BlocEvent,
+  State extends BlocState<any>
+> extends BlocBase<State> {
   constructor(_state: State) {
     super(_state);
     this.emit = this.emit.bind(this);
@@ -18,6 +22,8 @@ export abstract class Bloc<E extends BlocEvent, State> extends BlocBase<State> {
   private readonly _eventsSubscription: Subscription;
 
   private _event: E | undefined;
+
+  public readonly events$ = this._events$.asObservable().pipe(share());
 
   /**
    *
@@ -47,6 +53,17 @@ export abstract class Bloc<E extends BlocEvent, State> extends BlocBase<State> {
 
   // overridable methods for transtions, changes, and errors
 
+  protected transformEvents(
+    events: Observable<E>,
+    next: EventToStateMapper<E, State>
+  ): Observable<State> {
+    return events.pipe(switchMap(next));
+  }
+
+  protected trans(events: E, next: (event: E) => void): void {
+    return;
+  }
+
   protected override listen(state: State) {
     return;
   }
@@ -68,29 +85,19 @@ export abstract class Bloc<E extends BlocEvent, State> extends BlocBase<State> {
   }
 
   /**
-   *
-   * @param events$ incoming events
-   * @param next (event: E) => Observable<void>
-   * @returns transformed events Observable
-   */
-  protected transformEvents(events$: Observable<E>, next: (event: E) => Observable<void>) {
-    return events$.pipe(concatMap(next));
-  }
-
-  /**
    * @description subscribes to event stream to initialize a bloc and process events
    * @returns Subscription
    */
   private _subscribeToEvents(): Subscription {
-    return this._events$
-      .pipe(
-        tap((event) => this.onEvent(event)),
-        tap((event) => (this._event = event)),
-        mergeMap((event) => {
-          return this.transformEvents(of(event), this._mapEventToState);
-        }),
-        catchError((error: Error) => this._mapEventToStateError(error))
-      )
+    const eventStream$ = this._events$.pipe(
+      tap((event) => this.onEvent(event)),
+      tap((event) => (this._event = event))
+    );
+
+    const transformedStream = this.transformEvents(eventStream$, this._mapEventToState);
+
+    return transformedStream
+      .pipe(catchError((error: Error) => this._mapEventToStateError(error)))
       .subscribe();
   }
 
@@ -99,16 +106,49 @@ export abstract class Bloc<E extends BlocEvent, State> extends BlocBase<State> {
    * @returns Observable
    * @description retrieves event handler from eventsMap if it exists and returns an empty observable
    */
-  private _mapEventToState(event: E): Observable<void> {
+  private _mapEventToState(event: E): Observable<State> {
     const handler = this._eventsMap.get(event.blockEventName);
 
     if (handler === undefined) {
       return EMPTY;
     }
 
-    let result = handler(event, this.emit);
+    const mapEventSubject$ = new Subject<State>();
 
-    return result instanceof Promise ? from(result) : EMPTY;
+    const emitter = (newState: State | EmitUpdaterCallback<State>): void => {
+      if (mapEventSubject$.closed) {
+        return;
+      }
+
+      let stateToBeEmitted: State;
+
+      if (typeof newState === "function") {
+        let callback = newState as EmitUpdaterCallback<State>;
+        stateToBeEmitted = callback(this.state);
+      } else {
+        stateToBeEmitted = newState;
+      }
+
+      mapEventSubject$.next(stateToBeEmitted);
+    };
+
+    return new Observable((subscriber) => {
+      mapEventSubject$.subscribe(this.emit);
+
+      const result = handler(event, emitter);
+
+      if (result instanceof Promise) {
+        from(result).subscribe({
+          complete: () => subscriber.complete(),
+        });
+      } else {
+        subscriber.complete();
+      }
+
+      return () => {
+        mapEventSubject$.complete();
+      };
+    });
   }
 
   /**

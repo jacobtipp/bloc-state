@@ -5,13 +5,16 @@ import {
   distinctUntilChanged,
   shareReplay,
   map,
+  share,
+  Subject,
 } from "rxjs";
+import { BlocState } from "./state";
 import { EmitUpdaterCallback } from "./types";
 
-export abstract class BlocBase<State = any> extends BehaviorSubject<State> {
+export abstract class BlocBase<State extends BlocState<any>> {
   constructor(private _state: State) {
-    super(_state);
     this.emit = this.emit.bind(this);
+    this._stateSubject$ = new BehaviorSubject(_state);
     this.state$ = this._buildStatePipeline();
     this._stateSubscription = this._subscribeStateoState();
   }
@@ -22,6 +25,8 @@ export abstract class BlocBase<State = any> extends BehaviorSubject<State> {
   get state(): State {
     return this._state;
   }
+
+  private readonly _stateSubject$: BehaviorSubject<State>;
 
   /**
    * emits state pushed into a cubit
@@ -38,10 +43,9 @@ export abstract class BlocBase<State = any> extends BehaviorSubject<State> {
   }
 
   private _buildStatePipeline(): Observable<State> {
-    return this.asObservable().pipe(
-      distinctUntilChanged(),
-      shareReplay({ refCount: true, bufferSize: 1 })
-    );
+    return this._stateSubject$
+      .asObservable()
+      .pipe(distinctUntilChanged(), shareReplay({ refCount: true, bufferSize: 1 }));
   }
 
   protected listen(state: State): void {
@@ -60,7 +64,7 @@ export abstract class BlocBase<State = any> extends BehaviorSubject<State> {
    * @returns void
    */
   public emit(newState: State | EmitUpdaterCallback<State>): void {
-    if (this.closed) {
+    if (this._stateSubject$.closed) {
       return;
     }
 
@@ -76,7 +80,7 @@ export abstract class BlocBase<State = any> extends BehaviorSubject<State> {
     if (this._state !== stateToBeEmitted) {
       this.onChange(this._state, stateToBeEmitted);
       this._state = stateToBeEmitted;
-      this.next(stateToBeEmitted);
+      this._stateSubject$.next(stateToBeEmitted);
     }
   }
 
@@ -105,7 +109,7 @@ export abstract class BlocBase<State = any> extends BehaviorSubject<State> {
   }
 
   private dispose(): void {
-    this.complete();
+    this._stateSubject$.complete();
     this._stateSubscription.unsubscribe();
   }
 }

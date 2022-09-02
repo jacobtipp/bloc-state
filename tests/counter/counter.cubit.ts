@@ -1,23 +1,24 @@
 import { Cubit } from "../../lib/cubit";
+import { CounterState } from "./counter.state";
 import { delay } from "./delay";
 
-export class CounterCubit extends Cubit<number> {
+export class CounterCubit extends Cubit<CounterState> {
   constructor() {
-    super(0);
+    super(CounterState.init(0));
   }
 
   increment() {
-    this.emit(this.state + 1);
+    this.emit(CounterState.ready(this.state.data + 1));
   }
 
   decrement() {
-    this.emit(this.state - 1);
+    this.emit(CounterState.ready(this.state.data - 1));
   }
 
   async asyncIncrement() {
-    this.emit(this.state + 1);
-    this.emit(this.state - 1);
+    this.emit(CounterState.ready(this.state.data + 1));
+    this.emit(CounterState.ready(this.state.data - 1));
     await delay(3000);
-    this.emit(this.state + 1);
+    this.emit(CounterState.ready(this.state.data + 1));
   }
 }

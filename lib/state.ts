@@ -7,10 +7,10 @@ export abstract class BlocState<T = any> {
   isLoading: boolean;
   message?: string;
   error?: Error;
-  data?: T;
+  data: T;
   hasData: boolean;
 
-  constructor(initial: boolean, isLoading: boolean, error?: Error, message?: string, data?: T) {
+  constructor(data: T, initial: boolean, isLoading: boolean, error?: Error, message?: string) {
     this.initial = initial;
     this.isLoading = isLoading;
     this.error = error;
@@ -28,32 +28,34 @@ export abstract class BlocState<T = any> {
   }
 
   static init<T extends BlocStateInstanceType, D>(
-    this: new (intial: boolean, isLoading: boolean, error?: Error, message?: string, data?: D) => T,
+    this: new (data: D, intial: boolean, isLoading: boolean, error?: Error, message?: string) => T,
     data?: D
   ): T {
-    return new this(true, false, undefined, undefined, data);
+    return new this(data!, true, false, undefined, undefined);
   }
 
   static ready<T extends BlocStateInstanceType, D>(
-    this: new (intial: boolean, isLoading: boolean, error?: Error, message?: string, data?: D) => T,
+    this: new (data: D, intial: boolean, isLoading: boolean, error?: Error, message?: string) => T,
     data?: D
   ): T {
-    return new this(false, false, undefined, undefined, data);
+    return new this(data!, false, false, undefined, undefined);
   }
 
   static loading<T extends BlocStateInstanceType, D>(
-    this: new (intial: boolean, isLoading: boolean, error?: Error, message?: string, data?: D) => T,
-    message?: string
+    this: new (data: D, intial: boolean, isLoading: boolean, error?: Error, message?: string) => T,
+    message?: string,
+    data?: D
   ): T {
-    return new this(false, true, undefined, message, undefined);
+    return new this(data!, false, true, undefined, message);
   }
 
   static failed<T extends BlocStateInstanceType, D>(
-    this: new (intial: boolean, isLoading: boolean, error?: Error, message?: string, data?: D) => T,
+    this: new (data: D, intial: boolean, isLoading: boolean, error?: Error, message?: string) => T,
     message: string,
-    error: Error
+    error: Error,
+    data?: D
   ): T {
-    return new this(false, false, error, message, undefined);
+    return new this(data!, false, false, error, message);
   }
 
   ofType<K>(classType: Type<K>): boolean {

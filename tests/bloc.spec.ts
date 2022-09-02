@@ -1,11 +1,12 @@
 import { skip, take } from "rxjs/operators";
-import { Bloc } from "../lib";
+import { Bloc, BlocListener, BlocState, Cubit } from "../lib";
 import { CounterBloc } from "./counter/counter.bloc";
 import {
   CounterEvent,
-  DecrementCounterEvent,
   IncrementCounterEvent,
+  DecrementCounterEvent,
 } from "./counter/counter.event";
+import { CounterState } from "./counter/counter.state";
 
 describe("bloc", () => {
   let bloc: CounterBloc;
@@ -21,7 +22,7 @@ describe("bloc", () => {
   it("should have initial state", (done) => {
     bloc.state$.subscribe({
       next: (state) => {
-        expect(state).toBe(0);
+        expect(state.data).toBe(0);
       },
       complete: () => done(),
     });
@@ -30,17 +31,17 @@ describe("bloc", () => {
   });
 
   it("should map events to state", (done) => {
-    const states: number[] = [];
+    const states: CounterState[] = [];
     bloc.state$.pipe(skip(1), take(4)).subscribe({
       next: (state) => {
         states.push(state);
       },
       complete: () => {
         const [first, second, third, fourth] = states;
-        expect(first).toBe(1);
-        expect(second).toBe(2);
-        expect(third).toBe(3);
-        expect(fourth).toBe(2);
+        expect(first.data).toBe(1);
+        expect(second.data).toBe(2);
+        expect(third.data).toBe(3);
+        expect(fourth.data).toBe(2);
         bloc.close();
         done();
       },
@@ -53,8 +54,8 @@ describe("bloc", () => {
 
   it("should subscribe to state changes and send them to listen method", (done) => {
     class TestBloc extends CounterBloc {
-      protected override listen(state: number) {
-        expect(state).toBe(0);
+      protected override listen(state: CounterState): void {
+        expect(state.data).toBe(0);
         done();
       }
     }
@@ -62,5 +63,60 @@ describe("bloc", () => {
     const bloc = new TestBloc();
 
     bloc.close();
+  });
+
+  describe("BlocListener", () => {
+    it("should listen to the state of multiple blocs", (done) => {
+      class UserState extends BlocState<string> {}
+      class UsernameBloc extends Cubit<UserState> {
+        constructor() {
+          super(UserState.ready("Bob"));
+        }
+      }
+
+      class UpperCaseState extends BlocState<string> {}
+      class UpperCaseBloc extends Cubit<UpperCaseState> {
+        constructor() {
+          super(UpperCaseState.ready(""));
+        }
+      }
+
+      class UsernameListener extends BlocListener<UsernameBloc | UpperCaseBloc> {
+        constructor(private usernameBloc, private uppercaseBloc: UpperCaseBloc) {
+          super(usernameBloc, uppercaseBloc);
+          this.build();
+        }
+
+        override listen(state: UserState | UpperCaseState): void {
+          if (state instanceof UserState && state.hasData) {
+            this.uppercaseBloc.emit(UpperCaseState.ready(state.data.toUpperCase()));
+          }
+        }
+      }
+
+      const usernameBloc = new UsernameBloc();
+      const uppercaseUsernameBloc = new UpperCaseBloc();
+      const uppercaseStates: string[] = [];
+
+      usernameBloc.state$.subscribe({
+        next: (state) => {
+          expect(state.data).toBe("Bob");
+        },
+      });
+
+      uppercaseUsernameBloc.state$.subscribe({
+        next: (state) => {
+          uppercaseStates.push(state.data);
+        },
+        complete: () => {
+          expect(uppercaseStates[1]).toBe("BOB");
+          done();
+        },
+      });
+
+      const usernameListener = new UsernameListener(usernameBloc, uppercaseUsernameBloc);
+
+      uppercaseUsernameBloc.close();
+    });
   });
 });
