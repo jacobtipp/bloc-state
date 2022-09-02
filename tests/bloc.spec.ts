@@ -66,7 +66,7 @@ describe("bloc", () => {
   });
 
   describe("BlocListener", () => {
-    it("should listen to the state of multiple blocs", (done) => {
+    it("should listen to the state of multiple blocs", () => {
       class UserState extends BlocState<string> {}
       class UsernameBloc extends Cubit<UserState> {
         constructor() {
@@ -87,35 +87,21 @@ describe("bloc", () => {
           this.build();
         }
 
-        override listen(state: UserState | UpperCaseState): void {
+        protected override listen(state: UserState | UpperCaseState): void {
           if (state instanceof UserState && state.hasData) {
             this.uppercaseBloc.emit(UpperCaseState.ready(state.data.toUpperCase()));
+            expect(state.data).toBe("Bob");
+          }
+
+          if (state instanceof UpperCaseState) {
+            expect(state.data).toBe("BOB");
           }
         }
       }
 
       const usernameBloc = new UsernameBloc();
       const uppercaseUsernameBloc = new UpperCaseBloc();
-      const uppercaseStates: string[] = [];
-
-      usernameBloc.state$.subscribe({
-        next: (state) => {
-          expect(state.data).toBe("Bob");
-        },
-      });
-
-      uppercaseUsernameBloc.state$.subscribe({
-        next: (state) => {
-          uppercaseStates.push(state.data);
-        },
-        complete: () => {
-          expect(uppercaseStates[1]).toBe("BOB");
-          done();
-        },
-      });
-
       const usernameListener = new UsernameListener(usernameBloc, uppercaseUsernameBloc);
-
       uppercaseUsernameBloc.close();
     });
   });

@@ -26,8 +26,6 @@ export abstract class BlocListener<T extends BlocBase<any>> {
       });
       this.active = true;
     }
-
-    console.log(this.active);
   }
 
   protected listen(state: BlocStateType<T>) {}

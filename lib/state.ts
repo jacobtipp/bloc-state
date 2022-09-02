@@ -16,7 +16,7 @@ export abstract class BlocState<T = any> {
     this.error = error;
     this.message = message;
     this.data = data;
-    this.hasData = data ? true : false;
+    this.hasData = data !== undefined;
   }
 
   get hasError() {
