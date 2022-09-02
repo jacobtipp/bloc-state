@@ -1,5 +1,5 @@
 import { Config } from "bili";
-import typescript from "rollup-plugin-typescript2";
+import typescript2 from "rollup-plugin-typescript2";
 
 const config: Config = {
   input: "lib/index.ts",
@@ -17,11 +17,11 @@ const config: Config = {
     "rxjs/operators": "rxjs.operators",
   },
   externals: ["rxjs", "rxjs/operators"],
-  plugins: [
-    typescript({
+  plugins: {
+    typescript2: {
       tsconfig: "./tsconfig-build.json",
-    }),
-  ],
+    },
+  },
 };
 
 export default config;
