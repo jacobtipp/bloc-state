@@ -2,8 +2,11 @@ import { Observable } from "rxjs";
 import { BlocBase } from "./base";
 import { Bloc } from "./bloc";
 import { Cubit } from "./cubit";
+import { BlocState } from "./state";
 
-export type BlocStateType<T extends BlocBase<any>> = T extends BlocBase<infer U> ? U : never;
+export type BlocStateType<T extends BlocBase<unknown>> = T extends BlocBase<infer U> ? U : never;
+
+export type BlocDataType<D extends BlocState<any>> = D extends BlocState<infer U> ? U : never;
 
 export type BlocType<T extends BlocBase<any>> = T extends Bloc<infer E, infer S>
   ? Bloc<E, S>
@@ -11,7 +14,7 @@ export type BlocType<T extends BlocBase<any>> = T extends Bloc<infer E, infer S>
   ? Cubit<S>
   : never;
 
-export type EmitUpdaterCallback<T> = (state: T) => T;
+export type EmitUpdaterCallback<T> = (state: T) => T | undefined;
 
 export type Emitter<S> = (state: S | EmitUpdaterCallback<S>) => void;
 

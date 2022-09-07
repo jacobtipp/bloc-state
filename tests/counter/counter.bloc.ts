@@ -5,9 +5,17 @@ import { CounterState } from "./counter.state";
 
 export class CounterBloc extends Bloc<CounterEvent, CounterState> {
   constructor() {
-    super(CounterState.init(0));
+    super(CounterState.ready(0));
 
-    this.on(IncrementCounterEvent, (event, emit) => emit(CounterState.ready(this.state.data + 1)));
-    this.on(DecrementCounterEvent, (event, emit) => emit(CounterState.ready(this.state.data - 1)));
+    this.on(IncrementCounterEvent, (event, emit) => {
+      if (this.state.data !== undefined) {
+        return emit(CounterState.ready(this.state.data + 1));
+      }
+    });
+    this.on(DecrementCounterEvent, (event, emit) => {
+      if (this.state.data !== undefined) {
+        return emit(CounterState.ready(this.state.data - 1));
+      }
+    });
   }
 }

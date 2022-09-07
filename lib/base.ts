@@ -7,11 +7,13 @@ import {
   map,
   share,
   Subject,
+  filter,
 } from "rxjs";
 import { BlocState } from "./state";
 import { EmitUpdaterCallback } from "./types";
+import deepEqual from "fast-deep-equal";
 
-export abstract class BlocBase<State extends BlocState<any>> {
+export abstract class BlocBase<State = unknown> {
   constructor(private _state: State) {
     this.emit = this.emit.bind(this);
     this._stateSubject$ = new BehaviorSubject(_state);
@@ -68,7 +70,7 @@ export abstract class BlocBase<State extends BlocState<any>> {
       return;
     }
 
-    let stateToBeEmitted: State;
+    let stateToBeEmitted: State | undefined;
 
     if (typeof newState === "function") {
       let callback = newState as EmitUpdaterCallback<State>;
@@ -77,7 +79,7 @@ export abstract class BlocBase<State extends BlocState<any>> {
       stateToBeEmitted = newState;
     }
 
-    if (this._state !== stateToBeEmitted) {
+    if (stateToBeEmitted !== undefined && this._state !== stateToBeEmitted) {
       this.onChange(this._state, stateToBeEmitted);
       this._state = stateToBeEmitted;
       this._stateSubject$.next(stateToBeEmitted);
@@ -99,7 +101,7 @@ export abstract class BlocBase<State extends BlocState<any>> {
   public select<K>(mapState: (state: State) => K): Observable<K> {
     return this.state$.pipe(
       map((state) => mapState(state)),
-      distinctUntilChanged(),
+      distinctUntilChanged(deepEqual),
       shareReplay({ refCount: true, bufferSize: 1 })
     );
   }

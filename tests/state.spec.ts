@@ -77,7 +77,7 @@ describe("BlocState", () => {
       class ChildCounterState extends CounterState {}
       class SiblingCounterState extends CounterState {}
 
-      const child = ChildCounterState.init();
+      const child = ChildCounterState.init(0);
 
       expect(child.ofType(ChildCounterState)).toBe(true);
       expect(child.ofType(SiblingCounterState)).toBe(false);

@@ -1,10 +1,28 @@
 import { EMPTY, from, Observable, of, Subject, Subscription } from "rxjs";
-import { catchError, shareReplay, switchMap, tap, share } from "rxjs/operators";
+import {
+  catchError,
+  shareReplay,
+  switchMap,
+  tap,
+  share,
+  map,
+  distinctUntilChanged,
+  filter,
+} from "rxjs/operators";
 import { BlocBase } from "./base";
 import { Cubit } from "./cubit";
 import { BlocEvent } from "./event";
 import { BlocState } from "./state";
-import { Emitter, EmitUpdaterCallback, EventHandler, EventToStateMapper, Type } from "./types";
+import {
+  BlocDataType,
+  BlocStateType,
+  Emitter,
+  EmitUpdaterCallback,
+  EventHandler,
+  EventToStateMapper,
+  Type,
+} from "./types";
+import deepEqual from "fast-deep-equal";
 
 export abstract class Bloc<
   E extends BlocEvent,
@@ -45,7 +63,7 @@ export abstract class Bloc<
    * @param event Event: E
    * @description add a new bloc event to the bloc event stream
    */
-  addEvent(event: E): void {
+  add(event: E): void {
     if (!this._events$.closed) {
       this._events$.next(event);
     }
@@ -58,10 +76,6 @@ export abstract class Bloc<
     next: EventToStateMapper<E, State>
   ): Observable<State> {
     return events.pipe(switchMap(next));
-  }
-
-  protected trans(events: E, next: (event: E) => void): void {
-    return;
   }
 
   protected override listen(state: State) {
@@ -120,7 +134,7 @@ export abstract class Bloc<
         return;
       }
 
-      let stateToBeEmitted: State;
+      let stateToBeEmitted: State | undefined;
 
       if (typeof newState === "function") {
         let callback = newState as EmitUpdaterCallback<State>;
@@ -129,7 +143,9 @@ export abstract class Bloc<
         stateToBeEmitted = newState;
       }
 
-      mapEventSubject$.next(stateToBeEmitted);
+      if (stateToBeEmitted !== undefined) {
+        mapEventSubject$.next(stateToBeEmitted);
+      }
     };
 
     return new Observable((subscriber) => {
@@ -161,6 +177,21 @@ export abstract class Bloc<
     return EMPTY;
   }
 
+  /**
+   *
+   * @param mapState (state: State) => K
+   * @returns new mapped selected state
+   */
+  public override select<K>(mapState: (state: BlocDataType<State>) => K): Observable<K> {
+    return this.state$.pipe(
+      map((state) => state.data),
+      filter(inputIsNotNullOrUndefined),
+      map((data) => mapState(data)),
+      distinctUntilChanged(deepEqual),
+      shareReplay({ refCount: true, bufferSize: 1 })
+    );
+  }
+
   override close(): void {
     this._dispose();
   }
@@ -169,4 +200,8 @@ export abstract class Bloc<
     this._eventsSubscription.unsubscribe();
     super.close();
   }
+}
+
+function inputIsNotNullOrUndefined<T>(input: null | undefined | T): input is T {
+  return input !== null && input !== undefined;
 }

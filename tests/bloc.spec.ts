@@ -1,5 +1,5 @@
-import { skip, take } from "rxjs/operators";
-import { Bloc, BlocListener, BlocState, Cubit } from "../lib";
+import { skip, take, tap } from "rxjs/operators";
+import { Bloc, BlocEvent, BlocListener, BlocState, Cubit } from "../lib";
 import { CounterBloc } from "./counter/counter.bloc";
 import {
   CounterEvent,
@@ -33,9 +33,7 @@ describe("bloc", () => {
   it("should map events to state", (done) => {
     const states: CounterState[] = [];
     bloc.state$.pipe(skip(1), take(4)).subscribe({
-      next: (state) => {
-        states.push(state);
-      },
+      next: (state) => states.push(state),
       complete: () => {
         const [first, second, third, fourth] = states;
         expect(first.data).toBe(1);
@@ -46,10 +44,10 @@ describe("bloc", () => {
         done();
       },
     });
-    bloc.addEvent(new IncrementCounterEvent());
-    bloc.addEvent(new IncrementCounterEvent());
-    bloc.addEvent(new IncrementCounterEvent());
-    bloc.addEvent(new DecrementCounterEvent());
+    bloc.add(new IncrementCounterEvent());
+    bloc.add(new IncrementCounterEvent());
+    bloc.add(new IncrementCounterEvent());
+    bloc.add(new DecrementCounterEvent());
   });
 
   it("should subscribe to state changes and send them to listen method", (done) => {
@@ -65,44 +63,100 @@ describe("bloc", () => {
     bloc.close();
   });
 
-  describe("BlocListener", () => {
-    it("should listen to the state of multiple blocs", () => {
-      class UserState extends BlocState<string> {}
-      class UsernameBloc extends Cubit<UserState> {
+  describe("BlocBase.select", () => {
+    it("should return an observable with selectable state", () => {
+      interface User {
+        name: {
+          first: string;
+          last: string;
+        };
+        age: number;
+      }
+
+      class UserState extends BlocState<User> {}
+      class UserEvent extends BlocEvent {}
+      class UserNameChangedEvent extends UserEvent {
+        constructor(public name: { first: string; last: string }) {
+          super();
+        }
+      }
+      class UserAgeChangedEvent extends UserEvent {
+        constructor(public age: number) {
+          super();
+        }
+      }
+      class UserBloc extends Bloc<UserEvent, UserState> {
         constructor() {
-          super(UserState.ready("Bob"));
+          super(
+            UserState.init({
+              name: {
+                first: "",
+                last: "",
+              },
+              age: 0,
+            })
+          );
+
+          this.on(UserNameChangedEvent, (event, emit) => {
+            emit((state) => {
+              return UserState.ready({ ...state.data, name: event.name });
+            });
+          });
+
+          this.on(UserAgeChangedEvent, (event, emit) => {
+            emit((state) => {
+              if (state.data) {
+                const { age } = state.data;
+                const newState = UserState.ready({ ...state.data, age: age + 1 });
+                return newState;
+              }
+            });
+          });
         }
+
+        protected override onError(error: Error): void {
+          console.log(error);
+        }
+
+        name$ = this.select((data) => data.name);
+
+        age$ = this.select((data) => data.age);
       }
 
-      class UpperCaseState extends BlocState<string> {}
-      class UpperCaseBloc extends Cubit<UpperCaseState> {
-        constructor() {
-          super(UpperCaseState.ready(""));
-        }
-      }
+      const userBloc = new UserBloc();
 
-      class UsernameListener extends BlocListener<UsernameBloc | UpperCaseBloc> {
-        constructor(private usernameBloc, private uppercaseBloc: UpperCaseBloc) {
-          super(usernameBloc, uppercaseBloc);
-          this.subscribe();
-        }
+      const names: { first: string; last: string }[] = [];
+      const ages: number[] = [];
 
-        protected override listen(state: UserState | UpperCaseState): void {
-          if (state instanceof UserState && state.hasData) {
-            this.uppercaseBloc.emit(UpperCaseState.ready(state.data.toUpperCase()));
-            expect(state.data).toBe("Bob");
-          }
+      userBloc.age$.subscribe({
+        next: (age) => ages.push(age),
+        complete: () => {
+          const [a, b] = ages;
 
-          if (state instanceof UpperCaseState) {
-            expect(state.data).toBe("BOB");
-          }
-        }
-      }
+          //expect(a).toBe(0)
+        },
+      });
 
-      const usernameBloc = new UsernameBloc();
-      const uppercaseUsernameBloc = new UpperCaseBloc();
-      const usernameListener = new UsernameListener(usernameBloc, uppercaseUsernameBloc);
-      uppercaseUsernameBloc.close();
+      userBloc.name$.subscribe({
+        next: (name) => names.push(name),
+        complete: () => {
+          const [a, b, c] = names;
+
+          /*expect(a.first).toBe("")
+          expect(a.last).toBe("")
+
+          expect( b.first ).toBe( "bob" )
+          expect(b.last).toBe("parker")
+
+          expect(c.first).toBe("eric")
+          expect(c.last).toBe("smith")*/
+        },
+      });
+      userBloc.add(new UserNameChangedEvent({ first: "bob", last: "parker" }));
+      userBloc.add(new UserNameChangedEvent({ first: "bob", last: "parker" })); // fast-deep-equal prevents unchanged state from emitting
+      userBloc.add(new UserAgeChangedEvent(1));
+      userBloc.add(new UserNameChangedEvent({ first: "eric", last: "smith" })); // this should trigger a new state change in name$
+      userBloc.close();
     });
   });
 });

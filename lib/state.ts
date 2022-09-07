@@ -2,13 +2,14 @@ import { Type } from "./types";
 
 export type BlocStateInstanceType = InstanceType<typeof BlocState>;
 
-export abstract class BlocState<T = any> {
+export abstract class BlocState<T = unknown> {
   initial: boolean;
   isLoading: boolean;
   message?: string;
   error?: Error;
   data: T;
   hasData: boolean;
+  blocStateName = this.constructor.name;
 
   constructor(data: T, initial: boolean, isLoading: boolean, error?: Error, message?: string) {
     this.initial = initial;
@@ -29,7 +30,7 @@ export abstract class BlocState<T = any> {
 
   static init<T extends BlocStateInstanceType, D>(
     this: new (data: D, intial: boolean, isLoading: boolean, error?: Error, message?: string) => T,
-    data?: D
+    data: D
   ): T {
     return new this(data!, true, false, undefined, undefined);
   }
