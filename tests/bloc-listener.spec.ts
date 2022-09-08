@@ -21,14 +21,14 @@ describe("BlocListener", () => {
         super(usernameBloc, uppercaseBloc);
 
         this.on(UserState, (state) => {
-          if (state.data !== undefined) {
-            this.uppercaseBloc.emit(UpperCaseState.ready(state.data.toUpperCase()));
-            expect(state.data).toBe("Bob");
+          if (state.info.hasData) {
+            this.uppercaseBloc.emit(UpperCaseState.ready(state.info.data.toUpperCase()));
+            expect(state.info.data).toBe("Bob");
           }
         });
 
         this.on(UpperCaseState, (state) => {
-          expect(state.data).toBe("BOB");
+          expect(state.info.data).toBe("BOB");
           done();
         });
       }

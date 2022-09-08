@@ -22,7 +22,7 @@ describe("bloc", () => {
   it("should have initial state", (done) => {
     bloc.state$.subscribe({
       next: (state) => {
-        expect(state.data).toBe(0);
+        expect(state.info.data).toBe(0);
       },
       complete: () => done(),
     });
@@ -36,10 +36,10 @@ describe("bloc", () => {
       next: (state) => states.push(state),
       complete: () => {
         const [first, second, third, fourth] = states;
-        expect(first.data).toBe(1);
-        expect(second.data).toBe(2);
-        expect(third.data).toBe(3);
-        expect(fourth.data).toBe(2);
+        expect(first.info.data).toBe(1);
+        expect(second.info.data).toBe(2);
+        expect(third.info.data).toBe(3);
+        expect(fourth.info.data).toBe(2);
         bloc.close();
         done();
       },
@@ -53,7 +53,7 @@ describe("bloc", () => {
   it("should subscribe to state changes and send them to listen method", (done) => {
     class TestBloc extends CounterBloc {
       protected override listen(state: CounterState): void {
-        expect(state.data).toBe(0);
+        expect(state.info.data).toBe(0);
         done();
       }
     }
@@ -98,17 +98,19 @@ describe("bloc", () => {
           );
 
           this.on(UserNameChangedEvent, (event, emit) => {
-            emit((state) => {
-              return UserState.ready({ ...state.data, name: event.name });
+            emit((previousState) => {
+              if (previousState.info.hasData) {
+                const data = previousState.info.data;
+                return UserState.ready({ ...data, name: event.name });
+              }
             });
           });
 
           this.on(UserAgeChangedEvent, (event, emit) => {
-            emit((state) => {
-              if (state.data) {
-                const { age } = state.data;
-                const newState = UserState.ready({ ...state.data, age: age + 1 });
-                return newState;
+            emit((previousState) => {
+              if (previousState.info.hasData) {
+                const data = previousState.info.data;
+                return UserState.ready({ ...data, age: data.age + 1 });
               }
             });
           });

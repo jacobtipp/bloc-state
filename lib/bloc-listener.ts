@@ -1,6 +1,6 @@
-import { Subscription, Observable, merge, concatMap, EMPTY, from } from "rxjs";
+import { Subscription, Observable, merge, concatMap, EMPTY, from, mergeMap } from "rxjs";
 import { BlocBase } from "./base";
-import { BlocStateType, Type } from "./types";
+import { BlocStateType, ClassType } from "./types";
 
 export abstract class BlocListener<T extends BlocBase<any>> {
   private blocListenerStreamSubscription: Subscription = Subscription.EMPTY;
@@ -14,7 +14,7 @@ export abstract class BlocListener<T extends BlocBase<any>> {
     );
   }
 
-  protected on<S extends BlocStateType<T>>(state: Type<S>, eventHandler: (state: S) => void) {
+  protected on<S extends BlocStateType<T>>(state: ClassType<S>, eventHandler: (state: S) => void) {
     if (this._statesMap.has(state.name)) {
       throw new Error(`Error: ${state.name} can only have one EventHandler`);
     }
@@ -27,7 +27,7 @@ export abstract class BlocListener<T extends BlocBase<any>> {
   }
 
   #subscribeToMergedStates() {
-    return this.state$.pipe(concatMap(this.#stateHandler.bind(this))).subscribe();
+    return this.state$.pipe(mergeMap(this.#stateHandler.bind(this))).subscribe();
   }
 
   #stateHandler(state: BlocStateType<T>): Observable<void> {

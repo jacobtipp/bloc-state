@@ -8,13 +8,16 @@ export class CounterBloc extends Bloc<CounterEvent, CounterState> {
     super(CounterState.ready(0));
 
     this.on(IncrementCounterEvent, (event, emit) => {
-      if (this.state.data !== undefined) {
-        return emit(CounterState.ready(this.state.data + 1));
+      const { data, hasData } = this.state.info;
+      if (hasData) {
+        return emit(CounterState.ready(data + 1));
       }
     });
+
     this.on(DecrementCounterEvent, (event, emit) => {
-      if (this.state.data !== undefined) {
-        return emit(CounterState.ready(this.state.data - 1));
+      const { data, hasData } = this.state.info;
+      if (hasData) {
+        return emit(CounterState.ready(data - 1));
       }
     });
   }

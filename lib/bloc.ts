@@ -20,7 +20,7 @@ import {
   EmitUpdaterCallback,
   EventHandler,
   EventToStateMapper,
-  Type,
+  ClassType,
 } from "./types";
 import deepEqual from "fast-deep-equal";
 
@@ -50,7 +50,7 @@ export abstract class Bloc<
    * @descrition this method is for registering event handlers based on the type of events that
    * are added to a bloc
    */
-  protected on<T extends E>(event: Type<T>, eventHandler: EventHandler<T, State>) {
+  protected on<T extends E>(event: ClassType<T>, eventHandler: EventHandler<T, State>) {
     if (this._eventsMap.has(event.name)) {
       throw new Error(`Error: ${event} can only have one EventHandler`);
     }
@@ -184,7 +184,7 @@ export abstract class Bloc<
    */
   public override select<K>(mapState: (state: BlocDataType<State>) => K): Observable<K> {
     return this.state$.pipe(
-      map((state) => state.data),
+      map((state) => state.info.data),
       filter(inputIsNotNullOrUndefined),
       map((data) => mapState(data)),
       distinctUntilChanged(deepEqual),

@@ -1,65 +1,119 @@
-import { Type } from "./types";
-
-export type BlocStateInstanceType = InstanceType<typeof BlocState>;
+import {
+  StateInfo,
+  BlocStateInstanceType,
+  BlocDataType,
+  Initial,
+  InitialWithData,
+  Ready,
+  ReadyWithData,
+  Loading,
+  Failed,
+  FailedWithError,
+} from "./types";
 
 export abstract class BlocState<T = unknown> {
-  initial: boolean;
-  isLoading: boolean;
-  message?: string;
-  error?: Error;
-  data: T;
-  hasData: boolean;
   blocStateName = this.constructor.name;
+  constructor(public info: StateInfo<T>) {}
 
-  constructor(data: T, initial: boolean, isLoading: boolean, error?: Error, message?: string) {
-    this.initial = initial;
-    this.isLoading = isLoading;
-    this.error = error;
-    this.message = message;
-    this.data = data;
-    this.hasData = data !== undefined;
+  static init<State extends BlocStateInstanceType, Data extends BlocDataType<State>>(
+    this: new (info: Initial) => State,
+    data?: Data
+  ): State;
+
+  static init<State extends BlocStateInstanceType, Data extends BlocDataType<State>>(
+    this: new (info: Initial | InitialWithData<Data>) => State,
+    data?: Data
+  ): State {
+    if (data === undefined) {
+      return new this({
+        initial: true,
+        hasError: false,
+        error: undefined,
+        hasData: false,
+        loading: false,
+        data: undefined,
+      });
+    } else {
+      return new this({
+        initial: true,
+        hasError: false,
+        error: undefined,
+        message: undefined,
+        hasData: true,
+        loading: false,
+        data,
+      });
+    }
   }
 
-  get hasError() {
-    return this.error !== undefined;
+  static ready<State extends BlocStateInstanceType, Data extends BlocDataType<State>>(
+    this: new (info: Ready) => State,
+    data?: Data
+  ): State;
+
+  static ready<State extends BlocStateInstanceType, Data extends BlocDataType<State>>(
+    this: new (info: ReadyWithData<Data> | Ready) => State,
+    data?: Data
+  ): State {
+    if (data === undefined) {
+      return new this({
+        initial: false,
+        hasError: false,
+        error: undefined,
+        hasData: false,
+        loading: false,
+        data: undefined,
+      });
+    } else {
+      return new this({
+        initial: false,
+        hasError: false,
+        error: undefined,
+        hasData: true,
+        loading: false,
+        data,
+      });
+    }
   }
 
-  get isReady() {
-    return !this.initial && !this.hasError && !this.isLoading;
+  static loading<State extends BlocStateInstanceType>(this: new (info: Loading) => State): State {
+    return new this({
+      initial: false,
+      hasError: false,
+      error: undefined,
+      hasData: false,
+      loading: true,
+      data: undefined,
+    });
   }
 
-  static init<T extends BlocStateInstanceType, D>(
-    this: new (data: D, intial: boolean, isLoading: boolean, error?: Error, message?: string) => T,
-    data: D
-  ): T {
-    return new this(data!, true, false, undefined, undefined);
-  }
+  static failed<State extends BlocStateInstanceType, E extends Error>(
+    this: new (info: Failed) => State,
+    error?: E
+  ): State;
 
-  static ready<T extends BlocStateInstanceType, D>(
-    this: new (data: D, intial: boolean, isLoading: boolean, error?: Error, message?: string) => T,
-    data?: D
-  ): T {
-    return new this(data!, false, false, undefined, undefined);
-  }
-
-  static loading<T extends BlocStateInstanceType, D>(
-    this: new (data: D, intial: boolean, isLoading: boolean, error?: Error, message?: string) => T,
-    message?: string,
-    data?: D
-  ): T {
-    return new this(data!, false, true, undefined, message);
-  }
-
-  static failed<T extends BlocStateInstanceType, D>(
-    this: new (data: D, intial: boolean, isLoading: boolean, error?: Error, message?: string) => T,
-    message: string,
-    error: Error,
-    data?: D
-  ): T {
-    return new this(data!, false, false, error, message);
-  }
-
-  ofType<K>(classType: Type<K>): boolean {
-    return this instanceof classType;
+  static failed<State extends BlocStateInstanceType, E extends Error>(
+    this: new (info: Failed | FailedWithError<E>) => State,
+    error?: E
+  ): State {
+    if (error !== undefined) {
+      return new this({
+        initial: false,
+        hasError: true,
+        error: error,
+        hasData: false,
+        loading: false,
+        data: undefined,
+      });
+    } else {
+      return new this({
+        initial: false,
+        hasError: false,
+        error: undefined,
+        hasData: false,
+        loading: false,
+        data: undefined,
+      });
+    }
   }
 }
