@@ -8,17 +8,30 @@ import {
   share,
   Subject,
   filter,
+  EMPTY,
+  from,
+  mergeMap,
+  merge,
 } from "rxjs";
-import { BlocState } from "./state";
-import { EmitUpdaterCallback } from "./types";
+import { BlocStateType, EmitUpdaterCallback, StreamType } from "./types";
 import deepEqual from "fast-deep-equal";
 
-export abstract class BlocBase<State = unknown> {
+export abstract class BlocBase<State = any> {
+  private blocListenerStreamSubscription: Subscription = Subscription.EMPTY;
+  private blocListenerIsActive = false;
+
   constructor(private _state: State) {
     this.emit = this.emit.bind(this);
     this._stateSubject$ = new BehaviorSubject(_state);
     this.state$ = this._buildStatePipeline();
     this._stateSubscription = this._subscribeStateoState();
+  }
+
+  listen<T = any>(stream: Observable<T>, listenHandler: (state: T) => void): void {
+    if (!this.blocListenerIsActive) {
+      this.blocListenerStreamSubscription = stream.subscribe(listenHandler);
+      this.blocListenerIsActive = true;
+    }
   }
 
   /**
@@ -39,7 +52,6 @@ export abstract class BlocBase<State = unknown> {
 
   private _subscribeStateoState(): Subscription {
     return this.state$.subscribe({
-      next: (state) => this.listen(state),
       error: (error) => this.onError(error),
     });
   }
@@ -48,10 +60,6 @@ export abstract class BlocBase<State = unknown> {
     return this._stateSubject$
       .asObservable()
       .pipe(distinctUntilChanged(), shareReplay({ refCount: true, bufferSize: 1 }));
-  }
-
-  protected listen(state: State): void {
-    return;
   }
 
   /**

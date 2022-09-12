@@ -4,17 +4,21 @@ import { Bloc } from "./bloc";
 import { Cubit } from "./cubit";
 import { BlocState } from "./state";
 
-export type BlocStateType<T extends BlocBase<unknown>> = T extends BlocBase<infer U> ? U : never;
+export type BlocStateType<T extends BlocBase<any>> = T extends BlocBase<infer U> ? U : never;
 
 export type BlocDataType<D extends BlocState<any>> = D extends BlocState<infer U> ? U : never;
 
 export type BlocStateInstanceType = InstanceType<typeof BlocState>;
+
+export type BlocInstanceType = InstanceType<typeof BlocBase>;
 
 export type BlocType<T extends BlocBase<any>> = T extends Bloc<infer E, infer S>
   ? Bloc<E, S>
   : T extends Cubit<infer S>
   ? Cubit<S>
   : never;
+
+export type StreamType<T extends Observable<any>> = T extends Observable<infer U> ? U : never;
 
 export type EmitUpdaterCallback<T> = (state: T) => T | undefined;
 
@@ -94,7 +98,7 @@ export interface FailedWithError<E extends Error> {
   data: undefined;
 }
 
-export type StateInfo<T, E extends Error = Error> =
+export type StatePayload<T, E extends Error = Error> =
   | Initial
   | InitialWithData<T>
   | Loading
