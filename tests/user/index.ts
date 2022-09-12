@@ -11,7 +11,7 @@ export interface User {
   age: number;
 }
 
-export class UserState<T = any> extends BlocState<T> {}
+export class UserState extends BlocState<User> {}
 
 export class UserEvent extends BlocEvent {}
 
@@ -40,26 +40,22 @@ export class UserBloc extends Bloc<UserEvent, UserState> {
     );
 
     this.on(UserNameChangedEvent, (event, emit) => {
-      emit((previousState) => {
-        if (previousState.payload.hasData) {
-          const data = previousState.payload.data;
+      emit((current) => {
+        if (current.payload.hasData) {
+          const data = current.payload.data;
           return UserState.ready({ ...data, name: event.name });
         }
       });
     });
 
     this.on(UserAgeChangedEvent, (event, emit) => {
-      emit((previousState) => {
-        if (previousState.payload.hasData) {
-          const data = previousState.payload.data;
+      emit((current) => {
+        if (current.payload.hasData) {
+          const data = current.payload.data;
           return UserState.ready({ ...data, age: data.age + 1 });
         }
       });
     });
-  }
-
-  protected override onError(error: Error): void {
-    console.log(error);
   }
 
   name$ = this.select((data) => data.name);
