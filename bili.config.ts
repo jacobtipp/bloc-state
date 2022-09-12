@@ -1,4 +1,5 @@
 import { Config } from "bili";
+import { visualizer } from "rollup-plugin-visualizer";
 import typescript2 from "rollup-plugin-typescript2";
 
 const config: Config = {
@@ -14,13 +15,13 @@ const config: Config = {
   },
   globals: {
     rxjs: "rxjs",
-    "rxjs/operators": "rxjs.operators",
   },
-  externals: ["rxjs", "rxjs/operators"],
+  externals: ["rxjs"],
   plugins: {
     typescript2: {
       tsconfig: "./tsconfig-build.json",
     },
+    visualizer: visualizer(),
   },
 };
 

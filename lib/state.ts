@@ -14,6 +14,7 @@ import {
 export abstract class BlocState<T = any> {
   blocStateName = this.constructor.name;
   isBlocStateInstance = true;
+
   constructor(public payload: StatePayload<T>) {}
 
   static init<State extends BlocStateInstanceType, Data extends BlocDataType<State>>(

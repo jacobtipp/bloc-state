@@ -5,16 +5,8 @@ import {
   distinctUntilChanged,
   shareReplay,
   map,
-  share,
-  Subject,
-  filter,
-  EMPTY,
-  from,
-  mergeMap,
-  merge,
 } from "rxjs";
-import { BlocStateType, EmitUpdaterCallback, StreamType } from "./types";
-import deepEqual from "fast-deep-equal";
+import { EmitUpdaterCallback } from "./types";
 
 export abstract class BlocBase<State = any> {
   private blocListenerStreamSubscription: Subscription = Subscription.EMPTY;
@@ -109,7 +101,7 @@ export abstract class BlocBase<State = any> {
   public select<K>(mapState: (state: State) => K): Observable<K> {
     return this.state$.pipe(
       map((state) => mapState(state)),
-      distinctUntilChanged(deepEqual),
+      distinctUntilChanged(),
       shareReplay({ refCount: true, bufferSize: 1 })
     );
   }

@@ -83,7 +83,6 @@ describe("bloc", () => {
         complete: () => {
           const [a, b, c] = names;
 
-          console.log("test");
           expect(a.first).toBe("");
           expect(a.last).toBe("");
 
@@ -95,7 +94,6 @@ describe("bloc", () => {
         },
       });
       userBloc.add(new UserNameChangedEvent({ first: "bob", last: "parker" }));
-      userBloc.add(new UserNameChangedEvent({ first: "bob", last: "parker" })); // fast-deep-equal prevents unchanged state from emitting
       userBloc.add(new UserAgeChangedEvent(1));
       userBloc.add(new UserNameChangedEvent({ first: "eric", last: "smith" })); // this should trigger a new state change in name$
       userBloc.close();

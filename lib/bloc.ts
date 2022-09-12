@@ -1,5 +1,9 @@
-import { EMPTY, from, Observable, of, Subject, Subscription } from "rxjs";
 import {
+  EMPTY,
+  from,
+  Observable,
+  Subject,
+  Subscription,
   catchError,
   shareReplay,
   switchMap,
@@ -8,21 +12,17 @@ import {
   map,
   distinctUntilChanged,
   filter,
-} from "rxjs/operators";
+} from "rxjs";
 import { BlocBase } from "./base";
-import { Cubit } from "./cubit";
 import { BlocEvent } from "./event";
 import { BlocState } from "./state";
 import {
   BlocDataType,
-  BlocStateType,
-  Emitter,
   EmitUpdaterCallback,
   EventHandler,
   EventToStateMapper,
   ClassType,
 } from "./types";
-import deepEqual from "fast-deep-equal";
 
 export abstract class Bloc<
   E extends BlocEvent,
@@ -178,7 +178,7 @@ export abstract class Bloc<
       map((state) => state.payload.data),
       filter(inputIsNotNullOrUndefined),
       map((data) => mapState(data)),
-      distinctUntilChanged(deepEqual),
+      distinctUntilChanged(),
       shareReplay({ refCount: true, bufferSize: 1 })
     );
   }
