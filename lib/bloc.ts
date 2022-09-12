@@ -72,31 +72,21 @@ export abstract class Bloc<
   // overridable methods for transtions, changes, and errors
 
   protected transformEvents(
-    events: Observable<E>,
+    events$: Observable<E>,
     next: EventToStateMapper<E, State>
   ): Observable<State> {
-    return events.pipe(switchMap(next));
+    return events$.pipe(switchMap(next));
   }
 
-  protected override listen(state: State) {
-    return;
-  }
-
-  protected override onError(error: Error): void {
-    return;
-  }
+  protected override onError(error: Error): void {}
 
   protected override onChange(current: State, next: State): void {
     this.onTransition(current, next, this._event!);
   }
 
-  protected onTransition(current: State, next: State, event: E): void {
-    return;
-  }
+  protected onTransition(current: State, next: State, event: E): void {}
 
-  protected onEvent(event: E): void {
-    return;
-  }
+  protected onEvent(event: E): void {}
 
   /**
    * @description subscribes to event stream to initialize a bloc and process events
@@ -119,6 +109,7 @@ export abstract class Bloc<
    * @param event BlocEvent
    * @returns Observable
    * @description retrieves event handler from eventsMap if it exists and returns an empty observable
+   * @TODO this method needs an audit, make sure there are no zombie subscribers.
    */
   private _mapEventToState(event: E): Observable<State> {
     const handler = this._eventsMap.get(event.blockEventName);
@@ -184,7 +175,7 @@ export abstract class Bloc<
    */
   public override select<K>(mapState: (state: BlocDataType<State>) => K): Observable<K> {
     return this.state$.pipe(
-      map((state) => state.info.data),
+      map((state) => state.payload.data),
       filter(inputIsNotNullOrUndefined),
       map((data) => mapState(data)),
       distinctUntilChanged(deepEqual),

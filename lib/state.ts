@@ -1,5 +1,5 @@
 import {
-  StateInfo,
+  StatePayload,
   BlocStateInstanceType,
   BlocDataType,
   Initial,
@@ -11,17 +11,18 @@ import {
   FailedWithError,
 } from "./types";
 
-export abstract class BlocState<T = unknown> {
+export abstract class BlocState<T = any> {
   blocStateName = this.constructor.name;
-  constructor(public info: StateInfo<T>) {}
+  isBlocStateInstance = true;
+  constructor(public payload: StatePayload<T>) {}
 
   static init<State extends BlocStateInstanceType, Data extends BlocDataType<State>>(
-    this: new (info: Initial) => State,
+    this: new (payload: Initial) => State,
     data?: Data
   ): State;
 
   static init<State extends BlocStateInstanceType, Data extends BlocDataType<State>>(
-    this: new (info: Initial | InitialWithData<Data>) => State,
+    this: new (payload: Initial | InitialWithData<Data>) => State,
     data?: Data
   ): State {
     if (data === undefined) {
@@ -47,12 +48,12 @@ export abstract class BlocState<T = unknown> {
   }
 
   static ready<State extends BlocStateInstanceType, Data extends BlocDataType<State>>(
-    this: new (info: Ready) => State,
+    this: new (payload: Ready) => State,
     data?: Data
   ): State;
 
   static ready<State extends BlocStateInstanceType, Data extends BlocDataType<State>>(
-    this: new (info: ReadyWithData<Data> | Ready) => State,
+    this: new (payload: ReadyWithData<Data> | Ready) => State,
     data?: Data
   ): State {
     if (data === undefined) {
@@ -76,7 +77,9 @@ export abstract class BlocState<T = unknown> {
     }
   }
 
-  static loading<State extends BlocStateInstanceType>(this: new (info: Loading) => State): State {
+  static loading<State extends BlocStateInstanceType>(
+    this: new (payload: Loading) => State
+  ): State {
     return new this({
       initial: false,
       hasError: false,
@@ -88,12 +91,12 @@ export abstract class BlocState<T = unknown> {
   }
 
   static failed<State extends BlocStateInstanceType, E extends Error>(
-    this: new (info: Failed) => State,
+    this: new (payload: Failed) => State,
     error?: E
   ): State;
 
   static failed<State extends BlocStateInstanceType, E extends Error>(
-    this: new (info: Failed | FailedWithError<E>) => State,
+    this: new (payload: Failed | FailedWithError<E>) => State,
     error?: E
   ): State {
     if (error !== undefined) {
@@ -117,3 +120,7 @@ export abstract class BlocState<T = unknown> {
     }
   }
 }
+
+export const isBlocStateInstance = (state: any) => {
+  return state instanceof BlocState || Boolean(state.isBlocStateInstance);
+};

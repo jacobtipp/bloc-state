@@ -1,6 +1,8 @@
 import { skip, take, tap } from "rxjs/operators";
 import { Bloc, BlocEvent, BlocListener, BlocState, Cubit } from "../lib";
 import { CounterBloc } from "./counter/counter.bloc";
+import { UserAgeChangedEvent, UserBloc, UserNameChangedEvent } from "./user";
+import { NameBloc, UpperCaseBloc } from "./name";
 import {
   CounterEvent,
   IncrementCounterEvent,
@@ -22,7 +24,7 @@ describe("bloc", () => {
   it("should have initial state", (done) => {
     bloc.state$.subscribe({
       next: (state) => {
-        expect(state.info.data).toBe(0);
+        expect(state.payload.data).toBe(0);
       },
       complete: () => done(),
     });
@@ -36,10 +38,10 @@ describe("bloc", () => {
       next: (state) => states.push(state),
       complete: () => {
         const [first, second, third, fourth] = states;
-        expect(first.info.data).toBe(1);
-        expect(second.info.data).toBe(2);
-        expect(third.info.data).toBe(3);
-        expect(fourth.info.data).toBe(2);
+        expect(first.payload.data).toBe(1);
+        expect(second.payload.data).toBe(2);
+        expect(third.payload.data).toBe(3);
+        expect(fourth.payload.data).toBe(2);
         bloc.close();
         done();
       },
@@ -50,81 +52,19 @@ describe("bloc", () => {
     bloc.add(new DecrementCounterEvent());
   });
 
-  it("should subscribe to state changes and send them to listen method", (done) => {
-    class TestBloc extends CounterBloc {
-      protected override listen(state: CounterState): void {
-        expect(state.info.data).toBe(0);
-        done();
-      }
-    }
+  describe("BlocBase.listen", () => {
+    it("should listen to an array of blocs", () => {
+      const nameBloc = new NameBloc();
+      const uppercaseBloc = new UpperCaseBloc();
 
-    const bloc = new TestBloc();
+      uppercaseBloc.listen(nameBloc.state$, (state) => uppercaseBloc.toUpperCase(state));
 
-    bloc.close();
+      uppercaseBloc.state$.subscribe((state) => expect(state).toBe("BOB"));
+    });
   });
 
   describe("BlocBase.select", () => {
     it("should return an observable with selectable state", () => {
-      interface User {
-        name: {
-          first: string;
-          last: string;
-        };
-        age: number;
-      }
-
-      class UserState extends BlocState<User> {}
-      class UserEvent extends BlocEvent {}
-      class UserNameChangedEvent extends UserEvent {
-        constructor(public name: { first: string; last: string }) {
-          super();
-        }
-      }
-      class UserAgeChangedEvent extends UserEvent {
-        constructor(public age: number) {
-          super();
-        }
-      }
-      class UserBloc extends Bloc<UserEvent, UserState> {
-        constructor() {
-          super(
-            UserState.init({
-              name: {
-                first: "",
-                last: "",
-              },
-              age: 0,
-            })
-          );
-
-          this.on(UserNameChangedEvent, (event, emit) => {
-            emit((previousState) => {
-              if (previousState.info.hasData) {
-                const data = previousState.info.data;
-                return UserState.ready({ ...data, name: event.name });
-              }
-            });
-          });
-
-          this.on(UserAgeChangedEvent, (event, emit) => {
-            emit((previousState) => {
-              if (previousState.info.hasData) {
-                const data = previousState.info.data;
-                return UserState.ready({ ...data, age: data.age + 1 });
-              }
-            });
-          });
-        }
-
-        protected override onError(error: Error): void {
-          console.log(error);
-        }
-
-        name$ = this.select((data) => data.name);
-
-        age$ = this.select((data) => data.age);
-      }
-
       const userBloc = new UserBloc();
 
       const names: { first: string; last: string }[] = [];
@@ -144,14 +84,15 @@ describe("bloc", () => {
         complete: () => {
           const [a, b, c] = names;
 
-          /*expect(a.first).toBe("")
-          expect(a.last).toBe("")
+          console.log("test");
+          expect(a.first).toBe("");
+          expect(a.last).toBe("");
 
-          expect( b.first ).toBe( "bob" )
-          expect(b.last).toBe("parker")
+          expect(b.first).toBe("bob");
+          expect(b.last).toBe("parker");
 
-          expect(c.first).toBe("eric")
-          expect(c.last).toBe("smith")*/
+          expect(c.first).toBe("eric");
+          expect(c.last).toBe("smith");
         },
       });
       userBloc.add(new UserNameChangedEvent({ first: "bob", last: "parker" }));
