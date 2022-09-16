@@ -1,7 +1,6 @@
 import { Bloc } from "../../lib/bloc";
 import { BlocEvent } from "../../lib/event";
 import { BlocState } from "../../lib/state";
-import {} from "../../lib/types";
 
 export interface User {
   name: {
@@ -28,6 +27,10 @@ export class UserAgeChangedEvent extends UserEvent {
 }
 
 export class UserBloc extends Bloc<UserEvent, UserState> {
+  name$ = this.select((state) => state.name);
+
+  age$ = this.select((state) => state.age);
+
   constructor() {
     super(
       UserState.init({
@@ -57,8 +60,4 @@ export class UserBloc extends Bloc<UserEvent, UserState> {
       });
     });
   }
-
-  name$ = this.select((data) => data.name);
-
-  age$ = this.select((data) => data.age);
 }

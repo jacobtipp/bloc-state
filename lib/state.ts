@@ -122,6 +122,6 @@ export abstract class BlocState<T = any> {
   }
 }
 
-export const isBlocStateInstance = (state: any) => {
+export const isBlocStateInstance = (state: any): state is BlocState => {
   return state instanceof BlocState || Boolean(state.isBlocStateInstance);
 };

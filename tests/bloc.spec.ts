@@ -74,7 +74,8 @@ describe("bloc", () => {
         complete: () => {
           const [a, b] = ages;
 
-          //expect(a).toBe(0)
+          expect(a).toBe(0);
+          expect(b).toBe(1);
         },
       });
 

@@ -15,7 +15,7 @@ import {
 } from "rxjs";
 import { BlocBase } from "./base";
 import { BlocEvent } from "./event";
-import { BlocState } from "./state";
+import { BlocState, isBlocStateInstance } from "./state";
 import {
   BlocDataType,
   EmitUpdaterCallback,
@@ -174,9 +174,10 @@ export abstract class Bloc<
    * @returns new mapped selected state
    */
   public override select<K>(mapState: (state: BlocDataType<State>) => K): Observable<K> {
+    const blocState$ = this.state$.pipe();
     return this.state$.pipe(
+      filter((state) => state.payload.hasData),
       map((state) => state.payload.data),
-      filter(inputIsNotNullOrUndefined),
       map((data) => mapState(data)),
       distinctUntilChanged(),
       shareReplay({ refCount: true, bufferSize: 1 })
