@@ -17,7 +17,7 @@
     "url": "https://github.com/jacobtipp/bloc-state"
   },
   "scripts": {
-    "test": "jest --verbose --runInBand",
+    "test": "jest --verbose --runInBand --coverage",
     "build": "rimraf dist && bili",
     "prepublishOnly": "npm run test && npm run build",
     "prepare": "husky install"
