@@ -173,11 +173,14 @@ export abstract class Bloc<
    * @param mapState (state: State) => K
    * @returns new mapped selected state
    */
-  public override select<K>(mapState: (state: BlocDataType<State>) => K): Observable<K> {
-    const blocState$ = this.state$.pipe();
+  public override select<K>(
+    mapState: (state: BlocDataType<State>) => K,
+    stateFilter: (state: BlocDataType<State>) => boolean = () => true
+  ): Observable<K> {
     return this.state$.pipe(
       filter((state) => state.payload.hasData),
       map((state) => state.payload.data),
+      filter(stateFilter),
       map((data) => mapState(data)),
       distinctUntilChanged(),
       shareReplay({ refCount: true, bufferSize: 1 })

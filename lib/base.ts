@@ -5,6 +5,7 @@ import {
   distinctUntilChanged,
   shareReplay,
   map,
+  filter,
 } from "rxjs";
 import { EmitUpdaterCallback } from "./types";
 
@@ -98,8 +99,12 @@ export abstract class BlocBase<State = any> {
    * @param mapState (state: State) => K
    * @returns new mapped selected state
    */
-  public select<K>(mapState: (state: State) => K): Observable<K> {
+  public select<K>(
+    mapState: (state: State) => K,
+    stateFilter: (state: State) => boolean = () => true
+  ): Observable<K> {
     return this.state$.pipe(
+      filter(stateFilter),
       map((state) => mapState(state)),
       distinctUntilChanged(),
       shareReplay({ refCount: true, bufferSize: 1 })

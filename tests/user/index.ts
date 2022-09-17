@@ -31,6 +31,11 @@ export class UserBloc extends Bloc<UserEvent, UserState> {
 
   age$ = this.select((state) => state.age);
 
+  bob$ = this.select(
+    (state) => state.name, // map all names
+    (state) => state.name.first === "bob"
+  ); // filter all names with firstName "bob"
+
   constructor() {
     super(
       UserState.init({

@@ -67,6 +67,7 @@ describe("bloc", () => {
       const userBloc = new UserBloc();
 
       const names: { first: string; last: string }[] = [];
+      const bobs: { first: string; last: string }[] = [];
       const ages: number[] = [];
 
       userBloc.age$.subscribe({
@@ -94,6 +95,16 @@ describe("bloc", () => {
           expect(c.last).toBe("smith");
         },
       });
+
+      userBloc.bob$.subscribe({
+        next: (name) => bobs.push(name),
+        complete: () => {
+          const [a] = bobs;
+
+          expect(a.first).toBe("bob");
+        },
+      });
+
       userBloc.add(new UserNameChangedEvent({ first: "bob", last: "parker" }));
       userBloc.add(new UserAgeChangedEvent(1));
       userBloc.add(new UserNameChangedEvent({ first: "eric", last: "smith" })); // this should trigger a new state change in name$
