@@ -75,6 +75,7 @@ describe("bloc", () => {
         complete: () => {
           const [a, b] = ages;
 
+          expect(ages.length).toBe(2);
           expect(a).toBe(0);
           expect(b).toBe(1);
         },
@@ -85,6 +86,7 @@ describe("bloc", () => {
         complete: () => {
           const [a, b, c] = names;
 
+          expect(names.length).toBe(3);
           expect(a.first).toBe("");
           expect(a.last).toBe("");
 
@@ -101,7 +103,9 @@ describe("bloc", () => {
         complete: () => {
           const [a] = bobs;
 
+          expect(bobs.length).toBe(1);
           expect(a.first).toBe("bob");
+          expect(bobs.length).toBe(1);
         },
       });
 

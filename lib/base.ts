@@ -105,12 +105,12 @@ export abstract class BlocBase<State = any> {
    * @returns new mapped selected state
    */
   public select<K>(
-    mapState: (state: State) => K,
-    stateFilter: (state: State) => boolean = () => true
+    selectorMap: (state: State) => K,
+    selectorFilter: (state: K) => boolean = () => true
   ): Observable<K> {
     return this.state$.pipe(
-      filter(stateFilter),
-      map((state) => mapState(state)),
+      map((state) => selectorMap(state)),
+      filter(selectorFilter),
       distinctUntilChanged(),
       shareReplay({ refCount: true, bufferSize: 1 })
     );
