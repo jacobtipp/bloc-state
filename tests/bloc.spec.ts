@@ -56,7 +56,7 @@ describe("bloc", () => {
       const nameBloc = new NameBloc();
       const uppercaseBloc = new UpperCaseBloc();
 
-      uppercaseBloc.listen(nameBloc.state$, (state) => uppercaseBloc.toUpperCase(state));
+      uppercaseBloc.listen(nameBloc.state$, (state, bloc) => bloc.toUpperCase(state));
 
       uppercaseBloc.state$.subscribe((state) => expect(state).toBe("BOB"));
     });

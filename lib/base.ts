@@ -7,7 +7,7 @@ import {
   map,
   filter,
 } from "rxjs";
-import { EmitUpdaterCallback } from "./types";
+import { Emitter, EmitUpdaterCallback } from "./types";
 
 export abstract class BlocBase<State = any> {
   private blocListenerStreamSubscription: Subscription = Subscription.EMPTY;
@@ -20,10 +20,15 @@ export abstract class BlocBase<State = any> {
     this._stateSubscription = this._subscribeStateoState();
   }
 
-  listen<T = any>(stream: Observable<T>, listenHandler: (state: T) => void): void {
+  listen<T = any>(
+    stream: Observable<T>,
+    listenHandler: (state: T, bloc: typeof this) => void
+  ): void {
     if (!this.blocListenerIsActive) {
-      this.blocListenerStreamSubscription = stream.subscribe(listenHandler);
       this.blocListenerIsActive = true;
+      this.blocListenerStreamSubscription = stream.subscribe({
+        next: (state) => listenHandler(state, this),
+      });
     }
   }
 
@@ -118,5 +123,6 @@ export abstract class BlocBase<State = any> {
   private dispose(): void {
     this._stateSubject$.complete();
     this._stateSubscription.unsubscribe();
+    this.blocListenerStreamSubscription.unsubscribe();
   }
 }
