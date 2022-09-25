@@ -4,10 +4,6 @@ import { Bloc } from "./bloc";
 import { Cubit } from "./cubit";
 import { BlocState } from "./state";
 
-export type BlocStateType<T extends BlocBase<any>> = T extends BlocBase<infer U> ? U : never;
-
-export type BlocDataType<D extends BlocState<any>> = D extends BlocState<infer U> ? U : never;
-
 export type BlocStateInstanceType = InstanceType<typeof BlocState>;
 
 export type BlocInstanceType = InstanceType<typeof BlocBase>;
@@ -34,6 +30,26 @@ export interface ClassType<T = any> extends Function {
   new (...args: any[]): T;
 }
 
+export type BlocStateType<T extends BlocBase<any>> = T extends Cubit<infer U>
+  ? U
+  : T extends Bloc<any, infer D>
+  ? D
+  : never;
+
+export type BlocDataType<T> = T extends BlocState<infer U> ? U : T;
+
+export type SelectorStateType<B extends BlocBase<any>> = BlocDataType<BlocStateType<B>>;
+
+export type CubitSelectorConfig<State, P> = {
+  selector: (state: State) => P;
+  filter?: (state: P) => boolean;
+};
+
+export type BlocSelectorConfig<State extends BlocState<any>, P> = {
+  selector: (state: BlocDataType<State>) => P;
+  filter?: (state: P) => boolean;
+};
+
 export interface Initial {
   initial: true;
   hasError: false;
@@ -41,6 +57,7 @@ export interface Initial {
   error: undefined;
   hasData: false;
   data: undefined;
+  isReady: true;
 }
 
 export interface InitialWithData<T> {
@@ -50,6 +67,7 @@ export interface InitialWithData<T> {
   error: undefined;
   message: undefined;
   hasData: true;
+  isReady: true;
   data: T;
 }
 
@@ -59,6 +77,7 @@ export interface Ready {
   loading: false;
   error: undefined;
   hasData: false;
+  isReady: true;
   data: undefined;
 }
 
@@ -67,6 +86,7 @@ export interface ReadyWithData<T> {
   hasError: false;
   loading: false;
   error: undefined;
+  isReady: true;
   hasData: true;
   data: T;
 }
@@ -76,6 +96,7 @@ export interface Loading {
   hasError: false;
   loading: true;
   error: undefined;
+  isReady: false;
   hasData: false;
   data: undefined;
 }
@@ -85,6 +106,7 @@ export interface Failed {
   hasError: false;
   loading: false;
   error: undefined;
+  isReady: false;
   hasData: false;
   data: undefined;
 }
@@ -95,6 +117,7 @@ export interface FailedWithError<E extends Error> {
   loading: false;
   error: E;
   hasData: false;
+  isReady: false;
   data: undefined;
 }
 

@@ -6,8 +6,9 @@ import {
   shareReplay,
   map,
   filter,
+  EMPTY,
 } from "rxjs";
-import { Emitter, EmitUpdaterCallback } from "./types";
+import { CubitSelectorConfig, EmitUpdaterCallback } from "./types";
 
 export abstract class BlocBase<State = any> {
   private blocListenerStreamSubscription: Subscription = Subscription.EMPTY;
@@ -49,9 +50,7 @@ export abstract class BlocBase<State = any> {
   private readonly _stateSubscription: Subscription;
 
   private _subscribeStateoState(): Subscription {
-    return this.state$.subscribe({
-      error: (error) => this.onError(error),
-    });
+    return this.state$.subscribe();
   }
 
   private _buildStatePipeline(): Observable<State> {
@@ -72,23 +71,29 @@ export abstract class BlocBase<State = any> {
    * @returns void
    */
   public emit(newState: State | EmitUpdaterCallback<State>): void {
-    if (this._stateSubject$.closed) {
-      return;
-    }
+    if (!this._stateSubject$.closed) {
+      let stateToBeEmitted: State | undefined;
 
-    let stateToBeEmitted: State | undefined;
+      if (typeof newState === "function") {
+        try {
+          let callback = newState as EmitUpdaterCallback<State>;
+          stateToBeEmitted = callback(this.state);
+        } catch (error) {
+          this.onError(error);
+        }
+      } else {
+        stateToBeEmitted = newState;
+      }
 
-    if (typeof newState === "function") {
-      let callback = newState as EmitUpdaterCallback<State>;
-      stateToBeEmitted = callback(this.state);
-    } else {
-      stateToBeEmitted = newState;
-    }
-
-    if (stateToBeEmitted !== undefined && this._state !== stateToBeEmitted) {
-      this.onChange(this._state, stateToBeEmitted);
-      this._state = stateToBeEmitted;
-      this._stateSubject$.next(stateToBeEmitted);
+      if (stateToBeEmitted !== undefined && this._state !== stateToBeEmitted) {
+        try {
+          this.onChange(this._state, stateToBeEmitted);
+          this._state = stateToBeEmitted;
+          this._stateSubject$.next(stateToBeEmitted);
+        } catch (error) {
+          this.onError(error);
+        }
+      }
     }
   }
 
@@ -104,16 +109,16 @@ export abstract class BlocBase<State = any> {
    * @param mapState (state: State) => K
    * @returns new mapped selected state
    */
-  public select<K>(
-    selectorMap: (state: State) => K,
-    selectorFilter: (state: K) => boolean = () => true
-  ): Observable<K> {
-    return this.state$.pipe(
-      map((state) => selectorMap(state)),
-      filter(selectorFilter),
-      distinctUntilChanged(),
-      shareReplay({ refCount: true, bufferSize: 1 })
-    );
+  public select<K>(config: CubitSelectorConfig<State, K> | ((state: State) => K)): Observable<K> {
+    let stream$: Observable<K> = EMPTY;
+
+    if ("selector" in config) {
+      stream$ = this.state$.pipe(map(config.selector), filter(config.filter ?? (() => true)));
+    } else if (typeof config === "function") {
+      stream$ = this.state$.pipe(map(config));
+    }
+
+    return stream$.pipe(distinctUntilChanged(), shareReplay({ refCount: true, bufferSize: 1 }));
   }
 
   close() {

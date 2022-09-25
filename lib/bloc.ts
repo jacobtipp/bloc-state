@@ -22,6 +22,7 @@ import {
   EventHandler,
   EventToStateMapper,
   ClassType,
+  BlocSelectorConfig,
 } from "./types";
 
 export abstract class Bloc<
@@ -52,7 +53,7 @@ export abstract class Bloc<
    */
   protected on<T extends E>(event: ClassType<T>, eventHandler: EventHandler<T, State>) {
     if (this._eventsMap.has(event.name)) {
-      throw new Error(`Error: ${event} can only have one EventHandler`);
+      throw new Error(`${event.name} can only have one EventHandler`);
     }
 
     this._eventsMap.set(event.name, eventHandler.bind(this));
@@ -98,9 +99,9 @@ export abstract class Bloc<
       tap((event) => (this._event = event))
     );
 
-    const transformedStream = this.transformEvents(eventStream$, this._mapEventToState);
+    const transformStream$ = this.transformEvents(eventStream$, this._mapEventToState);
 
-    return transformedStream
+    return transformStream$
       .pipe(catchError((error: Error) => this._mapEventToStateError(error)))
       .subscribe();
   }
@@ -168,23 +169,52 @@ export abstract class Bloc<
     return EMPTY;
   }
 
+  public filterType<T extends State>(type: ClassType<T>): Observable<T> {
+    const typePredicate = (state: State): state is T => state instanceof type;
+    return this.state$.pipe(filter(typePredicate));
+  }
+
+  public filter<T extends State>(
+    stateFilter: (state: T) => boolean,
+    type?: ClassType<T>
+  ): Observable<T> {
+    if (type) {
+      const typePredicate = (state: State): state is T => state instanceof type;
+      return this.state$.pipe(filter(typePredicate), filter(stateFilter));
+    } else {
+      return this.state$.pipe(filter(stateFilter));
+    }
+  }
+
   /**
    *
    * @param mapState (state: State) => K
    * @returns new mapped selected state
    */
-  public override select<K>(
-    selectorMap: (state: BlocDataType<State>) => K,
-    selectorFilter: (state: K) => boolean = () => true
+  public override select<K, T extends State = State>(
+    config: BlocSelectorConfig<T, K> | ((state: BlocDataType<T>) => K),
+    type?: ClassType<T>
   ): Observable<K> {
-    return this.state$.pipe(
-      filter((state) => state.payload.hasData),
-      map((state) => state.payload.data),
-      map((data) => selectorMap(data)),
-      filter(selectorFilter),
-      distinctUntilChanged(),
-      shareReplay({ refCount: true, bufferSize: 1 })
-    );
+    let stream$: Observable<K> = EMPTY;
+    const typePredicate = type ? (state: T): state is T => state instanceof type : () => true;
+    if ("selector" in config) {
+      stream$ = this.state$.pipe(
+        filter((state) => state.payload.hasData), // only filter state that has data
+        filter(typePredicate),
+        map((state) => state.payload.data), // select only data
+        map(config.selector),
+        filter(config.filter ?? (() => true))
+      );
+    } else if (typeof config === "function") {
+      stream$ = this.state$.pipe(
+        filter((state) => state.payload.hasData), // only filter state that has data
+        filter(typePredicate),
+        map((state) => state.payload.data), // select only data
+        map(config)
+      );
+    }
+
+    return stream$.pipe(distinctUntilChanged(), shareReplay({ refCount: true, bufferSize: 1 }));
   }
 
   override close(): void {
@@ -195,8 +225,4 @@ export abstract class Bloc<
     this._eventsSubscription.unsubscribe();
     super.close();
   }
-}
-
-function inputIsNotNullOrUndefined<T>(input: null | undefined | T): input is T {
-  return input !== null && input !== undefined;
 }

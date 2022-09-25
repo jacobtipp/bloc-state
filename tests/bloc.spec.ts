@@ -1,6 +1,12 @@
 import { skip, take, tap } from "rxjs/operators";
 import { CounterBloc } from "./counter/counter.bloc";
-import { UserAgeChangedEvent, UserBloc, UserNameChangedEvent } from "./user";
+import {
+  RandomDerivedUserState,
+  TriggerRandomDerivedEvent,
+  UserAgeChangedEvent,
+  UserBloc,
+  UserNameChangedEvent,
+} from "./user";
 import { NameBloc, UpperCaseBloc } from "./name";
 import {
   CounterEvent,
@@ -8,6 +14,8 @@ import {
   DecrementCounterEvent,
 } from "./counter/counter.event";
 import { CounterState } from "./counter/counter.state";
+import { delay } from "./counter/delay";
+import { Bloc, BlocEvent, BlocState } from "../lib";
 
 describe("bloc", () => {
   let bloc: CounterBloc;
@@ -62,22 +70,33 @@ describe("bloc", () => {
     });
   });
 
-  describe("BlocBase.select", () => {
-    it("should return an observable with selectable state", () => {
+  describe("Bloc.select", () => {
+    it("should return an observable with selectable state", async () => {
       const userBloc = new UserBloc();
 
       const names: { first: string; last: string }[] = [];
-      const bobs: { first: string; last: string }[] = [];
+      const bobs: string[] = [];
+      const agesWithBlocState: number[] = [];
       const ages: number[] = [];
+      const random: RandomDerivedUserState[] = [];
+
+      userBloc.ageWithBlocState$.subscribe({
+        next: (age) => agesWithBlocState.push(age),
+        complete: () => {
+          const [a] = agesWithBlocState;
+
+          expect(a).toBe(1);
+        },
+      });
 
       userBloc.age$.subscribe({
-        next: (age) => ages.push(age),
+        next: (state) => ages.push(state),
         complete: () => {
           const [a, b] = ages;
 
-          expect(ages.length).toBe(2);
           expect(a).toBe(0);
           expect(b).toBe(1);
+          expect(ages.length).toBe(2);
         },
       });
 
@@ -104,15 +123,78 @@ describe("bloc", () => {
           const [a] = bobs;
 
           expect(bobs.length).toBe(1);
-          expect(a.first).toBe("bob");
+          expect(a).toBe("bob");
           expect(bobs.length).toBe(1);
         },
       });
 
+      userBloc.randomUserState$.subscribe({
+        next: (state) => random.push(state),
+        complete: () => {
+          const [a, b] = random;
+
+          expect(random.length).toBe(2);
+
+          expect(a).toBeInstanceOf(RandomDerivedUserState);
+          expect(a.payload.hasData).toBe(true);
+          expect(a.payload.data?.payload).toBe("test");
+
+          expect(b).toBeInstanceOf(RandomDerivedUserState);
+          expect(b.payload.hasData).toBe(false);
+        },
+      });
+
+      userBloc.add(new TriggerRandomDerivedEvent("test"));
       userBloc.add(new UserNameChangedEvent({ first: "bob", last: "parker" }));
       userBloc.add(new UserAgeChangedEvent(1));
+      userBloc.add(new TriggerRandomDerivedEvent());
       userBloc.add(new UserNameChangedEvent({ first: "eric", last: "smith" })); // this should trigger a new state change in name$
       userBloc.close();
+    });
+  });
+
+  describe("Bloc.on", () => {
+    it("should throw an error if attempting to subscribe to the same event more than once", () => {
+      class TestState extends BlocState {}
+      class TestEvent extends BlocEvent {}
+
+      class TestBloc extends Bloc<TestEvent, TestState> {
+        constructor() {
+          super(TestState.init());
+
+          this.on(TestEvent, (event, emit) => {});
+
+          this.on(TestEvent, (event, emit) => {});
+        }
+      }
+
+      expect(() => new TestBloc()).toThrowError("TestEvent can only have one EventHandler");
+    });
+  });
+
+  describe("Bloc.onError", () => {
+    it("should be invoked when an error is thrown from Bloc.onEvent", () => {
+      class TestState extends BlocState {}
+      class TestEvent extends BlocEvent {}
+
+      class TestBloc extends Bloc<TestEvent, TestState> {
+        constructor() {
+          super(TestState.init());
+          this.on(TestEvent, (event, emit) => {});
+        }
+
+        protected override onEvent(event: TestEvent): void {
+          throw new Error("onevent error");
+        }
+
+        protected override onError(error: Error): void {
+          expect(error.message).toBe("onevent error");
+        }
+      }
+
+      const bloc = new TestBloc();
+      bloc.add(new TestEvent());
+      bloc.close();
     });
   });
 });

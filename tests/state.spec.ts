@@ -4,7 +4,7 @@ describe("BlocState", () => {
   let state: CounterState;
 
   describe("BlocState.payload.initializing", () => {
-    it("should set state to maked", () => {
+    it("should set state to initial", () => {
       state = CounterState.init(0);
       expect(state).toBeInstanceOf(CounterState);
       expect(state.payload.initial).toBe(true);

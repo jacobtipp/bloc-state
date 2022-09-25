@@ -1,3 +1,5 @@
+import { concatMap, Observable } from "rxjs";
+import { EventToStateMapper } from "../../lib";
 import { Bloc } from "../../lib/bloc";
 import { BlocEvent } from "../../lib/event";
 import { BlocState } from "../../lib/state";
@@ -10,7 +12,13 @@ export interface User {
   age: number;
 }
 
-export class UserState extends BlocState<User> {}
+export abstract class UserState<T = any> extends BlocState<T> {}
+
+export class UserNameChangeState extends UserState<User> {}
+
+export class UserAgeChangedState extends UserState<User> {}
+
+export class RandomDerivedUserState extends UserState<{ payload: string }> {}
 
 export class UserEvent extends BlocEvent {}
 
@@ -26,19 +34,40 @@ export class UserAgeChangedEvent extends UserEvent {
   }
 }
 
-export class UserBloc extends Bloc<UserEvent, UserState> {
-  name$ = this.select((state) => state.name);
+export class TriggerRandomDerivedEvent extends UserEvent {
+  constructor(public payload?: string) {
+    super();
+  }
+}
 
-  age$ = this.select((state) => state.age);
+export class UserBloc extends Bloc<UserEvent, UserState> {
+  name$ = this.select((state) => state.name, UserNameChangeState);
+
+  ageWithBlocState$ = this.select((state) => state.age, UserAgeChangedState);
+
+  age$ = this.select({
+    selector: (state) => state.age as number,
+    filter: (state) => state != null,
+  });
+
+  randomUserState$ = this.filterType(RandomDerivedUserState);
+
+  ageGreaterThanZero$ = this.filter(
+    ({ payload }) => payload.hasData && payload.data.age > 0,
+    UserAgeChangedState
+  );
 
   bob$ = this.select(
-    (state) => state.name, // map all names
-    (state) => state.first === "bob" // filter all names with firstName "bob"
+    {
+      selector: (state) => state.name.first,
+      filter: (name) => name === "bob",
+    },
+    UserNameChangeState
   );
 
   constructor() {
     super(
-      UserState.init({
+      UserNameChangeState.init({
         name: {
           first: "",
           last: "",
@@ -47,22 +76,49 @@ export class UserBloc extends Bloc<UserEvent, UserState> {
       })
     );
 
+    this.on(TriggerRandomDerivedEvent, ({ payload }, emit) => {
+      if (payload != null) {
+        emit(RandomDerivedUserState.ready({ payload }));
+      } else {
+        emit(RandomDerivedUserState.ready());
+      }
+    });
+
     this.on(UserNameChangedEvent, (event, emit) => {
       emit((current) => {
-        if (current.payload.hasData) {
-          const data = current.payload.data;
-          return UserState.ready({ ...data, name: event.name });
-        }
+        const data = current.payload.data;
+        return UserNameChangeState.ready({ ...data, name: event.name });
       });
     });
 
     this.on(UserAgeChangedEvent, (event, emit) => {
       emit((current) => {
-        if (current.payload.hasData) {
-          const data = current.payload.data;
-          return UserState.ready({ ...data, age: data.age + 1 });
-        }
+        const data = current.payload.data;
+        return UserAgeChangedState.ready({ ...data, age: event.age });
       });
     });
+  }
+
+  protected override transformEvents(
+    events$: Observable<UserEvent>,
+    next: EventToStateMapper<UserEvent, UserState<any>>
+  ): Observable<UserState<any>> {
+    return events$.pipe(concatMap(next));
+  }
+
+  protected override onError(error: Error): void {
+    //console.log(error)
+  }
+
+  protected override onEvent(event: UserEvent): void {
+    //console.log(event)
+  }
+
+  protected override onTransition(
+    current: UserState<any>,
+    next: UserState<any>,
+    event: UserEvent
+  ): void {
+    //console.log(current, next, event);
   }
 }

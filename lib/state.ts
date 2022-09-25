@@ -9,6 +9,7 @@ import {
   Loading,
   Failed,
   FailedWithError,
+  ClassType,
 } from "./types";
 
 export abstract class BlocState<T = any> {
@@ -33,6 +34,7 @@ export abstract class BlocState<T = any> {
         error: undefined,
         hasData: false,
         loading: false,
+        isReady: true,
         data: undefined,
       });
     } else {
@@ -42,6 +44,7 @@ export abstract class BlocState<T = any> {
         error: undefined,
         message: undefined,
         hasData: true,
+        isReady: true,
         loading: false,
         data,
       });
@@ -63,6 +66,7 @@ export abstract class BlocState<T = any> {
         hasError: false,
         error: undefined,
         hasData: false,
+        isReady: true,
         loading: false,
         data: undefined,
       });
@@ -72,6 +76,7 @@ export abstract class BlocState<T = any> {
         hasError: false,
         error: undefined,
         hasData: true,
+        isReady: true,
         loading: false,
         data,
       });
@@ -87,6 +92,7 @@ export abstract class BlocState<T = any> {
       error: undefined,
       hasData: false,
       loading: true,
+      isReady: false,
       data: undefined,
     });
   }
@@ -106,6 +112,7 @@ export abstract class BlocState<T = any> {
         hasError: true,
         error: error,
         hasData: false,
+        isReady: false,
         loading: false,
         data: undefined,
       });
@@ -114,6 +121,7 @@ export abstract class BlocState<T = any> {
         initial: false,
         hasError: false,
         error: undefined,
+        isReady: false,
         hasData: false,
         loading: false,
         data: undefined,
