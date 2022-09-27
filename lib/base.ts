@@ -122,10 +122,6 @@ export abstract class BlocBase<State = any> {
   }
 
   close() {
-    this.dispose();
-  }
-
-  private dispose(): void {
     this._stateSubject$.complete();
     this._stateSubscription.unsubscribe();
     this.blocListenerStreamSubscription.unsubscribe();
