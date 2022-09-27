@@ -13,6 +13,7 @@ describe("BlocState", () => {
       expect(state.payload.loading).toBe(false);
       expect(state.payload.hasError).toBe(false);
       expect(state.payload.error).toBeUndefined();
+      expect(state.payload.isFailure).toBe(false);
     });
   });
 
@@ -25,6 +26,7 @@ describe("BlocState", () => {
       expect(state.payload.loading).toBe(true);
       expect(state.payload.hasError).toBe(false);
       expect(state.payload.error).toBeUndefined();
+      expect(state.payload.isFailure).toBe(false);
     });
   });
 
@@ -37,6 +39,7 @@ describe("BlocState", () => {
       expect(state.payload.hasError).toBe(false);
       expect(state.payload.error).toBeUndefined();
       expect(state.payload.hasData).toBe(false);
+      expect(state.payload.isFailure).toBe(false);
     });
 
     it("should set state to ready with data", () => {
@@ -47,11 +50,12 @@ describe("BlocState", () => {
       expect(state.payload.hasError).toBe(false);
       expect(state.payload.error).toBeUndefined();
       expect(state.payload.hasData).toBe(true);
+      expect(state.payload.isFailure).toBe(false);
     });
   });
 
   describe("BlocState.failed", () => {
-    it("should set state to failed", () => {
+    it("should set state to failed with error", () => {
       const error = new Error("Invalid constructor arguments for Bloc State.");
       state = CounterState.failed(error);
       expect(state.payload.initial).toBe(false);
@@ -60,6 +64,18 @@ describe("BlocState", () => {
       expect(state.payload.hasError).toBe(true);
       expect(state.payload.hasData).toBe(false);
       expect(state.payload.error?.message).toBe("Invalid constructor arguments for Bloc State.");
+      expect(state.payload.isFailure).toBe(true);
+    });
+
+    it("should set state to failed without error", () => {
+      state = CounterState.failed();
+      expect(state.payload.initial).toBe(false);
+      expect(state.payload.data).toBeUndefined();
+      expect(state.payload.loading).toBe(false);
+      expect(state.payload.hasError).toBe(false);
+      expect(state.payload.hasData).toBe(false);
+      expect(state.payload.error).toBeUndefined();
+      expect(state.payload.isFailure).toBe(true);
     });
   });
 });

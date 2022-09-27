@@ -36,6 +36,7 @@ export abstract class BlocState<T = any> {
         loading: false,
         isReady: true,
         data: undefined,
+        isFailure: false,
       });
     } else {
       return new this({
@@ -47,6 +48,7 @@ export abstract class BlocState<T = any> {
         isReady: true,
         loading: false,
         data,
+        isFailure: false,
       });
     }
   }
@@ -69,6 +71,7 @@ export abstract class BlocState<T = any> {
         isReady: true,
         loading: false,
         data: undefined,
+        isFailure: false,
       });
     } else {
       return new this({
@@ -79,6 +82,7 @@ export abstract class BlocState<T = any> {
         isReady: true,
         loading: false,
         data,
+        isFailure: false,
       });
     }
   }
@@ -94,6 +98,7 @@ export abstract class BlocState<T = any> {
       loading: true,
       isReady: false,
       data: undefined,
+      isFailure: false,
     });
   }
 
@@ -115,6 +120,7 @@ export abstract class BlocState<T = any> {
         isReady: false,
         loading: false,
         data: undefined,
+        isFailure: true,
       });
     } else {
       return new this({
@@ -125,6 +131,7 @@ export abstract class BlocState<T = any> {
         hasData: false,
         loading: false,
         data: undefined,
+        isFailure: true,
       });
     }
   }

@@ -85,6 +85,7 @@ export interface Initial {
   error: undefined;
   hasData: false;
   data: undefined;
+  isFailure: false;
   isReady: true;
 }
 
@@ -97,6 +98,7 @@ export interface InitialWithData<T> {
   hasData: true;
   isReady: true;
   data: T;
+  isFailure: false;
 }
 
 export interface Ready {
@@ -107,6 +109,7 @@ export interface Ready {
   hasData: false;
   isReady: true;
   data: undefined;
+  isFailure: false;
 }
 
 export interface ReadyWithData<T> {
@@ -117,6 +120,7 @@ export interface ReadyWithData<T> {
   isReady: true;
   hasData: true;
   data: T;
+  isFailure: false;
 }
 
 export interface Loading {
@@ -127,6 +131,7 @@ export interface Loading {
   isReady: false;
   hasData: false;
   data: undefined;
+  isFailure: false;
 }
 
 export interface Failed {
@@ -137,6 +142,7 @@ export interface Failed {
   isReady: false;
   hasData: false;
   data: undefined;
+  isFailure: true;
 }
 
 export interface FailedWithError<E extends Error> {
@@ -147,6 +153,7 @@ export interface FailedWithError<E extends Error> {
   hasData: false;
   isReady: false;
   data: undefined;
+  isFailure: true;
 }
 
 export type StatePayload<T, E extends Error = Error> =
