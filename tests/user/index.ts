@@ -99,13 +99,6 @@ export class UserBloc extends Bloc<UserEvent, UserState> {
     });
   }
 
-  protected override transformEvents(
-    events$: Observable<UserEvent>,
-    next: EventToStateMapper<UserEvent, UserState<any>>
-  ): Observable<UserState<any>> {
-    return events$.pipe(concatMap(next));
-  }
-
   protected override onError(error: Error): void {
     //console.log(error)
   }

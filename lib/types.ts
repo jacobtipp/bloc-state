@@ -2,6 +2,7 @@ import { Observable } from "rxjs";
 import { BlocBase } from "./base";
 import { Bloc } from "./bloc";
 import { Cubit } from "./cubit";
+import { BlocEvent } from "./event";
 import { BlocState } from "./state";
 
 export type BlocStateInstanceType = InstanceType<typeof BlocState>;
@@ -14,13 +15,33 @@ export type BlocType<T extends BlocBase<any>> = T extends Bloc<infer E, infer S>
   ? Cubit<S>
   : never;
 
+export interface BlocEmitter<State> {
+  onEach<T>(
+    stream$: Observable<T>,
+    onData: (data: T) => void,
+    onError?: (error: Error) => void
+  ): Promise<void>;
+
+  forEach<T>(
+    stream$: Observable<T>,
+    onData: (data: T) => State,
+    onError?: (error: Error) => State
+  ): Promise<void>;
+}
+
 export type StreamType<T extends Observable<any>> = T extends Observable<infer U> ? U : never;
 
 export type EmitUpdaterCallback<T> = (state: T) => T | undefined;
 
-export type Emitter<S> = (state: S | EmitUpdaterCallback<S>) => void;
+export interface Emitter<S extends BlocState> extends BlocEmitter<S> {
+  (state: S | EmitUpdaterCallback<S>): void;
+  close: () => void;
+}
 
-export type EventHandler<E, S> = (event: E, emitter: Emitter<S>) => void | Promise<void>;
+export type EventHandler<E extends BlocEvent, S extends BlocState> = (
+  event: E,
+  emitter: Emitter<S>
+) => void | Promise<void>;
 
 export type EventToStateMapper<E, S> = (event: E) => Observable<S>;
 
@@ -49,6 +70,13 @@ export type BlocSelectorConfig<State extends BlocState<any>, P> = {
   selector: (state: BlocDataType<State>) => P;
   filter?: (state: P) => boolean;
 };
+
+export type EventMapper<Event extends BlocEvent> = (event: Event) => Observable<void>;
+
+export type EventTransformer<Event extends BlocEvent> = (
+  events$: Observable<Event>,
+  mapper: EventMapper<Event>
+) => Observable<Event>;
 
 export interface Initial {
   initial: true;
