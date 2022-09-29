@@ -19,6 +19,7 @@ import {
 import { BlocBase } from "./base";
 import { BlocEvent } from "./event";
 import { BlocState, isBlocStateInstance } from "./state";
+import { concurrent } from "./transformer";
 import {
   BlocDataType,
   EmitUpdaterCallback,
@@ -36,7 +37,6 @@ export abstract class Bloc<
 > extends BlocBase<State> {
   constructor(_state: State) {
     super(_state);
-    this.emit = this.emit.bind(this);
   }
 
   private readonly _eventSubject$ = new Subject<E>();
@@ -49,9 +49,7 @@ export abstract class Bloc<
 
   public readonly events$ = this._eventSubject$.asObservable().pipe(share());
 
-  static transformer: EventTransformer<any> = (events$, mapper) => {
-    return events$.pipe(mergeMap(mapper));
-  };
+  static transformer: EventTransformer<any> = concurrent();
 
   /**
    *
