@@ -16,6 +16,7 @@ import {
 import { CounterState } from "./counter/counter.state";
 import { delay } from "./counter/delay";
 import { Bloc, BlocEvent, BlocState } from "../lib";
+import { interval, Observable } from "rxjs";
 
 describe("bloc", () => {
   let bloc: CounterBloc;
@@ -59,26 +60,15 @@ describe("bloc", () => {
     bloc.add(new DecrementCounterEvent());
   });
 
-  describe("BlocBase.listen", () => {
-    it("should listen to an array of blocs", () => {
-      const nameBloc = new NameBloc();
-      const uppercaseBloc = new UpperCaseBloc();
+  describe("Bloc.select & Bloc.filter", () => {
+    let userBloc: UserBloc;
 
-      uppercaseBloc.listen(nameBloc.state$, (state, bloc) => bloc.toUpperCase(state));
-
-      uppercaseBloc.state$.subscribe((state) => expect(state).toBe("BOB"));
+    beforeEach(() => {
+      userBloc = new UserBloc();
     });
-  });
 
-  describe("Bloc.select", () => {
-    it("should return an observable with selectable state", async () => {
-      const userBloc = new UserBloc();
-
-      const names: { first: string; last: string }[] = [];
-      const bobs: string[] = [];
+    it("should select age with bloc state", (done) => {
       const agesWithBlocState: number[] = [];
-      const ages: number[] = [];
-      const random: RandomDerivedUserState[] = [];
 
       userBloc.ageWithBlocState$.subscribe({
         next: (age) => agesWithBlocState.push(age),
@@ -86,8 +76,20 @@ describe("bloc", () => {
           const [a] = agesWithBlocState;
 
           expect(a).toBe(1);
+          done();
         },
       });
+
+      userBloc.add(new TriggerRandomDerivedEvent("test"));
+      userBloc.add(new UserNameChangedEvent({ first: "bob", last: "parker" }));
+      userBloc.add(new UserAgeChangedEvent(1));
+      userBloc.add(new TriggerRandomDerivedEvent());
+      userBloc.add(new UserNameChangedEvent({ first: "eric", last: "smith" }));
+      userBloc.close();
+    });
+
+    it("should select age without bloc state", (done) => {
+      const ages: number[] = [];
 
       userBloc.age$.subscribe({
         next: (state) => ages.push(state),
@@ -97,9 +99,68 @@ describe("bloc", () => {
           expect(a).toBe(0);
           expect(b).toBe(1);
           expect(ages.length).toBe(2);
+          done();
         },
       });
 
+      userBloc.add(new TriggerRandomDerivedEvent("test"));
+      userBloc.add(new UserNameChangedEvent({ first: "bob", last: "parker" }));
+      userBloc.add(new UserAgeChangedEvent(1));
+      userBloc.add(new TriggerRandomDerivedEvent());
+      userBloc.add(new UserNameChangedEvent({ first: "eric", last: "smith" }));
+      userBloc.close();
+    });
+
+    it("should filter by age > 0", (done) => {
+      const ages: number[] = [];
+
+      userBloc.ageGreaterThanZero$.subscribe({
+        next: (state) => ages.push(state.payload.data.age),
+        complete: () => {
+          const [a] = ages;
+
+          expect(a).toBe(1);
+          expect(ages.length).toBe(1);
+          done();
+        },
+      });
+
+      userBloc.add(new TriggerRandomDerivedEvent("test"));
+      userBloc.add(new UserNameChangedEvent({ first: "bob", last: "parker" }));
+      userBloc.add(new UserAgeChangedEvent(1));
+      userBloc.add(new TriggerRandomDerivedEvent());
+      userBloc.add(new UserNameChangedEvent({ first: "eric", last: "smith" }));
+      userBloc.close();
+    });
+
+    it("should filter by age > 0 with type", (done) => {
+      const ages: number[] = [];
+
+      userBloc.ageGreaterThanZeroWithType$.subscribe({
+        next: (state) => {
+          if (state.payload.hasData) {
+            ages.push(state.payload.data.age);
+          }
+        },
+        complete: () => {
+          const [a] = ages;
+
+          expect(a).toBe(1);
+          expect(ages.length).toBe(1);
+          done();
+        },
+      });
+
+      userBloc.add(new TriggerRandomDerivedEvent("test"));
+      userBloc.add(new UserNameChangedEvent({ first: "bob", last: "parker" }));
+      userBloc.add(new UserAgeChangedEvent(1));
+      userBloc.add(new TriggerRandomDerivedEvent());
+      userBloc.add(new UserNameChangedEvent({ first: "eric", last: "smith" }));
+      userBloc.close();
+    });
+
+    it("should select name", (done) => {
+      const names: { first: string; last: string }[] = [];
       userBloc.name$.subscribe({
         next: (name) => names.push(name),
         complete: () => {
@@ -114,9 +175,43 @@ describe("bloc", () => {
 
           expect(c.first).toBe("eric");
           expect(c.last).toBe("smith");
+          done();
         },
       });
 
+      userBloc.add(new TriggerRandomDerivedEvent("test"));
+      userBloc.add(new UserNameChangedEvent({ first: "bob", last: "parker" }));
+      userBloc.add(new UserAgeChangedEvent(1));
+      userBloc.add(new TriggerRandomDerivedEvent());
+      userBloc.add(new UserNameChangedEvent({ first: "eric", last: "smith" }));
+      userBloc.close();
+    });
+
+    it("should select first names", (done) => {
+      const first: string[] = [];
+      userBloc.firstName$.subscribe({
+        next: (name) => first.push(name),
+        complete: () => {
+          const [a, b, c] = first;
+
+          expect(first.length).toBe(3);
+          expect(a).toBe("");
+          expect(b).toBe("bob");
+          expect(c).toBe("eric");
+          done();
+        },
+      });
+
+      userBloc.add(new TriggerRandomDerivedEvent("test"));
+      userBloc.add(new UserNameChangedEvent({ first: "bob", last: "parker" }));
+      userBloc.add(new UserAgeChangedEvent(1));
+      userBloc.add(new TriggerRandomDerivedEvent());
+      userBloc.add(new UserNameChangedEvent({ first: "eric", last: "smith" }));
+      userBloc.close();
+    });
+
+    it("should select names filtered by 'bob'", (done) => {
+      const bobs: string[] = [];
       userBloc.bob$.subscribe({
         next: (name) => bobs.push(name),
         complete: () => {
@@ -125,8 +220,20 @@ describe("bloc", () => {
           expect(bobs.length).toBe(1);
           expect(a).toBe("bob");
           expect(bobs.length).toBe(1);
+          done();
         },
       });
+
+      userBloc.add(new TriggerRandomDerivedEvent("test"));
+      userBloc.add(new UserNameChangedEvent({ first: "bob", last: "parker" }));
+      userBloc.add(new UserAgeChangedEvent(1));
+      userBloc.add(new TriggerRandomDerivedEvent());
+      userBloc.add(new UserNameChangedEvent({ first: "eric", last: "smith" }));
+      userBloc.close();
+    });
+
+    it("should select random user", (done) => {
+      const random: RandomDerivedUserState[] = [];
 
       userBloc.randomUserState$.subscribe({
         next: (state) => random.push(state),
@@ -141,6 +248,7 @@ describe("bloc", () => {
 
           expect(b).toBeInstanceOf(RandomDerivedUserState);
           expect(b.payload.hasData).toBe(false);
+          done();
         },
       });
 
@@ -173,7 +281,7 @@ describe("bloc", () => {
   });
 
   describe("Bloc.onError", () => {
-    it("should be invoked when an error is thrown from Bloc.onEvent", () => {
+    it("should be invoked when an error is thrown from Bloc.onEvent", (done) => {
       class TestState extends BlocState {}
       class TestEvent extends BlocEvent {}
 
@@ -192,9 +300,33 @@ describe("bloc", () => {
         }
       }
 
-      const bloc = new TestBloc();
-      bloc.add(new TestEvent());
-      bloc.close();
+      const testBloc = new TestBloc();
+      testBloc.state$.subscribe({ complete: () => done() });
+      testBloc.add(new TestEvent());
+      testBloc.close();
+    });
+
+    it("should be invoked when an error is thrown inside an event callback", (done) => {
+      class TestState extends BlocState {}
+      class TestEvent extends BlocEvent {}
+
+      class TestBloc extends Bloc<TestEvent, TestState> {
+        constructor() {
+          super(TestState.init());
+          this.on(TestEvent, (event, emit) => {
+            throw new Error("eventcallback error");
+          });
+        }
+
+        protected override onError(error: Error): void {
+          expect(error.message).toBe("eventcallback error");
+        }
+      }
+
+      const testBloc = new TestBloc();
+      testBloc.state$.subscribe({ complete: () => done() });
+      testBloc.add(new TestEvent());
+      testBloc.close();
     });
   });
 });

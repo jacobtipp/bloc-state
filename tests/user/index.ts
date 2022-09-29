@@ -52,7 +52,9 @@ export class UserBloc extends Bloc<UserEvent, UserState> {
 
   randomUserState$ = this.filterType(RandomDerivedUserState);
 
-  ageGreaterThanZero$ = this.filter(
+  ageGreaterThanZero$ = this.filter(({ payload }) => payload.hasData && payload.data.age > 0);
+
+  ageGreaterThanZeroWithType$ = this.filter(
     ({ payload }) => payload.hasData && payload.data.age > 0,
     UserAgeChangedState
   );
@@ -61,6 +63,13 @@ export class UserBloc extends Bloc<UserEvent, UserState> {
     {
       selector: (state) => state.name.first,
       filter: (name) => name === "bob",
+    },
+    UserNameChangeState
+  );
+
+  firstName$ = this.select(
+    {
+      selector: (state) => state.name.first,
     },
     UserNameChangeState
   );

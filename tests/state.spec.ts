@@ -1,3 +1,4 @@
+import { isBlocStateInstance } from "../lib";
 import { CounterState } from "./counter/counter.state";
 
 describe("BlocState", () => {
@@ -76,6 +77,16 @@ describe("BlocState", () => {
       expect(state.payload.hasData).toBe(false);
       expect(state.payload.error).toBeUndefined();
       expect(state.payload.isFailure).toBe(true);
+    });
+  });
+
+  describe("isBlocStateInstance function", () => {
+    it("should return true only if an object is an instance of BlocState", () => {
+      state = CounterState.init();
+      class Test {}
+      const test = new Test();
+      expect(isBlocStateInstance(state)).toBe(true);
+      expect(isBlocStateInstance(test)).toBe(false);
     });
   });
 });

@@ -95,8 +95,8 @@ export abstract class Bloc<
         }
       };
 
-      emitter.onEach = (stream$, onData, onError) =>
-        new Promise((resolve) => {
+      emitter.onEach = (stream$, onData, onError) => {
+        return new Promise((resolve) => {
           const subscription = stream$.subscribe({
             next: onData,
             error: (error) => {
@@ -106,19 +106,24 @@ export abstract class Bloc<
               resolve();
             },
             complete: () => {
-              dispsables.find((sub) => (sub = subscription))?.unsubscribe();
               resolve();
             },
           });
 
           dispsables.push(subscription);
         });
+      };
 
       emitter.forEach = (stream$, onData, onError) => {
-        return emitter.onEach(stream$, (data) => emitter(onData(data)), onError);
+        return emitter.onEach(
+          stream$,
+          (data) => emitter(onData(data)),
+          onError ? (error: any) => emitter(onError(error)) : undefined
+        );
       };
 
       emitter.close = () => {
+        isClosed = true;
         stateToBeEmittedStream$.complete();
         for (const sub of dispsables) {
           sub.unsubscribe();
@@ -148,7 +153,7 @@ export abstract class Bloc<
     };
 
     const transformStream$ = transformer(
-      this.events$.pipe(filter((newEvent): newEvent is T => newEvent instanceof event)),
+      this._eventSubject$.pipe(filter((newEvent): newEvent is T => newEvent instanceof event)),
       mapEventToState
     );
 
@@ -222,12 +227,13 @@ export abstract class Bloc<
     let stream$: Observable<K> = EMPTY;
     const typePredicate = type ? (state: T): state is T => state instanceof type : () => true;
     if ("selector" in config) {
+      const dataFilter = config.filter ?? (() => true);
       stream$ = this.state$.pipe(
         filter((state) => state.payload.hasData), // only filter state that has data
         filter(typePredicate),
         map((state) => state.payload.data), // select only data
         map(config.selector),
-        filter(config.filter ?? (() => true))
+        filter(dataFilter)
       );
     } else if (typeof config === "function") {
       stream$ = this.state$.pipe(
@@ -242,14 +248,14 @@ export abstract class Bloc<
   }
 
   override close(): void {
-    super.close();
+    for (const emitter of this.emitters) {
+      emitter.close();
+    }
 
     for (const sub of this._subscriptions) {
       sub.unsubscribe();
     }
 
-    for (const emitter of this.emitters) {
-      emitter.close();
-    }
+    super.close();
   }
 }

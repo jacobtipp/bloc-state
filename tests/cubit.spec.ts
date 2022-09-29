@@ -119,7 +119,7 @@ describe("Cubit", () => {
     });
   });
 
-  it("should not emit values if the bloc is closed", () => {
+  it("should not emit values if the bloc is closed", (done) => {
     const states: number[] = [];
     cubit.state$.subscribe({
       next: (state) => states.push(state),
@@ -139,6 +139,7 @@ describe("Cubit", () => {
     expect(a).toBe(0);
     expect(b).toBe(2);
     expect(c).toBe(3);
+    done();
   });
 
   describe("Cubit.select", () => {
@@ -174,9 +175,8 @@ describe("Cubit", () => {
       bloc = new CarBloc({ brand: "ford", year: 2021 });
     });
 
-    it("should select mapped state", () => {
+    it("should map cars mapped state", (done) => {
       const brands: string[] = [];
-      const years: number[] = [];
 
       bloc.brand$.subscribe({
         next: (brand) => brands.push(brand),
@@ -187,17 +187,7 @@ describe("Cubit", () => {
           expect(b).toBe("toyota");
           expect(c).toBe("mercedes");
           expect(d).toBe("bmw");
-        },
-      });
-
-      bloc.year$.subscribe({
-        next: (year) => years.push(year),
-        complete: () => {
-          const [a, b] = years;
-
-          expect(years.length).toBe(2);
-          expect(a).toBe(2021);
-          expect(b).toBe(2022);
+          done();
         },
       });
 
@@ -208,7 +198,29 @@ describe("Cubit", () => {
       bloc.close();
     });
 
-    it("should filter selected mapped state", () => {
+    it("should map years to selected state", (done) => {
+      const years: number[] = [];
+
+      bloc.year$.subscribe({
+        next: (year) => years.push(year),
+        complete: () => {
+          const [a, b] = years;
+
+          expect(years.length).toBe(2);
+          expect(a).toBe(2021);
+          expect(b).toBe(2022);
+          done();
+        },
+      });
+
+      bloc.updateCar({ brand: "toyota" });
+      bloc.updateCar({ brand: "mercedes" });
+      bloc.updateCar({ brand: "bmw" });
+      bloc.updateCar({ year: 2022 });
+      bloc.close();
+    });
+
+    it("should filter selected mapped state", (done) => {
       const brands: string[] = [];
       bloc.brandsFiltered$.subscribe({
         next: (brand) => brands.push(brand),
@@ -218,6 +230,7 @@ describe("Cubit", () => {
           expect(brands.length).toBe(2);
           expect(a).toBe("ford");
           expect(b).toBe("bmw");
+          done();
         },
       });
 

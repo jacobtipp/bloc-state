@@ -21,18 +21,6 @@ export abstract class BlocBase<State = any> {
     this._stateSubscription = this._subscribeStateoState();
   }
 
-  listen<T = any>(
-    stream: Observable<T>,
-    listenHandler: (state: T, bloc: typeof this) => void
-  ): void {
-    if (!this.blocListenerIsActive) {
-      this.blocListenerIsActive = true;
-      this.blocListenerStreamSubscription = stream.subscribe({
-        next: (state) => listenHandler(state, this),
-      });
-    }
-  }
-
   /**
    * @returns the last emitted state in a cubit
    */
