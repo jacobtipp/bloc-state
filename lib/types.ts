@@ -76,7 +76,7 @@ export type EventMapper<Event extends BlocEvent> = (event: Event) => Observable<
 export type EventTransformer<Event extends BlocEvent> = (
   events$: Observable<Event>,
   mapper: EventMapper<Event>
-) => Observable<Event>;
+) => Observable<void>;
 
 export interface Initial {
   initial: true;
