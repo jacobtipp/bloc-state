@@ -1,8 +1,7 @@
-import { concatMap, Observable } from "rxjs";
-import { EventToStateMapper } from "../../lib";
-import { Bloc } from "../../lib/bloc";
-import { BlocEvent } from "../../lib/event";
-import { BlocState } from "../../lib/state";
+import { Transition } from "../../../lib";
+import { Bloc } from "../../../lib/bloc";
+import { BlocEvent } from "../../../lib/event";
+import { BlocState } from "../../../lib/state";
 
 export interface User {
   name: {
@@ -116,11 +115,5 @@ export class UserBloc extends Bloc<UserEvent, UserState> {
     //console.log(event)
   }
 
-  protected override onTransition(
-    current: UserState<any>,
-    next: UserState<any>,
-    event: UserEvent
-  ): void {
-    //console.log(current, next, event);
-  }
+  protected override onTransition(transition: Transition<UserEvent, UserState<any>>): void {}
 }

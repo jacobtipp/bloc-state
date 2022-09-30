@@ -1,4 +1,4 @@
-import { Cubit } from "../../lib";
+import { Cubit } from "../../../lib";
 
 export class NameBloc extends Cubit<string> {
   constructor() {

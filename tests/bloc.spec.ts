@@ -1,20 +1,20 @@
 import { skip, take, tap } from "rxjs/operators";
-import { CounterBloc } from "./counter/counter.bloc";
+import { CounterBloc } from "./helpers/counter/counter.bloc";
 import {
   RandomDerivedUserState,
   TriggerRandomDerivedEvent,
   UserAgeChangedEvent,
   UserBloc,
   UserNameChangedEvent,
-} from "./user";
-import { NameBloc, UpperCaseBloc } from "./name";
+} from "./helpers/user";
+import { NameBloc, UpperCaseBloc } from "./helpers/name";
 import {
   CounterEvent,
   IncrementCounterEvent,
   DecrementCounterEvent,
-} from "./counter/counter.event";
-import { CounterState } from "./counter/counter.state";
-import { delay } from "./counter/delay";
+} from "./helpers/counter/counter.event";
+import { CounterState } from "./helpers/counter/counter.state";
+import { delay } from "./helpers/counter/delay";
 import { Bloc, BlocEvent, BlocState } from "../lib";
 import { interval, Observable } from "rxjs";
 

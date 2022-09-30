@@ -1,6 +1,6 @@
 import { Observable, interval, take } from "rxjs";
 import { BlocState, BlocEvent, Bloc } from "../lib";
-import { delay } from "./counter/delay";
+import { delay } from "./helpers/counter/delay";
 
 describe("emitter", () => {
   abstract class IntervalEvent extends BlocEvent {}

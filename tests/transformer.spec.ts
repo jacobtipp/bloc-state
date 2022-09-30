@@ -1,7 +1,7 @@
 import { Observable, interval, take } from "rxjs";
 import { BlocState, BlocEvent, Bloc } from "../lib";
 import { restartable, sequential } from "../lib/transformer";
-import { delay } from "./counter/delay";
+import { delay } from "./helpers/counter/delay";
 
 describe("transformers", () => {
   abstract class EventTransformerEvent extends BlocEvent {}

@@ -1,5 +1,5 @@
 import { isBlocStateInstance } from "../lib";
-import { CounterState } from "./counter/counter.state";
+import { CounterState } from "./helpers/counter/counter.state";
 
 describe("BlocState", () => {
   let state: CounterState;
