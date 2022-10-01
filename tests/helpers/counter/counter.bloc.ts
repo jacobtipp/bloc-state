@@ -1,4 +1,4 @@
-import { Bloc } from "../../../lib";
+import { Bloc, Transition } from "../../../lib";
 
 import { CounterEvent, DecrementCounterEvent, IncrementCounterEvent } from "./counter.event";
 import { CounterState } from "./counter.state";

@@ -106,14 +106,4 @@ export class UserBloc extends Bloc<UserEvent, UserState> {
       });
     });
   }
-
-  protected override onError(error: Error): void {
-    //console.log(error)
-  }
-
-  protected override onEvent(event: UserEvent): void {
-    //console.log(event)
-  }
-
-  protected override onTransition(transition: Transition<UserEvent, UserState<any>>): void {}
 }

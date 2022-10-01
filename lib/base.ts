@@ -8,6 +8,8 @@ import {
   filter,
   EMPTY,
 } from "rxjs";
+import { Bloc } from ".";
+import { Change } from "./change";
 import { CubitSelectorConfig, EmitUpdaterCallback } from "./types";
 
 export abstract class BlocBase<State = any> {
@@ -51,7 +53,9 @@ export abstract class BlocBase<State = any> {
    * @override
    * @param error
    */
-  protected onError(error: Error): void {}
+  protected onError(error: Error): void {
+    Bloc.observer.onError(this, error);
+  }
 
   /**
    *
@@ -75,7 +79,7 @@ export abstract class BlocBase<State = any> {
 
       if (stateToBeEmitted !== undefined && this._state !== stateToBeEmitted) {
         try {
-          this.onChange(this._state, stateToBeEmitted);
+          this.onChange(new Change(this.state, stateToBeEmitted));
           this._state = stateToBeEmitted;
           this._stateSubject$.next(stateToBeEmitted);
         } catch (error) {
@@ -90,7 +94,9 @@ export abstract class BlocBase<State = any> {
    * @param current State
    * @param next State
    */
-  protected onChange(current: State, next: State): void {}
+  protected onChange(change: Change<State>): void {
+    Bloc.observer.onChange(this, change);
+  }
 
   /**
    *

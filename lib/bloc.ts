@@ -17,14 +17,15 @@ import {
   of,
 } from "rxjs";
 import { BlocBase } from "./base";
+import { BlocObserver } from "./bloc-observer";
 import { BlocEvent } from "./event";
 import { BlocState, isBlocStateInstance } from "./state";
 import { concurrent } from "./transformer";
+import { Transition } from "./transition";
 import {
   BlocDataType,
   EmitUpdaterCallback,
   EventHandler,
-  EventToStateMapper,
   ClassType,
   BlocSelectorConfig,
   EventTransformer,
@@ -32,14 +33,14 @@ import {
 } from "./types";
 
 export abstract class Bloc<
-  E extends BlocEvent,
+  Event extends BlocEvent,
   State extends BlocState<any>
 > extends BlocBase<State> {
   constructor(_state: State) {
     super(_state);
   }
 
-  private readonly _eventSubject$ = new Subject<E>();
+  private readonly _eventSubject$ = new Subject<Event>();
 
   private readonly _eventMap = new Map<string, null>();
 
@@ -51,6 +52,7 @@ export abstract class Bloc<
 
   static transformer: EventTransformer<any> = concurrent();
 
+  static observer: BlocObserver = new BlocObserver();
   /**
    *
    * @param event
@@ -58,7 +60,7 @@ export abstract class Bloc<
    * @descrition this method is for registering event handlers based on the type of events that
    * are added to a bloc
    */
-  protected on<T extends E>(
+  protected on<T extends Event>(
     event: ClassType<T>,
     eventHandler: EventHandler<T, State>,
     transformer: EventTransformer<T> = Bloc.transformer
@@ -89,6 +91,7 @@ export abstract class Bloc<
         }
 
         if (stateToBeEmitted !== undefined) {
+          this.onTransition(new Transition(this.state, event, stateToBeEmitted));
           stateToBeEmittedStream$.next(stateToBeEmitted);
         }
       };
@@ -167,7 +170,7 @@ export abstract class Bloc<
    * @param event Event: E
    * @description add a new bloc event to the bloc event stream
    */
-  add(event: E): void {
+  add(event: Event): void {
     if (!this._eventSubject$.closed) {
       try {
         this.onEvent(event);
@@ -180,11 +183,17 @@ export abstract class Bloc<
 
   // overridable methods for transtions, changes, and errors
 
-  protected override onError(error: Error): void {}
+  protected override onError(error: Error): void {
+    Bloc.observer.onError(this, error);
+  }
 
-  protected onTransition(current: State, next: State, event: E): void {}
+  protected onTransition(transition: Transition<Event, State>): void {
+    Bloc.observer.onTransition(this, transition);
+  }
 
-  protected onEvent(event: E): void {}
+  protected onEvent(event: Event): void {
+    Bloc.observer.onEvent(this, event);
+  }
 
   /**
    *

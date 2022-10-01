@@ -1,5 +1,5 @@
 import { Observable, tap } from "rxjs";
-import { Cubit } from "../lib";
+import { Change, Cubit } from "../lib";
 import { CounterCubit } from "./helpers/counter/counter.cubit";
 
 describe("Cubit", () => {
@@ -84,12 +84,13 @@ describe("Cubit", () => {
         this.emit(1);
       }
 
-      protected override onChange(current: number, next: number): void {
+      protected override onChange(change: Change<number>): void {
         throw new OnChangeError();
       }
 
       protected override onError(error: Error): void {
         errors.push(error);
+        super.onError(error);
       }
     }
 
