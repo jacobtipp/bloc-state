@@ -35,7 +35,7 @@
     "prettier": "2.5.1",
     "rimraf": "^3.0.2",
     "rollup": ">=1.26.3",
-    "rollup-plugin-typescript2": "^0.30.0",
+    "rollup-plugin-typescript2": "^0.34.0",
     "rollup-plugin-visualizer": "^5.8.1",
     "rxjs": "^7.5.4",
     "ts-jest": "^27.0.5",

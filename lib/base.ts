@@ -8,7 +8,7 @@ import {
   filter,
   EMPTY,
 } from "rxjs";
-import { Bloc } from ".";
+import { Bloc } from "./bloc";
 import { Change } from "./change";
 import { CubitSelectorConfig, EmitUpdaterCallback } from "./types";
 
