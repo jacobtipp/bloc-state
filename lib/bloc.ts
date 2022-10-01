@@ -6,20 +6,14 @@ import {
   Subscription,
   catchError,
   shareReplay,
-  switchMap,
-  tap,
-  share,
   map,
   distinctUntilChanged,
   filter,
-  flatMap,
-  mergeMap,
-  of,
 } from "rxjs";
 import { BlocBase } from "./base";
 import { BlocObserver } from "./bloc-observer";
 import { BlocEvent } from "./event";
-import { BlocState, isBlocStateInstance } from "./state";
+import { BlocState } from "./state";
 import { concurrent } from "./transformer";
 import { Transition } from "./transition";
 import {
@@ -36,48 +30,53 @@ export abstract class Bloc<
   Event extends BlocEvent,
   State extends BlocState<any>
 > extends BlocBase<State> {
-  constructor(_state: State) {
-    super(_state);
+  constructor(state: State) {
+    super(state);
   }
 
-  private readonly _eventSubject$ = new Subject<Event>();
+  readonly #eventSubject$ = new Subject<Event>();
 
-  private readonly _eventMap = new Map<string, null>();
+  readonly #eventMap = new Map<string, null>();
 
-  private readonly _subscriptions: Subscription[] = [];
+  readonly #subscriptions: Subscription[] = [];
 
-  private emitters: Emitter<State>[] = [];
+  #emitters: Emitter<State>[] = [];
 
-  public readonly events$ = this._eventSubject$.asObservable().pipe(share());
+  #mapEventToStateError(error: Error): Observable<never> {
+    this.onError(error);
+    return EMPTY;
+  }
 
-  static transformer: EventTransformer<any> = concurrent();
+  protected override onError(error: Error): void {
+    Bloc.observer.onError(this, error);
+  }
 
-  static observer: BlocObserver = new BlocObserver();
-  /**
-   *
-   * @param event
-   * @param eventHandler
-   * @descrition this method is for registering event handlers based on the type of events that
-   * are added to a bloc
-   */
+  protected onTransition(transition: Transition<Event, State>): void {
+    Bloc.observer.onTransition(this, transition);
+  }
+
+  protected onEvent(event: Event): void {
+    Bloc.observer.onEvent(this, event);
+  }
+
   protected on<T extends Event>(
     event: ClassType<T>,
     eventHandler: EventHandler<T, State>,
     transformer: EventTransformer<T> = Bloc.transformer
   ) {
-    if (this._eventMap.has(event.name)) {
+    if (this.#eventMap.has(event.name)) {
       throw new Error(`${event.name} can only have one EventHandler`);
     }
 
-    this._eventMap.set(event.name, null);
+    this.#eventMap.set(event.name, null);
 
     const mapEventToState = (event: T): Observable<void> => {
       const stateToBeEmittedStream$ = new Subject<State>();
-      let dispsables: Subscription[] = [];
+      let disposables: Subscription[] = [];
       let isClosed = false;
 
       const emitter: Emitter<State> = (newState: State | EmitUpdaterCallback<State>): void => {
-        if (stateToBeEmittedStream$.closed || isClosed) {
+        if (isClosed) {
           return;
         }
 
@@ -111,7 +110,7 @@ export abstract class Bloc<
             },
           });
 
-          dispsables.push(subscription);
+          disposables.push(subscription);
         });
       };
 
@@ -126,13 +125,14 @@ export abstract class Bloc<
       emitter.close = () => {
         isClosed = true;
         stateToBeEmittedStream$.complete();
-        for (const sub of dispsables) {
+        for (const sub of disposables) {
           sub.unsubscribe();
         }
-        dispsables = [];
+        disposables = [];
+        this.#emitters = this.#emitters.filter((emit) => emit !== emitter);
       };
 
-      this.emitters.push(emitter);
+      this.#emitters.push(emitter);
 
       return new Observable((subscriber) => {
         stateToBeEmittedStream$.subscribe(this.emit);
@@ -154,66 +154,38 @@ export abstract class Bloc<
     };
 
     const transformStream$ = transformer(
-      this._eventSubject$.pipe(filter((newEvent): newEvent is T => newEvent instanceof event)),
+      this.#eventSubject$.pipe(filter((newEvent): newEvent is T => newEvent instanceof event)),
       mapEventToState
     );
 
     const subscription = transformStream$
-      .pipe(catchError((error: Error) => this._mapEventToStateError(error)))
+      .pipe(catchError((error: Error) => this.#mapEventToStateError(error)))
       .subscribe();
 
-    this._subscriptions.push(subscription);
+    this.#subscriptions.push(subscription);
   }
 
-  /**
-   *
-   * @param event Event: E
-   * @description add a new bloc event to the bloc event stream
-   */
+  static transformer: EventTransformer<any> = concurrent();
+
+  static observer: BlocObserver = new BlocObserver();
+
   add(event: Event): void {
-    if (!this._eventSubject$.closed) {
+    if (!this.#eventSubject$.closed) {
       try {
         this.onEvent(event);
-        this._eventSubject$.next(event);
+        this.#eventSubject$.next(event);
       } catch (error) {
         this.onError(error);
       }
     }
   }
 
-  // overridable methods for transtions, changes, and errors
-
-  protected override onError(error: Error): void {
-    Bloc.observer.onError(this, error);
-  }
-
-  protected onTransition(transition: Transition<Event, State>): void {
-    Bloc.observer.onTransition(this, transition);
-  }
-
-  protected onEvent(event: Event): void {
-    Bloc.observer.onEvent(this, event);
-  }
-
-  /**
-   *
-   * @param error
-   * @description error handler that returns an Observable that emits never as an exception has been thrown
-   */
-  private _mapEventToStateError(error: Error): Observable<never> {
-    this.onError(error);
-    return EMPTY;
-  }
-
-  public filterType<T extends State>(type: ClassType<T>): Observable<T> {
+  filterType<T extends State>(type: ClassType<T>): Observable<T> {
     const typePredicate = (state: State): state is T => state instanceof type;
     return this.state$.pipe(filter(typePredicate));
   }
 
-  public filter<T extends State>(
-    stateFilter: (state: T) => boolean,
-    type?: ClassType<T>
-  ): Observable<T> {
+  filter<T extends State>(stateFilter: (state: T) => boolean, type?: ClassType<T>): Observable<T> {
     if (type) {
       const typePredicate = (state: State): state is T => state instanceof type;
       return this.state$.pipe(filter(typePredicate), filter(stateFilter));
@@ -222,12 +194,7 @@ export abstract class Bloc<
     }
   }
 
-  /**
-   *
-   * @param mapState (state: State) => K
-   * @returns new mapped selected state
-   */
-  public override select<K, T extends State = State>(
+  override select<K, T extends State = State>(
     config: BlocSelectorConfig<T, K> | ((state: BlocDataType<T>) => K),
     type?: ClassType<T>
   ): Observable<K> {
@@ -255,11 +222,11 @@ export abstract class Bloc<
   }
 
   override close(): void {
-    for (const emitter of this.emitters) {
+    for (const emitter of this.#emitters) {
       emitter.close();
     }
 
-    for (const sub of this._subscriptions) {
+    for (const sub of this.#subscriptions) {
       sub.unsubscribe();
     }
 

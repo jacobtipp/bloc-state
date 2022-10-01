@@ -13,75 +13,70 @@ import { Change } from "./change";
 import { CubitSelectorConfig, EmitUpdaterCallback } from "./types";
 
 export abstract class BlocBase<State = any> {
-  private blocListenerStreamSubscription: Subscription = Subscription.EMPTY;
-  private blocListenerIsActive = false;
-
-  constructor(private _state: State) {
+  constructor(state: State) {
+    this.#state = state;
     this.emit = this.emit.bind(this);
-    this._stateSubject$ = new BehaviorSubject(_state);
-    this.state$ = this._buildStatePipeline();
-    this._stateSubscription = this._subscribeStateoState();
+    this.#stateSubject$ = new BehaviorSubject(state);
+    this.state$ = this.#buildStatePipeline();
+    this.#stateSubscription = this.#subscribeStateoState();
   }
 
-  /**
-   * @returns the last emitted state in a cubit
-   */
-  get state(): State {
-    return this._state;
-  }
+  #state: State;
 
-  private readonly _stateSubject$: BehaviorSubject<State>;
+  readonly #stateSubject$: BehaviorSubject<State>;
 
-  /**
-   * emits state pushed into a cubit
-   */
-  readonly state$: Observable<State>;
+  readonly #stateSubscription: Subscription;
 
-  private readonly _stateSubscription: Subscription;
-
-  private _subscribeStateoState(): Subscription {
+  #subscribeStateoState(): Subscription {
     return this.state$.subscribe();
   }
 
-  private _buildStatePipeline(): Observable<State> {
-    return this._stateSubject$
+  #buildStatePipeline(): Observable<State> {
+    return this.#stateSubject$
       .asObservable()
       .pipe(distinctUntilChanged(), shareReplay({ refCount: true, bufferSize: 1 }));
   }
 
-  /**
-   * @override
-   * @param error
-   */
+  #handleNewState(newState: State | EmitUpdaterCallback<State>): State | undefined {
+    let stateToBeEmitted: State | undefined;
+
+    if (typeof newState === "function") {
+      try {
+        let callback = newState as EmitUpdaterCallback<State>;
+        stateToBeEmitted = callback(this.state);
+      } catch (error) {
+        this.onError(error);
+      }
+    } else {
+      stateToBeEmitted = newState;
+    }
+
+    return stateToBeEmitted;
+  }
+
   protected onError(error: Error): void {
     Bloc.observer.onError(this, error);
   }
 
-  /**
-   *
-   * @param newState new state to be emitted
-   * @returns void
-   */
-  public emit(newState: State | EmitUpdaterCallback<State>): void {
-    if (!this._stateSubject$.closed) {
-      let stateToBeEmitted: State | undefined;
+  protected onChange(change: Change<State>): void {
+    Bloc.observer.onChange(this, change);
+  }
 
-      if (typeof newState === "function") {
-        try {
-          let callback = newState as EmitUpdaterCallback<State>;
-          stateToBeEmitted = callback(this.state);
-        } catch (error) {
-          this.onError(error);
-        }
-      } else {
-        stateToBeEmitted = newState;
-      }
+  readonly state$: Observable<State>;
 
-      if (stateToBeEmitted !== undefined && this._state !== stateToBeEmitted) {
+  get state(): State {
+    return this.#state;
+  }
+
+  emit(newState: State | EmitUpdaterCallback<State>): void {
+    if (!this.#stateSubject$.closed) {
+      const stateToBeEmitted = this.#handleNewState(newState);
+
+      if (stateToBeEmitted !== undefined && this.#state !== stateToBeEmitted) {
         try {
           this.onChange(new Change(this.state, stateToBeEmitted));
-          this._state = stateToBeEmitted;
-          this._stateSubject$.next(stateToBeEmitted);
+          this.#state = stateToBeEmitted;
+          this.#stateSubject$.next(stateToBeEmitted);
         } catch (error) {
           this.onError(error);
         }
@@ -89,21 +84,7 @@ export abstract class BlocBase<State = any> {
     }
   }
 
-  /**
-   * @override
-   * @param current State
-   * @param next State
-   */
-  protected onChange(change: Change<State>): void {
-    Bloc.observer.onChange(this, change);
-  }
-
-  /**
-   *
-   * @param mapState (state: State) => K
-   * @returns new mapped selected state
-   */
-  public select<K>(config: CubitSelectorConfig<State, K> | ((state: State) => K)): Observable<K> {
+  select<K>(config: CubitSelectorConfig<State, K> | ((state: State) => K)): Observable<K> {
     let stream$: Observable<K> = EMPTY;
 
     if ("selector" in config) {
@@ -116,8 +97,7 @@ export abstract class BlocBase<State = any> {
   }
 
   close() {
-    this._stateSubject$.complete();
-    this._stateSubscription.unsubscribe();
-    this.blocListenerStreamSubscription.unsubscribe();
+    this.#stateSubject$.complete();
+    this.#stateSubscription.unsubscribe();
   }
 }

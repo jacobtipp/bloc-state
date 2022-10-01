@@ -7,14 +7,6 @@ import { BlocState } from "./state";
 
 export type BlocStateInstanceType = InstanceType<typeof BlocState>;
 
-export type BlocInstanceType = InstanceType<typeof BlocBase>;
-
-export type BlocType<T extends BlocBase<any>> = T extends Bloc<infer E, infer S>
-  ? Bloc<E, S>
-  : T extends Cubit<infer S>
-  ? Cubit<S>
-  : never;
-
 export interface BlocEmitter<State> {
   onEach<T>(
     stream$: Observable<T>,
@@ -29,8 +21,6 @@ export interface BlocEmitter<State> {
   ): Promise<void>;
 }
 
-export type StreamType<T extends Observable<any>> = T extends Observable<infer U> ? U : never;
-
 export type EmitUpdaterCallback<T> = (state: T) => T | undefined;
 
 export interface Emitter<S extends BlocState> extends BlocEmitter<S> {
@@ -43,10 +33,6 @@ export type EventHandler<E extends BlocEvent, S extends BlocState> = (
   emitter: Emitter<S>
 ) => void | Promise<void>;
 
-export type EventToStateMapper<E, S> = (event: E) => Observable<S>;
-
-export type StateHandler<S> = (state: S) => void | Promise<void>;
-
 export interface ClassType<T = any> extends Function {
   new (...args: any[]): T;
 }
@@ -58,8 +44,6 @@ export type BlocStateType<T extends BlocBase<any>> = T extends Cubit<infer U>
   : never;
 
 export type BlocDataType<T> = T extends BlocState<infer U> ? U : T;
-
-export type SelectorStateType<B extends BlocBase<any>> = BlocDataType<BlocStateType<B>>;
 
 export type CubitSelectorConfig<State, P> = {
   selector: (state: State) => P;

@@ -52,7 +52,6 @@ describe("bloc-observer", () => {
       }
 
       override onError(bloc: BlocBase<any>, error: any): void {
-        console.log(error);
         errors.push([bloc, error]);
       }
     }
