@@ -37,16 +37,12 @@ export abstract class BlocBase<State = any> {
       .pipe(distinctUntilChanged(), shareReplay({ refCount: true, bufferSize: 1 }));
   }
 
-  #handleNewState(newState: State | EmitUpdaterCallback<State>): State | undefined {
-    let stateToBeEmitted: State | undefined;
+  #handleNewState(newState: State | EmitUpdaterCallback<State>): State {
+    let stateToBeEmitted: State;
 
     if (typeof newState === "function") {
-      try {
-        let callback = newState as EmitUpdaterCallback<State>;
-        stateToBeEmitted = callback(this.state);
-      } catch (error) {
-        this.onError(error);
-      }
+      let callback = newState as EmitUpdaterCallback<State>;
+      stateToBeEmitted = callback(this.state);
     } else {
       stateToBeEmitted = newState;
     }
@@ -70,16 +66,15 @@ export abstract class BlocBase<State = any> {
 
   emit(newState: State | EmitUpdaterCallback<State>): void {
     if (!this.#stateSubject$.closed) {
-      const stateToBeEmitted = this.#handleNewState(newState);
-
-      if (stateToBeEmitted !== undefined && this.#state !== stateToBeEmitted) {
-        try {
+      try {
+        const stateToBeEmitted = this.#handleNewState(newState);
+        if (this.#state !== stateToBeEmitted) {
           this.onChange(new Change(this.state, stateToBeEmitted));
           this.#state = stateToBeEmitted;
           this.#stateSubject$.next(stateToBeEmitted);
-        } catch (error) {
-          this.onError(error);
         }
+      } catch (error) {
+        this.onError(error);
       }
     }
   }

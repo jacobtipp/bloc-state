@@ -7,7 +7,7 @@ describe("transformers", () => {
   abstract class EventTransformerEvent extends BlocEvent {}
   class EventTransformerSequentialEvent extends EventTransformerEvent {}
   class EventTransformerRestartableEvent extends EventTransformerEvent {
-    constructor(public num: number = 0) {
+    constructor(public num: number = 1) {
       super();
     }
   }
@@ -15,13 +15,13 @@ describe("transformers", () => {
 
   class EventTransformerBloc extends Bloc<EventTransformerEvent, EventTransformerState> {
     constructor() {
-      super(EventTransformerState.init());
+      super(EventTransformerState.init(0));
 
       this.on(
         EventTransformerSequentialEvent,
         async (event, emit) => {
           await delay(1000);
-          emit(EventTransformerState.ready());
+          emit(EventTransformerState.ready(1));
         },
         sequential()
       );

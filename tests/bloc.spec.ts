@@ -1,12 +1,6 @@
 import { skip, take, tap } from "rxjs/operators";
 import { CounterBloc } from "./helpers/counter/counter.bloc";
-import {
-  RandomDerivedUserState,
-  TriggerRandomDerivedEvent,
-  UserAgeChangedEvent,
-  UserBloc,
-  UserNameChangedEvent,
-} from "./helpers/user";
+import { UserAgeChangedEvent, UserBloc, UserNameChangedEvent } from "./helpers/user";
 import { NameBloc, UpperCaseBloc } from "./helpers/name";
 import {
   CounterEvent,
@@ -64,6 +58,7 @@ describe("bloc", () => {
     let userBloc: UserBloc;
 
     beforeEach(() => {
+      userBloc?.close();
       userBloc = new UserBloc();
     });
 
@@ -80,10 +75,8 @@ describe("bloc", () => {
         },
       });
 
-      userBloc.add(new TriggerRandomDerivedEvent("test"));
       userBloc.add(new UserNameChangedEvent({ first: "bob", last: "parker" }));
       userBloc.add(new UserAgeChangedEvent(1));
-      userBloc.add(new TriggerRandomDerivedEvent());
       userBloc.add(new UserNameChangedEvent({ first: "eric", last: "smith" }));
       userBloc.close();
     });
@@ -103,10 +96,8 @@ describe("bloc", () => {
         },
       });
 
-      userBloc.add(new TriggerRandomDerivedEvent("test"));
       userBloc.add(new UserNameChangedEvent({ first: "bob", last: "parker" }));
       userBloc.add(new UserAgeChangedEvent(1));
-      userBloc.add(new TriggerRandomDerivedEvent());
       userBloc.add(new UserNameChangedEvent({ first: "eric", last: "smith" }));
       userBloc.close();
     });
@@ -115,21 +106,26 @@ describe("bloc", () => {
       const ages: number[] = [];
 
       userBloc.ageGreaterThanZero$.subscribe({
-        next: (state) => ages.push(state.payload.data.age),
+        next: (user) => {
+          ages.push(user.age);
+        },
         complete: () => {
-          const [a] = ages;
+          const [a, b, c] = ages;
 
+          expect(ages.length).toBe(3);
           expect(a).toBe(1);
-          expect(ages.length).toBe(1);
+          expect(b).toBe(1);
+          expect(c).toBe(3);
           done();
         },
       });
 
-      userBloc.add(new TriggerRandomDerivedEvent("test"));
       userBloc.add(new UserNameChangedEvent({ first: "bob", last: "parker" }));
       userBloc.add(new UserAgeChangedEvent(1));
-      userBloc.add(new TriggerRandomDerivedEvent());
       userBloc.add(new UserNameChangedEvent({ first: "eric", last: "smith" }));
+      userBloc.add(new UserAgeChangedEvent(0));
+      userBloc.add(new UserNameChangedEvent({ first: "eric", last: "smith" }));
+      userBloc.add(new UserAgeChangedEvent(3));
       userBloc.close();
     });
 
@@ -137,24 +133,21 @@ describe("bloc", () => {
       const ages: number[] = [];
 
       userBloc.ageGreaterThanZeroWithType$.subscribe({
-        next: (state) => {
-          if (state.payload.hasData) {
-            ages.push(state.payload.data.age);
-          }
-        },
+        next: (user) => ages.push(user.age),
         complete: () => {
           const [a] = ages;
 
+          console.log(ages);
           expect(a).toBe(1);
           expect(ages.length).toBe(1);
           done();
         },
       });
 
-      userBloc.add(new TriggerRandomDerivedEvent("test"));
+      userBloc.state$.subscribe();
+
       userBloc.add(new UserNameChangedEvent({ first: "bob", last: "parker" }));
       userBloc.add(new UserAgeChangedEvent(1));
-      userBloc.add(new TriggerRandomDerivedEvent());
       userBloc.add(new UserNameChangedEvent({ first: "eric", last: "smith" }));
       userBloc.close();
     });
@@ -179,10 +172,8 @@ describe("bloc", () => {
         },
       });
 
-      userBloc.add(new TriggerRandomDerivedEvent("test"));
       userBloc.add(new UserNameChangedEvent({ first: "bob", last: "parker" }));
       userBloc.add(new UserAgeChangedEvent(1));
-      userBloc.add(new TriggerRandomDerivedEvent());
       userBloc.add(new UserNameChangedEvent({ first: "eric", last: "smith" }));
       userBloc.close();
     });
@@ -202,10 +193,8 @@ describe("bloc", () => {
         },
       });
 
-      userBloc.add(new TriggerRandomDerivedEvent("test"));
       userBloc.add(new UserNameChangedEvent({ first: "bob", last: "parker" }));
       userBloc.add(new UserAgeChangedEvent(1));
-      userBloc.add(new TriggerRandomDerivedEvent());
       userBloc.add(new UserNameChangedEvent({ first: "eric", last: "smith" }));
       userBloc.close();
     });
@@ -224,51 +213,21 @@ describe("bloc", () => {
         },
       });
 
-      userBloc.add(new TriggerRandomDerivedEvent("test"));
       userBloc.add(new UserNameChangedEvent({ first: "bob", last: "parker" }));
       userBloc.add(new UserAgeChangedEvent(1));
-      userBloc.add(new TriggerRandomDerivedEvent());
       userBloc.add(new UserNameChangedEvent({ first: "eric", last: "smith" }));
-      userBloc.close();
-    });
-
-    it("should select random user", (done) => {
-      const random: RandomDerivedUserState[] = [];
-
-      userBloc.randomUserState$.subscribe({
-        next: (state) => random.push(state),
-        complete: () => {
-          const [a, b] = random;
-
-          expect(random.length).toBe(2);
-
-          expect(a).toBeInstanceOf(RandomDerivedUserState);
-          expect(a.payload.hasData).toBe(true);
-          expect(a.payload.data?.payload).toBe("test");
-
-          expect(b).toBeInstanceOf(RandomDerivedUserState);
-          expect(b.payload.hasData).toBe(false);
-          done();
-        },
-      });
-
-      userBloc.add(new TriggerRandomDerivedEvent("test"));
-      userBloc.add(new UserNameChangedEvent({ first: "bob", last: "parker" }));
-      userBloc.add(new UserAgeChangedEvent(1));
-      userBloc.add(new TriggerRandomDerivedEvent());
-      userBloc.add(new UserNameChangedEvent({ first: "eric", last: "smith" })); // this should trigger a new state change in name$
       userBloc.close();
     });
   });
 
   describe("Bloc.on", () => {
     it("should throw an error if attempting to subscribe to the same event more than once", () => {
-      class TestState extends BlocState {}
+      class TestState extends BlocState<null> {}
       class TestEvent extends BlocEvent {}
 
       class TestBloc extends Bloc<TestEvent, TestState> {
         constructor() {
-          super(TestState.init());
+          super(TestState.init(null));
 
           this.on(TestEvent, (event, emit) => {});
 
@@ -282,12 +241,12 @@ describe("bloc", () => {
 
   describe("Bloc.onError", () => {
     it("should be invoked when an error is thrown from Bloc.onEvent", (done) => {
-      class TestState extends BlocState {}
+      class TestState extends BlocState<null> {}
       class TestEvent extends BlocEvent {}
 
       class TestBloc extends Bloc<TestEvent, TestState> {
         constructor() {
-          super(TestState.init());
+          super(TestState.init(null));
           this.on(TestEvent, (event, emit) => {});
         }
 
@@ -307,12 +266,12 @@ describe("bloc", () => {
     });
 
     it("should be invoked when an error is thrown inside an event callback", (done) => {
-      class TestState extends BlocState {}
+      class TestState extends BlocState<null> {}
       class TestEvent extends BlocEvent {}
 
       class TestBloc extends Bloc<TestEvent, TestState> {
         constructor() {
-          super(TestState.init());
+          super(TestState.init(null));
           this.on(TestEvent, (event, emit) => {
             throw new Error("eventcallback error");
           });

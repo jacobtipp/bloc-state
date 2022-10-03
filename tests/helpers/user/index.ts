@@ -1,4 +1,4 @@
-import { Transition } from "../../../lib";
+import { StatePayload, Transition } from "../../../lib";
 import { Bloc } from "../../../lib/bloc";
 import { BlocEvent } from "../../../lib/event";
 import { BlocState } from "../../../lib/state";
@@ -11,13 +11,11 @@ export interface User {
   age: number;
 }
 
-export abstract class UserState<T = any> extends BlocState<T> {}
+export abstract class UserState extends BlocState<User> {}
 
-export class UserNameChangeState extends UserState<User> {}
+export class UserNameChangeState extends UserState {}
 
-export class UserAgeChangedState extends UserState<User> {}
-
-export class RandomDerivedUserState extends UserState<{ payload: string }> {}
+export class UserAgeChangedState extends UserState {}
 
 export class UserEvent extends BlocEvent {}
 
@@ -33,12 +31,6 @@ export class UserAgeChangedEvent extends UserEvent {
   }
 }
 
-export class TriggerRandomDerivedEvent extends UserEvent {
-  constructor(public payload?: string) {
-    super();
-  }
-}
-
 export class UserBloc extends Bloc<UserEvent, UserState> {
   name$ = this.select((state) => state.name, UserNameChangeState);
 
@@ -49,14 +41,9 @@ export class UserBloc extends Bloc<UserEvent, UserState> {
     filter: (state) => state != null,
   });
 
-  randomUserState$ = this.filterType(RandomDerivedUserState);
+  ageGreaterThanZero$ = this.filter(({ age }) => age > 0);
 
-  ageGreaterThanZero$ = this.filter(({ payload }) => payload.hasData && payload.data.age > 0);
-
-  ageGreaterThanZeroWithType$ = this.filter(
-    ({ payload }) => payload.hasData && payload.data.age > 0,
-    UserAgeChangedState
-  );
+  ageGreaterThanZeroWithType$ = this.filter(({ age }) => age > 0, UserAgeChangedState);
 
   bob$ = this.select(
     {
@@ -84,25 +71,15 @@ export class UserBloc extends Bloc<UserEvent, UserState> {
       })
     );
 
-    this.on(TriggerRandomDerivedEvent, ({ payload }, emit) => {
-      if (payload != null) {
-        emit(RandomDerivedUserState.ready({ payload }));
-      } else {
-        emit(RandomDerivedUserState.ready());
-      }
-    });
-
     this.on(UserNameChangedEvent, (event, emit) => {
       emit((current) => {
-        const data = current.payload.data;
-        return UserNameChangeState.ready({ ...data, name: event.name });
+        return UserNameChangeState.ready({ ...current, name: event.name });
       });
     });
 
     this.on(UserAgeChangedEvent, (event, emit) => {
       emit((current) => {
-        const data = current.payload.data;
-        return UserAgeChangedState.ready({ ...data, age: event.age });
+        return UserAgeChangedState.ready({ ...current, age: event.age });
       });
     });
   }

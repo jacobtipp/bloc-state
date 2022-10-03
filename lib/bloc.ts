@@ -9,6 +9,8 @@ import {
   map,
   distinctUntilChanged,
   filter,
+  BehaviorSubject,
+  tap,
 } from "rxjs";
 import { BlocBase } from "./base";
 import { BlocObserver } from "./bloc-observer";
@@ -24,6 +26,9 @@ import {
   BlocSelectorConfig,
   EventTransformer,
   Emitter,
+  EmitDataUpdaterCallback,
+  ReadyWithData,
+  InitialWithData,
 } from "./types";
 
 export abstract class Bloc<
@@ -32,14 +37,17 @@ export abstract class Bloc<
 > extends BlocBase<State> {
   constructor(state: State) {
     super(state);
+    if (!state.payload.hasData) {
+      throw new Error("State must be initialized with data");
+    }
+    this.#data = state.payload.data;
+    this.add = this.add.bind(this);
   }
 
   readonly #eventSubject$ = new Subject<Event>();
-
   readonly #eventMap = new Map<string, null>();
-
   readonly #subscriptions: Subscription[] = [];
-
+  #data: BlocDataType<State>;
   #emitters: Emitter<State>[] = [];
 
   #mapEventToStateError(error: Error): Observable<never> {
@@ -75,7 +83,7 @@ export abstract class Bloc<
       let disposables: Subscription[] = [];
       let isClosed = false;
 
-      const emitter: Emitter<State> = (newState: State | EmitUpdaterCallback<State>): void => {
+      const emitter: Emitter<State> = (newState: State | EmitDataUpdaterCallback<State>): void => {
         if (isClosed) {
           return;
         }
@@ -83,15 +91,21 @@ export abstract class Bloc<
         let stateToBeEmitted: State | undefined;
 
         if (typeof newState === "function") {
-          let callback = newState as EmitUpdaterCallback<State>;
-          stateToBeEmitted = callback(this.state);
+          let callback = newState as EmitDataUpdaterCallback<State>;
+          stateToBeEmitted = callback(this.#data);
         } else {
           stateToBeEmitted = newState;
         }
 
-        if (stateToBeEmitted !== undefined) {
-          this.onTransition(new Transition(this.state, event, stateToBeEmitted));
-          stateToBeEmittedStream$.next(stateToBeEmitted);
+        if (stateToBeEmitted !== undefined && this.state !== stateToBeEmitted) {
+          try {
+            const { hasData, data } = stateToBeEmitted.payload;
+            this.onTransition(new Transition(this.state, event, stateToBeEmitted));
+            if (hasData && this.#data !== data) this.#data = data;
+            stateToBeEmittedStream$.next(stateToBeEmitted);
+          } catch (error) {
+            this.onError(error);
+          }
         }
       };
 
@@ -165,6 +179,10 @@ export abstract class Bloc<
     this.#subscriptions.push(subscription);
   }
 
+  protected get data(): BlocDataType<State> {
+    return this.#data;
+  }
+
   static transformer: EventTransformer<any> = concurrent();
 
   static observer: BlocObserver = new BlocObserver();
@@ -185,13 +203,19 @@ export abstract class Bloc<
     return this.state$.pipe(filter(typePredicate));
   }
 
-  filter<T extends State>(stateFilter: (state: T) => boolean, type?: ClassType<T>): Observable<T> {
-    if (type) {
-      const typePredicate = (state: State): state is T => state instanceof type;
-      return this.state$.pipe(filter(typePredicate), filter(stateFilter));
-    } else {
-      return this.state$.pipe(filter(stateFilter));
-    }
+  filter<T extends State, Data extends BlocDataType<T>>(
+    stateFilter: (data: Data) => boolean,
+    type?: ClassType<T>
+  ): Observable<Data> {
+    const typePredicate = type ? (state: T): state is T => state instanceof type : () => true;
+    return this.state$.pipe(
+      filter(typePredicate),
+      filter((state) => state.payload.hasData),
+      map((state) => state.payload.data),
+      filter(stateFilter),
+      distinctUntilChanged(),
+      shareReplay({ refCount: true, bufferSize: 1 })
+    );
   }
 
   override select<K, T extends State = State>(

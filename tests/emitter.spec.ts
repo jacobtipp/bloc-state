@@ -11,7 +11,7 @@ describe("emitter", () => {
   class IntervalState extends BlocState<number> {}
   class IntervalBloc extends Bloc<IntervalEvent, IntervalState> {
     constructor(stream$: Observable<number>) {
-      super(IntervalState.init());
+      super(IntervalState.init(0));
 
       this.on(IntervalNoEmitOnCloseEvent, async (event, emit) => {
         await emit.forEach(stream$, (data) => {
@@ -58,7 +58,7 @@ describe("emitter", () => {
           }
         },
         complete: () => {
-          expect(states.length).toBe(3);
+          expect(states.length).toBe(4);
         },
       });
 
@@ -86,10 +86,11 @@ describe("emitter", () => {
           }
         },
         complete: () => {
-          const [a, b] = states;
-          expect(states.length).toBe(2);
-          expect(a.payload.data).toBe(1);
-          expect(b.payload.error?.message).toBe("stream error");
+          const [a, b, c] = states;
+          expect(states.length).toBe(3);
+          expect(a.payload.data).toBe(0);
+          expect(b.payload.data).toBe(1);
+          expect(c.payload.error?.message).toBe("stream error");
         },
       });
 
@@ -109,7 +110,7 @@ describe("emitter", () => {
           }
         },
         complete: () => {
-          expect(states.length).toBe(3);
+          expect(states.length).toBe(4);
         },
       });
 
@@ -127,7 +128,7 @@ describe("emitter", () => {
           }
         },
         complete: () => {
-          expect(states.length).toBe(3);
+          expect(states.length).toBe(4);
         },
       });
 
@@ -155,10 +156,11 @@ describe("emitter", () => {
           }
         },
         complete: () => {
-          const [a, b] = states;
-          expect(states.length).toBe(2);
-          expect(a.payload.data).toBe(1);
-          expect(b.payload.error?.message).toBe("stream error");
+          const [a, b, c, d] = states;
+          expect(states.length).toBe(3);
+          expect(a.payload.data).toBe(0);
+          expect(b.payload.data).toBe(1);
+          expect(c.payload.error?.message).toBe("stream error");
         },
       });
 

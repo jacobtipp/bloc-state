@@ -21,15 +21,17 @@ export interface BlocEmitter<State> {
   ): Promise<void>;
 }
 
-export type EmitUpdaterCallback<T> = (state: T) => T | undefined;
+export type EmitUpdaterCallback<T> = (state: T) => T;
+
+export type EmitDataUpdaterCallback<T extends BlocState<any>> = (data: BlocDataType<T>) => T;
 
 export interface Emitter<S extends BlocState> extends BlocEmitter<S> {
-  (state: S | EmitUpdaterCallback<S>): void;
+  (state: S | EmitDataUpdaterCallback<S>): void;
   close: () => void;
 }
 
 export type EventHandler<E extends BlocEvent, S extends BlocState> = (
-  event: E,
+  event: InstanceType<ClassType<E>>,
   emitter: Emitter<S>
 ) => void | Promise<void>;
 
@@ -62,37 +64,14 @@ export type EventTransformer<Event extends BlocEvent> = (
   mapper: EventMapper<Event>
 ) => Observable<void>;
 
-export interface Initial {
-  initial: true;
-  hasError: false;
-  loading: false;
-  error: undefined;
-  hasData: false;
-  data: undefined;
-  isFailure: false;
-  isReady: true;
-}
-
 export interface InitialWithData<T> {
   initial: true;
   hasError: false;
   loading: false;
   error: undefined;
-  message: undefined;
   hasData: true;
   isReady: true;
   data: T;
-  isFailure: false;
-}
-
-export interface Ready {
-  initial: false;
-  hasError: false;
-  loading: false;
-  error: undefined;
-  hasData: false;
-  isReady: true;
-  data: undefined;
   isFailure: false;
 }
 
@@ -115,6 +94,17 @@ export interface Loading {
   isReady: false;
   hasData: false;
   data: undefined;
+  isFailure: false;
+}
+
+export interface LoadingWithData<T> {
+  initial: false;
+  hasError: false;
+  loading: true;
+  error: undefined;
+  isReady: false;
+  hasData: true;
+  data: T;
   isFailure: false;
 }
 
@@ -141,10 +131,8 @@ export interface FailedWithError<E extends Error> {
 }
 
 export type StatePayload<T, E extends Error = Error> =
-  | Initial
   | InitialWithData<T>
   | Loading
-  | Ready
   | ReadyWithData<T>
   | Failed
   | FailedWithError<E>;
