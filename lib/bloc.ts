@@ -46,9 +46,10 @@ export abstract class Bloc<
 
   readonly #eventSubject$ = new Subject<Event>();
   readonly #eventMap = new Map<string, null>();
-  readonly #subscriptions: Subscription[] = [];
+  readonly #subscriptions = new Set<Subscription>();
+  readonly #emitters = new Set<Emitter<State>>();
+
   #data: BlocDataType<State>;
-  #emitters: Emitter<State>[] = [];
 
   #mapEventToStateError(error: Error): Observable<never> {
     this.onError(error);
@@ -143,10 +144,10 @@ export abstract class Bloc<
           sub.unsubscribe();
         }
         disposables = [];
-        this.#emitters = this.#emitters.filter((emit) => emit !== emitter);
+        this.#emitters.delete(emitter);
       };
 
-      this.#emitters.push(emitter);
+      this.#emitters.add(emitter);
 
       return new Observable((subscriber) => {
         stateToBeEmittedStream$.subscribe(this.emit);
@@ -176,7 +177,7 @@ export abstract class Bloc<
       .pipe(catchError((error: Error) => this.#mapEventToStateError(error)))
       .subscribe();
 
-    this.#subscriptions.push(subscription);
+    this.#subscriptions.add(subscription);
   }
 
   protected get data(): BlocDataType<State> {
@@ -254,6 +255,8 @@ export abstract class Bloc<
       sub.unsubscribe();
     }
 
+    this.#emitters.clear();
+    this.#subscriptions.clear();
     super.close();
   }
 }
