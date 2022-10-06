@@ -34,6 +34,8 @@ export class UserAgeChangedEvent extends UserEvent {
 export class UserBloc extends Bloc<UserEvent, UserState> {
   name$ = this.select((state) => state.name, UserNameChangeState);
 
+  nameChangeFilter$ = this.filterType(UserNameChangeState);
+
   ageWithBlocState$ = this.select((state) => state.age, UserAgeChangedState);
 
   age$ = this.select({

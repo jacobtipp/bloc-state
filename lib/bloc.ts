@@ -37,9 +37,6 @@ export abstract class Bloc<
 > extends BlocBase<State> {
   constructor(state: State) {
     super(state);
-    if (!state.payload.hasData) {
-      throw new Error("State must be initialized with data");
-    }
     this.#data = state.payload.data;
     this.add = this.add.bind(this);
   }
@@ -99,8 +96,9 @@ export abstract class Bloc<
         }
 
         if (stateToBeEmitted !== undefined && this.state !== stateToBeEmitted) {
+          const { hasData, data } = stateToBeEmitted.payload;
+
           try {
-            const { hasData, data } = stateToBeEmitted.payload;
             this.onTransition(new Transition(this.state, event, stateToBeEmitted));
             if (hasData && this.#data !== data) this.#data = data;
             stateToBeEmittedStream$.next(stateToBeEmitted);

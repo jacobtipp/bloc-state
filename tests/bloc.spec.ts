@@ -1,6 +1,12 @@
 import { skip, take, tap } from "rxjs/operators";
 import { CounterBloc } from "./helpers/counter/counter.bloc";
-import { UserAgeChangedEvent, UserBloc, UserNameChangedEvent } from "./helpers/user";
+import {
+  UserAgeChangedEvent,
+  UserBloc,
+  UserNameChangedEvent,
+  UserNameChangeState,
+  UserState,
+} from "./helpers/user";
 import { NameBloc, UpperCaseBloc } from "./helpers/name";
 import {
   CounterEvent,
@@ -9,7 +15,7 @@ import {
 } from "./helpers/counter/counter.event";
 import { CounterState } from "./helpers/counter/counter.state";
 import { delay } from "./helpers/counter/delay";
-import { Bloc, BlocEvent, BlocState } from "../lib";
+import { Bloc, BlocEvent, BlocState, Transition } from "../lib";
 import { interval, Observable } from "rxjs";
 
 describe("bloc", () => {
@@ -137,7 +143,6 @@ describe("bloc", () => {
         complete: () => {
           const [a] = ages;
 
-          console.log(ages);
           expect(a).toBe(1);
           expect(ages.length).toBe(1);
           done();
@@ -168,6 +173,28 @@ describe("bloc", () => {
 
           expect(c.first).toBe("eric");
           expect(c.last).toBe("smith");
+          done();
+        },
+      });
+
+      userBloc.add(new UserNameChangedEvent({ first: "bob", last: "parker" }));
+      userBloc.add(new UserAgeChangedEvent(1));
+      userBloc.add(new UserNameChangedEvent({ first: "eric", last: "smith" }));
+      userBloc.close();
+    });
+
+    it("should names filter by filterType", (done) => {
+      const names: UserState[] = [];
+      userBloc.nameChangeFilter$.subscribe({
+        next: (name) => names.push(name),
+        complete: () => {
+          const [a, b, c] = names;
+
+          console.log(names);
+          expect(names.length).toBe(3);
+          expect(a).toBeInstanceOf(UserNameChangeState);
+          expect(b).toBeInstanceOf(UserNameChangeState);
+          expect(c).toBeInstanceOf(UserNameChangeState);
           done();
         },
       });
@@ -279,13 +306,40 @@ describe("bloc", () => {
 
         protected override onError(error: Error): void {
           expect(error.message).toBe("eventcallback error");
+          bloc.close();
+          done();
         }
       }
 
       const testBloc = new TestBloc();
-      testBloc.state$.subscribe({ complete: () => done() });
       testBloc.add(new TestEvent());
-      testBloc.close();
+    });
+
+    it("should be invoked when an error is thrown from onTransition", (done) => {
+      class TestState extends BlocState<null> {}
+      class TestEvent extends BlocEvent {}
+
+      class TestBloc extends Bloc<TestEvent, TestState> {
+        constructor() {
+          super(TestState.init(null));
+          this.on(TestEvent, (event, emit) => {
+            emit(TestState.loading());
+          });
+        }
+
+        protected override onTransition(transition: Transition<TestEvent, TestState>): void {
+          throw new Error("ontransition error");
+        }
+
+        protected override onError(error: Error): void {
+          expect(error.message).toBe("ontransition error");
+          bloc.close();
+          done();
+        }
+      }
+
+      const testBloc = new TestBloc();
+      testBloc.add(new TestEvent());
     });
   });
 });

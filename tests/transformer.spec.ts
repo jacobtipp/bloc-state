@@ -21,7 +21,7 @@ describe("transformers", () => {
         EventTransformerSequentialEvent,
         async (event, emit) => {
           await delay(1000);
-          emit(EventTransformerState.ready(1));
+          emit(EventTransformerState.ready(this.data + 1));
         },
         sequential()
       );
@@ -47,7 +47,9 @@ describe("transformers", () => {
     it("should process each event sequentially, additional events added should be queued while processing current event", async () => {
       const states: EventTransformerState[] = [];
       transformerBloc.state$.subscribe({
-        next: (state) => states.push(state),
+        next: (state) => {
+          states.push(state);
+        },
         complete: () => {
           expect(states.length).toBe(6);
         },
