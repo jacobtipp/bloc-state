@@ -7,7 +7,6 @@ import {
   Loading,
   Failed,
   FailedWithError,
-  ClassType,
   LoadingWithData,
 } from "./types";
 

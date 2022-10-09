@@ -74,15 +74,11 @@ export class UserBloc extends Bloc<UserEvent, UserState> {
     );
 
     this.on(UserNameChangedEvent, (event, emit) => {
-      emit((current) => {
-        return UserNameChangeState.ready({ ...current, name: event.name });
-      });
+      emit(UserNameChangeState.ready({ ...this.data, name: event.name }));
     });
 
     this.on(UserAgeChangedEvent, (event, emit) => {
-      emit((current) => {
-        return UserAgeChangedState.ready({ ...current, age: event.age });
-      });
+      emit(UserAgeChangedState.ready({ ...this.data, age: event.age }));
     });
   }
 }

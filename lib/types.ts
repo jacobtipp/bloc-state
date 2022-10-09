@@ -23,10 +23,10 @@ export interface BlocEmitter<State> {
 
 export type EmitUpdaterCallback<T> = (state: T) => T;
 
-export type EmitDataUpdaterCallback<T extends BlocState<any>> = (data: BlocDataType<T>) => T;
+export type EmitDataUpdaterCallback<T extends BlocState<any>> = (state: T) => T;
 
 export interface Emitter<S extends BlocState> extends BlocEmitter<S> {
-  (state: S | EmitDataUpdaterCallback<S>): void;
+  (state: S): void;
   close: () => void;
 }
 

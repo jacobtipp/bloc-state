@@ -190,7 +190,6 @@ describe("bloc", () => {
         complete: () => {
           const [a, b, c] = names;
 
-          console.log(names);
           expect(names.length).toBe(3);
           expect(a).toBeInstanceOf(UserNameChangeState);
           expect(b).toBeInstanceOf(UserNameChangeState);

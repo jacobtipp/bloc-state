@@ -9,8 +9,6 @@ import {
   map,
   distinctUntilChanged,
   filter,
-  BehaviorSubject,
-  tap,
 } from "rxjs";
 import { BlocBase } from "./base";
 import { BlocObserver } from "./bloc-observer";
@@ -20,15 +18,11 @@ import { concurrent } from "./transformer";
 import { Transition } from "./transition";
 import {
   BlocDataType,
-  EmitUpdaterCallback,
   EventHandler,
   ClassType,
   BlocSelectorConfig,
   EventTransformer,
   Emitter,
-  EmitDataUpdaterCallback,
-  ReadyWithData,
-  InitialWithData,
 } from "./types";
 
 export abstract class Bloc<
@@ -81,19 +75,14 @@ export abstract class Bloc<
       let disposables: Subscription[] = [];
       let isClosed = false;
 
-      const emitter: Emitter<State> = (newState: State | EmitDataUpdaterCallback<State>): void => {
+      const emitter: Emitter<State> = (newState: State): void => {
         if (isClosed) {
           return;
         }
 
         let stateToBeEmitted: State | undefined;
 
-        if (typeof newState === "function") {
-          let callback = newState as EmitDataUpdaterCallback<State>;
-          stateToBeEmitted = callback(this.#data);
-        } else {
-          stateToBeEmitted = newState;
-        }
+        stateToBeEmitted = newState;
 
         if (stateToBeEmitted !== undefined && this.state !== stateToBeEmitted) {
           const { hasData, data } = stateToBeEmitted.payload;
@@ -108,8 +97,8 @@ export abstract class Bloc<
         }
       };
 
-      emitter.onEach = (stream$, onData, onError) => {
-        return new Promise((resolve) => {
+      emitter.onEach = (stream$, onData, onError) =>
+        new Promise((resolve) => {
           const subscription = stream$.subscribe({
             next: onData,
             error: (error) => {
@@ -125,15 +114,13 @@ export abstract class Bloc<
 
           disposables.push(subscription);
         });
-      };
 
-      emitter.forEach = (stream$, onData, onError) => {
-        return emitter.onEach(
+      emitter.forEach = (stream$, onData, onError) =>
+        emitter.onEach(
           stream$,
           (data) => emitter(onData(data)),
           onError ? (error: any) => emitter(onError(error)) : undefined
         );
-      };
 
       emitter.close = () => {
         isClosed = true;
@@ -226,16 +213,16 @@ export abstract class Bloc<
     if ("selector" in config) {
       const dataFilter = config.filter ?? (() => true);
       stream$ = this.state$.pipe(
-        filter((state) => state.payload.hasData), // only filter state that has data
         filter(typePredicate),
+        filter((state) => state.payload.hasData), // only filter state that has data
         map((state) => state.payload.data), // select only data
         map(config.selector),
         filter(dataFilter)
       );
     } else if (typeof config === "function") {
       stream$ = this.state$.pipe(
-        filter((state) => state.payload.hasData), // only filter state that has data
         filter(typePredicate),
+        filter((state) => state.payload.hasData), // only filter state that has data
         map((state) => state.payload.data), // select only data
         map(config)
       );
