@@ -209,54 +209,18 @@ export abstract class Bloc<
     }
   }
 
-  filterType<T extends State>(type: ClassType<T>): Observable<T> {
-    const typePredicate = (state: State): state is T => state instanceof type;
-    return this.state$.pipe(filter(typePredicate));
-  }
-
-  filter<T extends State, Data extends BlocDataType<T>>(
-    stateFilter: (data: Data) => boolean,
-    type?: ClassType<T>
-  ): Observable<Data> {
-    const typePredicate = type ? (state: T): state is T => state instanceof type : () => true;
-    return this.state$.pipe(
-      filter(typePredicate),
-      filter((state) => state.payload.hasData),
-      map((state) => state.payload.data),
-      filter(stateFilter),
-      distinctUntilChanged(),
-      shareReplay({ refCount: true, bufferSize: 1 })
-    );
-  }
-
   override select<K, T extends State = State>(
-    config: BlocSelectorConfig<T, K> | ((state: BlocDataType<T>) => K),
-    type?: ClassType<T>
+    config: BlocSelectorConfig<T, K> | ((state: BlocDataType<T>) => K)
   ): Observable<K> {
-    const typePredicate = type ? (state: T): state is T => state instanceof type : () => true;
-
+    let data$: Observable<K>;
     if (typeof config === "function") {
-      return this.state$.pipe(
-        filter(typePredicate),
-        filter((state) => state.payload.hasData), // only filter state that has data
-        map((state) => state.payload.data), // select only data
-        map(config),
-        distinctUntilChanged(),
-        shareReplay({ refCount: true, bufferSize: 1 })
-      );
+      data$ = this.data$.pipe(map(config));
+    } else {
+      const selectorFilter = config.filter ?? (() => true);
+      data$ = this.data$.pipe(map(config.selector), filter(selectorFilter));
     }
 
-    const dataFilter = config.filter ?? (() => true);
-
-    return this.state$.pipe(
-      filter(typePredicate),
-      filter((state) => state.payload.hasData), // only filter state that has data
-      map((state) => state.payload.data), // select only data
-      map(config.selector),
-      filter(dataFilter),
-      distinctUntilChanged(),
-      shareReplay({ refCount: true, bufferSize: 1 })
-    );
+    return data$.pipe(distinctUntilChanged(), shareReplay({ refCount: true, bufferSize: 1 }));
   }
 
   override close(): void {

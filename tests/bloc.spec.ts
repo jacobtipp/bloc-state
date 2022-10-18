@@ -66,7 +66,6 @@ describe("bloc", () => {
     bloc.data$.pipe(take(5)).subscribe({
       next: (val) => data.push(val),
       complete: () => {
-        console.log(data);
         const [first, second, third, fourth, fifth] = data;
         expect(first).toBe(0);
         expect(second).toBe(1);
@@ -84,23 +83,27 @@ describe("bloc", () => {
     bloc.add(new DecrementCounterEvent());
   });
 
-  describe("Bloc.select & Bloc.filter", () => {
+  describe("Bloc.select", () => {
     let userBloc: UserBloc;
 
     beforeEach(() => {
-      userBloc?.close();
       userBloc = new UserBloc();
     });
 
-    it("should select age with bloc state", (done) => {
+    afterEach(() => {
+      userBloc?.close();
+    });
+
+    it("should select age with age selector method", (done) => {
       const agesWithBlocState: number[] = [];
 
-      userBloc.ageWithBlocState$.subscribe({
+      userBloc.ageWithSelectorMethod$.pipe(take(2)).subscribe({
         next: (age) => agesWithBlocState.push(age),
         complete: () => {
-          const [a] = agesWithBlocState;
+          const [a, b] = agesWithBlocState;
 
-          expect(a).toBe(1);
+          expect(a).toBe(0);
+          expect(b).toBe(1);
           done();
         },
       });
@@ -108,13 +111,12 @@ describe("bloc", () => {
       userBloc.add(new UserNameChangedEvent({ first: "bob", last: "parker" }));
       userBloc.add(new UserAgeChangedEvent(1));
       userBloc.add(new UserNameChangedEvent({ first: "eric", last: "smith" }));
-      userBloc.close();
     });
 
-    it("should select age without bloc state", (done) => {
+    it("should select age with config selector", (done) => {
       const ages: number[] = [];
 
-      userBloc.age$.subscribe({
+      userBloc.age$.pipe(take(2)).subscribe({
         next: (state) => ages.push(state),
         complete: () => {
           const [a, b] = ages;
@@ -129,61 +131,11 @@ describe("bloc", () => {
       userBloc.add(new UserNameChangedEvent({ first: "bob", last: "parker" }));
       userBloc.add(new UserAgeChangedEvent(1));
       userBloc.add(new UserNameChangedEvent({ first: "eric", last: "smith" }));
-      userBloc.close();
     });
 
-    it("should filter by age > 0", (done) => {
-      const ages: number[] = [];
-
-      userBloc.ageGreaterThanZero$.subscribe({
-        next: (user) => {
-          ages.push(user.age);
-        },
-        complete: () => {
-          const [a, b, c] = ages;
-
-          expect(ages.length).toBe(3);
-          expect(a).toBe(1);
-          expect(b).toBe(1);
-          expect(c).toBe(3);
-          done();
-        },
-      });
-
-      userBloc.add(new UserNameChangedEvent({ first: "bob", last: "parker" }));
-      userBloc.add(new UserAgeChangedEvent(1));
-      userBloc.add(new UserNameChangedEvent({ first: "eric", last: "smith" }));
-      userBloc.add(new UserAgeChangedEvent(0));
-      userBloc.add(new UserNameChangedEvent({ first: "eric", last: "smith" }));
-      userBloc.add(new UserAgeChangedEvent(3));
-      userBloc.close();
-    });
-
-    it("should filter by age > 0 with type", (done) => {
-      const ages: number[] = [];
-
-      userBloc.ageGreaterThanZeroWithType$.subscribe({
-        next: (user) => ages.push(user.age),
-        complete: () => {
-          const [a] = ages;
-
-          expect(a).toBe(1);
-          expect(ages.length).toBe(1);
-          done();
-        },
-      });
-
-      userBloc.state$.subscribe();
-
-      userBloc.add(new UserNameChangedEvent({ first: "bob", last: "parker" }));
-      userBloc.add(new UserAgeChangedEvent(1));
-      userBloc.add(new UserNameChangedEvent({ first: "eric", last: "smith" }));
-      userBloc.close();
-    });
-
-    it("should select name", (done) => {
+    it("should select name with selector method", (done) => {
       const names: { first: string; last: string }[] = [];
-      userBloc.name$.subscribe({
+      userBloc.name$.pipe(take(3)).subscribe({
         next: (name) => names.push(name),
         complete: () => {
           const [a, b, c] = names;
@@ -204,33 +156,11 @@ describe("bloc", () => {
       userBloc.add(new UserNameChangedEvent({ first: "bob", last: "parker" }));
       userBloc.add(new UserAgeChangedEvent(1));
       userBloc.add(new UserNameChangedEvent({ first: "eric", last: "smith" }));
-      userBloc.close();
-    });
-
-    it("should names filter by filterType", (done) => {
-      const names: UserState[] = [];
-      userBloc.nameChangeFilter$.subscribe({
-        next: (name) => names.push(name),
-        complete: () => {
-          const [a, b, c] = names;
-
-          expect(names.length).toBe(3);
-          expect(a).toBeInstanceOf(UserNameChangeState);
-          expect(b).toBeInstanceOf(UserNameChangeState);
-          expect(c).toBeInstanceOf(UserNameChangeState);
-          done();
-        },
-      });
-
-      userBloc.add(new UserNameChangedEvent({ first: "bob", last: "parker" }));
-      userBloc.add(new UserAgeChangedEvent(1));
-      userBloc.add(new UserNameChangedEvent({ first: "eric", last: "smith" }));
-      userBloc.close();
     });
 
     it("should select first names", (done) => {
       const first: string[] = [];
-      userBloc.firstName$.subscribe({
+      userBloc.firstName$.pipe(take(3)).subscribe({
         next: (name) => first.push(name),
         complete: () => {
           const [a, b, c] = first;
@@ -246,27 +176,24 @@ describe("bloc", () => {
       userBloc.add(new UserNameChangedEvent({ first: "bob", last: "parker" }));
       userBloc.add(new UserAgeChangedEvent(1));
       userBloc.add(new UserNameChangedEvent({ first: "eric", last: "smith" }));
-      userBloc.close();
     });
 
     it("should select names filtered by 'bob'", (done) => {
       const bobs: string[] = [];
-      userBloc.bob$.subscribe({
+      userBloc.bob$.pipe(take(1)).subscribe({
         next: (name) => bobs.push(name),
         complete: () => {
           const [a] = bobs;
 
           expect(bobs.length).toBe(1);
           expect(a).toBe("bob");
-          expect(bobs.length).toBe(1);
           done();
         },
       });
 
-      userBloc.add(new UserNameChangedEvent({ first: "bob", last: "parker" }));
       userBloc.add(new UserAgeChangedEvent(1));
       userBloc.add(new UserNameChangedEvent({ first: "eric", last: "smith" }));
-      userBloc.close();
+      userBloc.add(new UserNameChangedEvent({ first: "bob", last: "anderson" }));
     });
   });
 

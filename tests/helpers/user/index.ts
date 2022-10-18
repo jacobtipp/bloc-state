@@ -32,35 +32,22 @@ export class UserAgeChangedEvent extends UserEvent {
 }
 
 export class UserBloc extends Bloc<UserEvent, UserState> {
-  name$ = this.select((state) => state.name, UserNameChangeState);
+  name$ = this.select((state) => state.name);
 
-  nameChangeFilter$ = this.filterType(UserNameChangeState);
-
-  ageWithBlocState$ = this.select((state) => state.age, UserAgeChangedState);
+  ageWithSelectorMethod$ = this.select((state) => state.age);
 
   age$ = this.select({
     selector: (state) => state.age as number,
-    filter: (state) => state != null,
   });
 
-  ageGreaterThanZero$ = this.filter(({ age }) => age > 0);
+  bob$ = this.select({
+    selector: (state) => state.name.first,
+    filter: (name) => name === "bob",
+  });
 
-  ageGreaterThanZeroWithType$ = this.filter(({ age }) => age > 0, UserAgeChangedState);
-
-  bob$ = this.select(
-    {
-      selector: (state) => state.name.first,
-      filter: (name) => name === "bob",
-    },
-    UserNameChangeState
-  );
-
-  firstName$ = this.select(
-    {
-      selector: (state) => state.name.first,
-    },
-    UserNameChangeState
-  );
+  firstName$ = this.select({
+    selector: (state) => state.name.first,
+  });
 
   constructor() {
     super(
