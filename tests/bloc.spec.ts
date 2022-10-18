@@ -12,10 +12,11 @@ import {
   CounterEvent,
   IncrementCounterEvent,
   DecrementCounterEvent,
+  NoEmitDataEvent,
 } from "./helpers/counter/counter.event";
 import { CounterState } from "./helpers/counter/counter.state";
 import { delay } from "./helpers/counter/delay";
-import { Bloc, BlocEvent, BlocState, Transition } from "../lib";
+import { Bloc, BlocDataType, BlocEvent, BlocState, Transition } from "../lib";
 import { interval, Observable } from "rxjs";
 
 describe("bloc", () => {
@@ -56,6 +57,29 @@ describe("bloc", () => {
     });
     bloc.add(new IncrementCounterEvent());
     bloc.add(new IncrementCounterEvent());
+    bloc.add(new IncrementCounterEvent());
+    bloc.add(new DecrementCounterEvent());
+  });
+
+  it("should push new data changes to data$ observable", (done) => {
+    const data: BlocDataType<CounterState>[] = [];
+    bloc.data$.pipe(take(5)).subscribe({
+      next: (val) => data.push(val),
+      complete: () => {
+        console.log(data);
+        const [first, second, third, fourth, fifth] = data;
+        expect(first).toBe(0);
+        expect(second).toBe(1);
+        expect(third).toBe(2);
+        expect(fourth).toBe(3);
+        expect(fifth).toBe(2);
+        bloc.close();
+        done();
+      },
+    });
+    bloc.add(new IncrementCounterEvent());
+    bloc.add(new IncrementCounterEvent());
+    bloc.add(new NoEmitDataEvent()); // we add a random event that does not emit new data, to demonstrate data is only changed when state has data
     bloc.add(new IncrementCounterEvent());
     bloc.add(new DecrementCounterEvent());
   });

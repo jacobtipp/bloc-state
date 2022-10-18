@@ -9,6 +9,7 @@ import {
   map,
   distinctUntilChanged,
   filter,
+  BehaviorSubject,
 } from "rxjs";
 import { BlocBase } from "./base";
 import { BlocObserver } from "./bloc-observer";
@@ -23,24 +24,36 @@ import {
   BlocSelectorConfig,
   EventTransformer,
   Emitter,
+  EmitUpdaterCallback,
 } from "./types";
 
 export abstract class Bloc<
   Event extends BlocEvent,
   State extends BlocState<any>
 > extends BlocBase<State> {
-  constructor(state: State) {
-    super(state);
-    this.#data = state.payload.data;
-    this.add = this.add.bind(this);
-  }
-
   readonly #eventSubject$ = new Subject<Event>();
   readonly #eventMap = new Map<string, null>();
   readonly #subscriptions = new Set<Subscription>();
   readonly #emitters = new Set<Emitter<State>>();
 
+  readonly #dataSubject: BehaviorSubject<BlocDataType<State>>;
+  readonly data$: Observable<BlocDataType<State>>;
   #data: BlocDataType<State>;
+
+  constructor(state: State) {
+    super(state);
+    const { data } = state.payload;
+    this.#dataSubject = new BehaviorSubject(data);
+    this.data$ = this.#buildDataStream();
+    this.#data = data;
+    this.add = this.add.bind(this);
+  }
+
+  #buildDataStream() {
+    return this.#dataSubject
+      .asObservable()
+      .pipe(distinctUntilChanged(), shareReplay({ bufferSize: 1, refCount: true }));
+  }
 
   #mapEventToStateError(error: Error): Observable<never> {
     this.onError(error);
@@ -85,11 +98,8 @@ export abstract class Bloc<
         stateToBeEmitted = newState;
 
         if (stateToBeEmitted !== undefined && this.state !== stateToBeEmitted) {
-          const { hasData, data } = stateToBeEmitted.payload;
-
           try {
             this.onTransition(new Transition(this.state, event, stateToBeEmitted));
-            if (hasData && this.#data !== data) this.#data = data;
             stateToBeEmittedStream$.next(stateToBeEmitted);
           } catch (error) {
             this.onError(error);
@@ -169,6 +179,21 @@ export abstract class Bloc<
     return this.#data;
   }
 
+  override emit(newState: State): void {
+    const { hasData, data } = newState.payload;
+
+    try {
+      super.emit(newState);
+
+      if (hasData && data !== this.#data) {
+        this.#data = data;
+        this.#dataSubject.next(data);
+      }
+    } catch (e) {
+      this.onError(e);
+    }
+  }
+
   static transformer: EventTransformer<any> = concurrent();
 
   static observer: BlocObserver = new BlocObserver();
@@ -208,27 +233,30 @@ export abstract class Bloc<
     config: BlocSelectorConfig<T, K> | ((state: BlocDataType<T>) => K),
     type?: ClassType<T>
   ): Observable<K> {
-    let stream$: Observable<K> = EMPTY;
     const typePredicate = type ? (state: T): state is T => state instanceof type : () => true;
-    if ("selector" in config) {
-      const dataFilter = config.filter ?? (() => true);
-      stream$ = this.state$.pipe(
+
+    if (typeof config === "function") {
+      return this.state$.pipe(
         filter(typePredicate),
         filter((state) => state.payload.hasData), // only filter state that has data
         map((state) => state.payload.data), // select only data
-        map(config.selector),
-        filter(dataFilter)
-      );
-    } else if (typeof config === "function") {
-      stream$ = this.state$.pipe(
-        filter(typePredicate),
-        filter((state) => state.payload.hasData), // only filter state that has data
-        map((state) => state.payload.data), // select only data
-        map(config)
+        map(config),
+        distinctUntilChanged(),
+        shareReplay({ refCount: true, bufferSize: 1 })
       );
     }
 
-    return stream$.pipe(distinctUntilChanged(), shareReplay({ refCount: true, bufferSize: 1 }));
+    const dataFilter = config.filter ?? (() => true);
+
+    return this.state$.pipe(
+      filter(typePredicate),
+      filter((state) => state.payload.hasData), // only filter state that has data
+      map((state) => state.payload.data), // select only data
+      map(config.selector),
+      filter(dataFilter),
+      distinctUntilChanged(),
+      shareReplay({ refCount: true, bufferSize: 1 })
+    );
   }
 
   override close(): void {

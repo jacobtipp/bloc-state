@@ -75,9 +75,11 @@ describe("Cubit", () => {
       }
 
       triggerError() {
-        this.emit((state) => {
-          throw new OnEmitError();
-        });
+        try {
+          this.emit((state) => {
+            throw new OnEmitError();
+          });
+        } catch (e) {}
       }
 
       triggerChange() {
@@ -113,7 +115,10 @@ describe("Cubit", () => {
     });
 
     it("should be invoked when an error is thrown from BlocBase.onChange", () => {
-      errorBloc.triggerChange();
+      try {
+        errorBloc.triggerChange();
+      } catch (e) {}
+
       const [a] = errors;
 
       expect(a.message).toBe("onchange error");
