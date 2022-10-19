@@ -75,7 +75,6 @@ export abstract class BlocBase<State = any> {
         }
       } catch (error) {
         this.onError(error);
-        throw error;
       }
     }
   }

@@ -88,19 +88,15 @@ export abstract class Bloc<
       let disposables: Subscription[] = [];
       let isClosed = false;
 
-      const emitter: Emitter<State> = (newState: State): void => {
+      const emitter: Emitter<State> = (nextState: State): void => {
         if (isClosed) {
           return;
         }
 
-        let stateToBeEmitted: State | undefined;
-
-        stateToBeEmitted = newState;
-
-        if (stateToBeEmitted !== undefined && this.state !== stateToBeEmitted) {
+        if (this.state !== nextState) {
           try {
-            this.onTransition(new Transition(this.state, event, stateToBeEmitted));
-            stateToBeEmittedStream$.next(stateToBeEmitted);
+            this.onTransition(new Transition(this.state, event, nextState));
+            stateToBeEmittedStream$.next(nextState);
           } catch (error) {
             this.onError(error);
           }
@@ -179,19 +175,15 @@ export abstract class Bloc<
     return this.#data;
   }
 
-  override emit(newState: State): void {
-    const { hasData, data } = newState.payload;
+  override emit(nextState: State): void {
+    const { hasData, data } = nextState.payload;
 
-    try {
-      super.emit(newState);
-
-      if (hasData && data !== this.#data) {
-        this.#data = data;
-        this.#dataSubject.next(data);
-      }
-    } catch (e) {
-      this.onError(e);
+    if (hasData && data !== this.#data) {
+      this.#data = data;
+      this.#dataSubject.next(data);
     }
+
+    super.emit(nextState);
   }
 
   static transformer: EventTransformer<any> = concurrent();
