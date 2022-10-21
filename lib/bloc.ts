@@ -47,6 +47,8 @@ export abstract class Bloc<
     this.data$ = this.#buildDataStream();
     this.#data = data;
     this.add = this.add.bind(this);
+    this.on = this.on.bind(this);
+    this.emit = this.emit.bind(this);
   }
 
   #buildDataStream() {
@@ -143,7 +145,7 @@ export abstract class Bloc<
       return new Observable((subscriber) => {
         stateToBeEmittedStream$.subscribe(this.emit);
 
-        const result = eventHandler(event, emitter);
+        const result = eventHandler.call(this, event, emitter);
 
         if (result instanceof Promise) {
           from(result).subscribe({
