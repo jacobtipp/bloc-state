@@ -173,7 +173,7 @@ export abstract class Bloc<
     this.#subscriptions.add(subscription);
   }
 
-  protected get data(): BlocDataType<State> {
+  get data(): BlocDataType<State> {
     return this.#data;
   }
 
@@ -192,7 +192,7 @@ export abstract class Bloc<
 
   static observer: BlocObserver = new BlocObserver();
 
-  add(event: Event): void {
+  add(event: Event) {
     if (!this.#eventSubject$.closed) {
       try {
         this.onEvent(event);
@@ -201,6 +201,7 @@ export abstract class Bloc<
         this.onError(error);
       }
     }
+    return this;
   }
 
   override select<K, T extends State = State>(

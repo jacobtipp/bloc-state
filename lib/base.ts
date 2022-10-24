@@ -8,6 +8,7 @@ import {
   filter,
   EMPTY,
 } from "rxjs";
+import { BlocObserver } from ".";
 import { Bloc } from "./bloc";
 import { Change } from "./change";
 import { CubitSelectorConfig, EmitUpdaterCallback } from "./types";
@@ -19,6 +20,7 @@ export abstract class BlocBase<State = any> {
     this.#stateSubject$ = new BehaviorSubject(state);
     this.state$ = this.#buildStatePipeline();
     this.#stateSubscription = this.#subscribeStateoState();
+    this.onCreate();
   }
 
   #state: State;
@@ -48,6 +50,10 @@ export abstract class BlocBase<State = any> {
     }
 
     return stateToBeEmitted;
+  }
+
+  protected onCreate() {
+    Bloc.observer.onCreate(this);
   }
 
   protected onError(error: Error): void {

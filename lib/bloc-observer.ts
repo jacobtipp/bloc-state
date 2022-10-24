@@ -2,6 +2,10 @@ import { Bloc, BlocBase, Transition } from "./";
 import { Change } from "./";
 
 export class BlocObserver {
+  onCreate(bloc: BlocBase<any>): void {
+    return;
+  }
+
   onEvent(bloc: Bloc<any, any>, event: any): void {
     return;
   }
