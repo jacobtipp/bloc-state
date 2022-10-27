@@ -9,10 +9,10 @@ import {
 } from "./helpers/user";
 import { NameBloc, UpperCaseBloc } from "./helpers/name";
 import {
+  CounterDecrementEvent,
   CounterEvent,
-  IncrementCounterEvent,
-  DecrementCounterEvent,
-  NoEmitDataEvent,
+  CounterIncrementEvent,
+  CounterNoEmitDataEvent,
 } from "./helpers/counter/counter.event";
 import { CounterState } from "./helpers/counter/counter.state";
 import { delay } from "./helpers/counter/delay";
@@ -55,10 +55,10 @@ describe("bloc", () => {
         done();
       },
     });
-    bloc.add(new IncrementCounterEvent());
-    bloc.add(new IncrementCounterEvent());
-    bloc.add(new IncrementCounterEvent());
-    bloc.add(new DecrementCounterEvent());
+    bloc.add(new CounterIncrementEvent());
+    bloc.add(new CounterIncrementEvent());
+    bloc.add(new CounterIncrementEvent());
+    bloc.add(new CounterDecrementEvent());
   });
 
   it("should push new data changes to data$ observable", (done) => {
@@ -76,11 +76,11 @@ describe("bloc", () => {
         done();
       },
     });
-    bloc.add(new IncrementCounterEvent());
-    bloc.add(new IncrementCounterEvent());
-    bloc.add(new NoEmitDataEvent()); // we add a random event that does not emit new data, to demonstrate data is only changed when state has data
-    bloc.add(new IncrementCounterEvent());
-    bloc.add(new DecrementCounterEvent());
+    bloc.add(new CounterIncrementEvent());
+    bloc.add(new CounterIncrementEvent());
+    bloc.add(new CounterNoEmitDataEvent()); // we add a random event that does not emit new data, to demonstrate data is only changed when state has data
+    bloc.add(new CounterIncrementEvent());
+    bloc.add(new CounterDecrementEvent());
   });
 
   describe("Bloc.select", () => {
@@ -206,9 +206,9 @@ describe("bloc", () => {
         constructor() {
           super(TestState.init(null));
 
-          this.on(TestEvent, (event, emit) => {});
+          this.on(TestEvent, TestState, (event, emit) => {});
 
-          this.on(TestEvent, (event, emit) => {});
+          this.on(TestEvent, TestState, (event, emit) => {});
         }
       }
 
@@ -224,7 +224,7 @@ describe("bloc", () => {
       class TestBloc extends Bloc<TestEvent, TestState> {
         constructor() {
           super(TestState.init(null));
-          this.on(TestEvent, (event, emit) => {});
+          this.on(TestEvent, TestState, (event, emit) => {});
         }
 
         protected override onEvent(event: TestEvent): void {
@@ -249,7 +249,7 @@ describe("bloc", () => {
       class TestBloc extends Bloc<TestEvent, TestState> {
         constructor() {
           super(TestState.init(null));
-          this.on(TestEvent, (event, emit) => {
+          this.on(TestEvent, TestState, (event, emit) => {
             throw new Error("eventcallback error");
           });
         }
@@ -272,7 +272,7 @@ describe("bloc", () => {
       class TestBloc extends Bloc<TestEvent, TestState> {
         constructor() {
           super(TestState.init(null));
-          this.on(TestEvent, (event, emit) => {
+          this.on(TestEvent, TestState, (event, emit) => {
             emit(TestState.loading());
           });
         }

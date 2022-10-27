@@ -11,8 +11,8 @@ import {
 } from "./types";
 
 export abstract class BlocState<T = any> {
-  blocStateName = this.constructor.name;
-  isBlocStateInstance = true;
+  readonly blocStateName = this.constructor.name;
+  readonly isBlocStateInstance = true;
 
   constructor(public payload: StatePayload<T>) {}
 

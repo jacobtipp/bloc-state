@@ -14,7 +14,7 @@ describe("emitter", () => {
     constructor(stream$: Observable<number>) {
       super(IntervalState.init(10)); // initial state is 10 to differentiate from state emitted from a stream
 
-      this.on(IntervalNoEmitOnCloseEvent, async (event, emit) => {
+      this.on(IntervalNoEmitOnCloseEvent, IntervalState, async (event, emit) => {
         await emit.forEach(stream$, (data) => {
           return IntervalState.ready(data);
         });
@@ -23,7 +23,7 @@ describe("emitter", () => {
         emit(IntervalState.ready(10));
       });
 
-      this.on(IntervalForEachEvent, async (event, emit) => {
+      this.on(IntervalForEachEvent, IntervalState, async (event, emit) => {
         await emit.forEach(
           stream$,
           (data) => IntervalState.ready(data),
@@ -31,7 +31,7 @@ describe("emitter", () => {
         );
       });
 
-      this.on(IntervalOnEachEvent, async (event, emit) => {
+      this.on(IntervalOnEachEvent, IntervalState, async (event, emit) => {
         await emit.onEach(
           stream$,
           (data) => {

@@ -2,7 +2,7 @@ import { Observable, interval, take } from "rxjs";
 import { BlocState, BlocEvent, Bloc, Transition, BlocObserver, BlocBase } from "../lib";
 import { restartable, sequential } from "../lib/transformer";
 import { CounterBloc } from "./helpers/counter/counter.bloc";
-import { IncrementCounterEvent } from "./helpers/counter/counter.event";
+import { CounterIncrementEvent } from "./helpers/counter/counter.event";
 import { CounterState } from "./helpers/counter/counter.state";
 import { delay } from "./helpers/counter/delay";
 import { NameBloc } from "./helpers/name";
@@ -29,12 +29,12 @@ describe("bloc-observer", () => {
       }
     }
 
-    expect(blocObserver.onEvent(counterBloc, new IncrementCounterEvent())).toBeUndefined();
+    expect(blocObserver.onEvent(counterBloc, new CounterIncrementEvent())).toBeUndefined();
 
     Bloc.observer = new TestBlocObserver();
-    counterBloc.add(new IncrementCounterEvent());
+    counterBloc.add(new CounterIncrementEvent());
     userBloc.add(new UserAgeChangedEvent(10));
-    counterBloc.add(new IncrementCounterEvent());
+    counterBloc.add(new CounterIncrementEvent());
 
     expect(events.length).toBe(3);
     expect(errors.length);
@@ -61,7 +61,7 @@ describe("bloc-observer", () => {
     expect(blocObserver.onError(counterBloc, new CounterBlocError("oops"))).toBeUndefined();
 
     Bloc.observer = new TestBlocObserver();
-    counterBloc.add(new IncrementCounterEvent());
+    counterBloc.add(new CounterIncrementEvent());
 
     const [err] = errors;
     const [bloc, error] = err;
@@ -83,12 +83,12 @@ describe("bloc-observer", () => {
     expect(
       blocObserver.onTransition(
         counterBloc,
-        new Transition(CounterState.ready(0), new IncrementCounterEvent(), CounterState.ready(1))
+        new Transition(CounterState.ready(0), new CounterIncrementEvent(), CounterState.ready(1))
       )
     ).toBeUndefined();
 
     Bloc.observer = new TestBlocObserver();
-    counterBloc.add(new IncrementCounterEvent());
+    counterBloc.add(new CounterIncrementEvent());
 
     expect(transitions.length).toBe(1);
 
@@ -96,7 +96,7 @@ describe("bloc-observer", () => {
 
     expect(bloc).toBe(counterBloc);
     expect(transition.currentState.payload.data).toBe(0);
-    expect(transition.event).toBeInstanceOf(IncrementCounterEvent);
+    expect(transition.event).toBeInstanceOf(CounterIncrementEvent);
     expect(transition.nextState.payload.data).toBe(1);
   });
 });

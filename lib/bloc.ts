@@ -10,6 +10,7 @@ import {
   distinctUntilChanged,
   filter,
   BehaviorSubject,
+  ReplaySubject,
 } from "rxjs";
 import { BlocBase } from "./base";
 import { BlocObserver } from "./bloc-observer";
@@ -25,6 +26,8 @@ import {
   EventTransformer,
   Emitter,
   EmitUpdaterCallback,
+  OnEventConfig,
+  PayloadWithDataOmitted,
 } from "./types";
 
 export abstract class Bloc<
@@ -35,8 +38,10 @@ export abstract class Bloc<
   readonly #eventMap = new Map<string, null>();
   readonly #subscriptions = new Set<Subscription>();
   readonly #emitters = new Set<Emitter<State>>();
+  readonly #derivedFiniteStateMap = new Map<string, Observable<PayloadWithDataOmitted<State>>>();
 
   readonly #dataSubject: BehaviorSubject<BlocDataType<State>>;
+  readonly isBlocInstance = true;
   readonly data$: Observable<BlocDataType<State>>;
   #data: BlocDataType<State>;
 
@@ -44,6 +49,7 @@ export abstract class Bloc<
     super(state);
     const { data } = state.payload;
     this.#dataSubject = new BehaviorSubject(data);
+    this.#derivedFiniteStateMap = new Map<string, Observable<PayloadWithDataOmitted<State>>>();
     this.data$ = this.#buildDataStream();
     this.#data = data;
     this.add = this.add.bind(this);
@@ -74,23 +80,28 @@ export abstract class Bloc<
     Bloc.observer.onEvent(this, event);
   }
 
-  protected on<T extends Event>(
+  protected on<T extends Event, S extends State>(
     event: ClassType<T>,
-    eventHandler: EventHandler<T, State>,
+    state: ClassType<S>,
+    eventHandler: EventHandler<T, S>,
     transformer: EventTransformer<T> = Bloc.transformer
   ) {
     if (this.#eventMap.has(event.name)) {
       throw new Error(`${event.name} can only have one EventHandler`);
     }
 
+    if (!this.#derivedFiniteStateMap.has(state.name)) {
+      this.#subscribeToDerivedState(state);
+    }
+
     this.#eventMap.set(event.name, null);
 
     const mapEventToState = (event: T): Observable<void> => {
-      const stateToBeEmittedStream$ = new Subject<State>();
+      const stateToBeEmittedStream$ = new Subject<S>();
       let disposables: Subscription[] = [];
       let isClosed = false;
 
-      const emitter: Emitter<State> = (nextState: State): void => {
+      const emitter: Emitter<S> = (nextState: S): void => {
         if (isClosed) {
           return;
         }
@@ -173,6 +184,36 @@ export abstract class Bloc<
     this.#subscriptions.add(subscription);
   }
 
+  #subscribeToDerivedState(stateType: ClassType<State>) {
+    const stream$ = this.state$.pipe(
+      filter((state): state is State => state instanceof stateType),
+      map((state) => ({
+        initial: state.payload.initial,
+        loading: state.payload.loading,
+        isReady: state.payload.isReady,
+        isFailure: state.payload.isFailure,
+        hasError: state.payload.hasError,
+        hasData: state.payload.hasData,
+        error: state.payload.error,
+      })),
+      shareReplay({ bufferSize: 1, refCount: true })
+    );
+
+    const subscription = stream$.subscribe();
+    this.#subscriptions.add(subscription);
+    this.#derivedFiniteStateMap.set(stateType.name, stream$);
+  }
+
+  getFiniteState(state: ClassType<State>): Observable<PayloadWithDataOmitted<State>> {
+    const finiteState$ = this.#derivedFiniteStateMap.get(state.name);
+
+    if (!finiteState$) {
+      throw new Error(`Bloc.getFiniteState: ${state.name} does is not subscribed to an event`);
+    }
+
+    return finiteState$;
+  }
+
   get data(): BlocDataType<State> {
     return this.#data;
   }
@@ -229,6 +270,11 @@ export abstract class Bloc<
 
     this.#emitters.clear();
     this.#subscriptions.clear();
+    this.#derivedFiniteStateMap.clear();
     super.close();
   }
 }
+
+export const isBlocInstance = (bloc: any): bloc is Bloc<any, any> => {
+  return bloc instanceof Bloc || Boolean(bloc.isBlocInstance);
+};

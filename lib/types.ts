@@ -59,6 +59,11 @@ export type BlocSelectorConfig<State extends BlocState<any>, P> = {
 
 export type EventMapper<Event extends BlocEvent> = (event: Event) => Observable<void>;
 
+export type OnEventConfig<Event extends BlocEvent, State extends BlocState> = {
+  stateType?: ClassType<State>;
+  transformer?: EventTransformer<Event>;
+};
+
 export type EventTransformer<Event extends BlocEvent> = (
   events$: Observable<Event>,
   mapper: EventMapper<Event>
@@ -136,3 +141,5 @@ export type StatePayload<T, E extends Error = Error> =
   | ReadyWithData<T>
   | Failed
   | FailedWithError<E>;
+
+export type PayloadWithDataOmitted<T> = Omit<StatePayload<T>, "data">;

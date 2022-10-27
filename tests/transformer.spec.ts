@@ -19,6 +19,7 @@ describe("transformers", () => {
 
       this.on(
         EventTransformerSequentialEvent,
+        EventTransformerState,
         async (event, emit) => {
           await delay(1000);
           emit(EventTransformerState.ready(this.data + 1));
@@ -28,6 +29,7 @@ describe("transformers", () => {
 
       this.on(
         EventTransformerRestartableEvent,
+        EventTransformerState,
         async (event, emit) => {
           await delay(1000);
           emit(EventTransformerState.ready(event.num));
@@ -40,6 +42,7 @@ describe("transformers", () => {
   let transformerBloc: EventTransformerBloc;
 
   beforeEach(() => {
+    transformerBloc?.close();
     transformerBloc = new EventTransformerBloc();
   });
 

@@ -1,26 +1,26 @@
 import { Bloc, Transition } from "../../../lib";
 
 import {
+  CounterDecrementEvent,
   CounterEvent,
-  DecrementCounterEvent,
-  IncrementCounterEvent,
-  NoEmitDataEvent,
+  CounterIncrementEvent,
+  CounterNoEmitDataEvent,
 } from "./counter.event";
-import { CounterState } from "./counter.state";
+import { CounterDecrementState, CounterIncrementState, CounterState } from "./counter.state";
 
 export class CounterBloc extends Bloc<CounterEvent, CounterState> {
   constructor() {
     super(CounterState.ready(0));
 
-    this.on(IncrementCounterEvent, (event, emit) => {
+    this.on(CounterIncrementEvent, CounterIncrementState, (event, emit) => {
       emit(CounterState.ready(this.data + 1));
     });
 
-    this.on(DecrementCounterEvent, (event, emit) => {
+    this.on(CounterDecrementEvent, CounterDecrementState, (event, emit) => {
       emit(CounterState.ready(this.data - 1));
     });
 
-    this.on(NoEmitDataEvent, (event, emit) => {
+    this.on(CounterNoEmitDataEvent, CounterState, (event, emit) => {
       emit(CounterState.loading());
     });
   }
