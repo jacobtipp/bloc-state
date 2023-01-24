@@ -1,0 +1,15 @@
+{
+  "name": "@jacobtipp/bloc",
+  "version": "0.0.0-semantic-release",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "private": false,
+  "license": "MIT",
+  "type": "commonjs",
+  "dependencies": {},
+  "devDependencies": {
+    "@jacobtipp/state": "*"
+  }
+}

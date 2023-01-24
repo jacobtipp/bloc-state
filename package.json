@@ -1,0 +1,63 @@
+{
+  "name": "bloc-state",
+  "version": "0.0.0-semantic-release",
+  "license": "MIT",
+  "scripts": {
+    "commit": "git-cz",
+    "commit-msg": "commitlint --edit",
+    "preinstall": "npx only-allow pnpm"
+  },
+  "private": true,
+  "dependencies": {
+    "@jacobtipp/state": "workspace:*",
+    "@jacobtipp/bloc": "workspace:*",
+    "@swc/helpers": "~0.4.11",
+    "immer": "9.0.17",
+    "rxjs": "7.8.0",
+    "tslib": "^2.3.0"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^17.4.2",
+    "@commitlint/config-conventional": "^17.4.2",
+    "@nrwl/devkit": "15.4.0",
+    "@nrwl/eslint-plugin-nx": "15.4.0",
+    "@nrwl/jest": "15.4.0",
+    "@nrwl/js": "15.4.0",
+    "@nrwl/linter": "15.4.0",
+    "@nrwl/node": "15.4.0",
+    "@nrwl/nx-cloud": "15.0.2",
+    "@nrwl/nx-plugin": "15.4.0",
+    "@nrwl/web": "15.4.0",
+    "@nrwl/workspace": "15.4.0",
+    "@swc/cli": "~0.1.55",
+    "@swc/core": "^1.2.173",
+    "@swc/jest": "0.2.20",
+    "@theunderscorer/nx-semantic-release": "1.14.0",
+    "@types/jest": "28.1.1",
+    "@types/node": "16.11.7",
+    "@typescript-eslint/eslint-plugin": "^5.36.1",
+    "@typescript-eslint/parser": "^5.36.1",
+    "commitizen": "^4.2.6",
+    "devmoji": "^2.3.0",
+    "eslint": "~8.15.0",
+    "eslint-config-prettier": "8.1.0",
+    "husky": "^8.0.0",
+    "inquirer": "8",
+    "is-ci": "^3.0.1",
+    "jest": "28.1.1",
+    "jest-environment-jsdom": "28.1.1",
+    "jsdom": "~20.0.3",
+    "nx": "15.4.0",
+    "prettier": "^2.6.2",
+    "ts-jest": "28.0.5",
+    "ts-node": "10.9.1",
+    "tsup": "6.5.0",
+    "typescript": "~4.8.2"
+  },
+  "config": {
+    "commitizen": {
+      "path": "cz-conventional-changelog"
+    }
+  }
+}
+

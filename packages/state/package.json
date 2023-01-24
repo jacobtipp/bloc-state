@@ -1,0 +1,16 @@
+{
+  "name": "@jacobtipp/state",
+  "version": "0.0.0-semantic-release",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "private": false,
+  "license": "MIT",
+  "type": "commonjs",
+  "dependencies": {
+    "@swc/helpers": "~0.4.11",
+    "immer": "9.0.17"
+  },
+  "devDependencies": {}
+}

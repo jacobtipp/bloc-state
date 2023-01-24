@@ -1,0 +1,71 @@
+{
+  "name": "bloc",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/bloc/src",
+  "projectType": "library",
+  "targets": {
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["tsc --noEmit -p packages/bloc/tsconfig.lib.json"]
+      }
+    },
+    "build": {
+      "executor": "@nrwl/rollup:rollup",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/bloc",
+        "format": ["cjs", "esm"],
+        "compiler": "babel",
+        "entryFile": "packages/bloc/src/index.ts",
+        "tsConfig": "packages/bloc/tsconfig.lib.json",
+        "project": "packages/bloc/package.json",
+        "assets": [
+          {
+            "glob": "packages/bloc/README.md",
+            "input": ".",
+            "output": "."
+          }
+        ]
+      },
+      "dependsOn": ["typecheck"]
+    },
+    "publish": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node tools/scripts/publish.mjs bloc {args.ver} {args.tag}"
+      },
+      "dependsOn": ["build"]
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": [
+          "packages/bloc/src/**/*.ts",
+          "packages/bloc/tests/**/*.ts"
+        ]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "packages/bloc/jest.config.ts",
+        "passWithNoTests": true
+      }
+    },
+    "semantic-release": {
+      "executor": "@theunderscorer/nx-semantic-release:semantic-release",
+      "options": {
+        "buildTarget": "bloc:build",
+        "outputPath": "dist/packages/bloc",
+        "github": true,
+        "changelog": true,
+        "npm": true,
+        "tagFormat": "bloc-v${VERSION}"
+      }
+    }
+  },
+  "tags": []
+}

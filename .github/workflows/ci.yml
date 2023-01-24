@@ -1,0 +1,70 @@
+name: CI
+
+on:
+  push:
+    branches: [main, alpha, beta, 'rc-**']
+  pull_request:
+    branches: [main, alpha, beta, 'rc-**']
+
+jobs:
+  main:
+    if: "!contains(github.event.head_commit.message, 'ci skip')"
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        node-version: [latest]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: nrwl/nx-set-shas@v3
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 7
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install
+
+      - run: pnpx nx workspace-lint
+      - run: pnpx nx format:write --base=${{env.NX_BASE}} --head=${{env.NX_HEAD}}
+
+      - run: pnpm nx affected --target=test --parallel=3 --base=${{env.NX_BASE}} --head=${{env.NX_HEAD}} --ci --code-coverage
+      - run: pnpm nx affected --target=build --parallel=3 --base=${{env.NX_BASE}} --head=${{env.NX_HEAD}}
+      - run: pnpx nx affected --target=lint --parallel=3 --base=${{env.NX_BASE}} --head=${{env.NX_HEAD}}
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+
+  release:
+    runs-on: ubuntu-latest
+    needs: ['main']
+    if: "!contains(github.event.head_commit.message, 'skip-release') && !contains(github.event.head_commit.message, 'skip-ci') && github.event_name != 'pull_request'"
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: nrwl/nx-set-shas@v3
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 7
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install
+
+      - run: pnpm nx affected --verbose --target=semantic-release --maxParallel=1 --base=${{env.NX_BASE}} --head=${{env.NX_HEAD}}
+
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
