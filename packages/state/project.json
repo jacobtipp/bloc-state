@@ -3,7 +3,18 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "packages/state/src",
   "projectType": "library",
+  "tags": [],
   "targets": {
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": [
+          "packages/state/src/**/*.{ts,tsx,js,jsx}",
+          "packages/state/tests/**/*.{ts,tsx,js,jsx}"
+        ]
+      }
+    },
     "typecheck": {
       "executor": "nx:run-commands",
       "options": {
@@ -11,41 +22,21 @@
       }
     },
     "build": {
-      "executor": "@nrwl/rollup:rollup",
+      "executor": "@nrwl/vite:build",
       "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
       "options": {
-        "outputPath": "dist/packages/state",
-        "format": ["cjs", "esm"],
-        "compiler": "babel",
-        "entryFile": "packages/state/src/index.ts",
-        "tsConfig": "packages/state/tsconfig.lib.json",
-        "project": "packages/state/package.json",
-        "assets": [
-          {
-            "glob": "packages/state/README.md",
-            "input": ".",
-            "output": "."
-          }
-        ]
+        "outputPath": "dist/packages/state"
+      },
+      "configurations": {
+        "development": {
+          "mode": "development"
+        },
+        "production": {
+          "mode": "production"
+        }
       },
       "dependsOn": ["typecheck"]
-    },
-    "publish": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "node tools/scripts/publish.mjs state {args.ver} {args.tag}"
-      },
-      "dependsOn": ["build"]
-    },
-    "lint": {
-      "executor": "@nrwl/linter:eslint",
-      "outputs": ["{options.outputFile}"],
-      "options": {
-        "lintFilePatterns": [
-          "packages/state/src/**/*.ts",
-          "packages/state/tests/**/*.ts"
-        ]
-      }
     },
     "test": {
       "executor": "@nrwl/jest:jest",
@@ -60,12 +51,25 @@
       "options": {
         "buildTarget": "state:build",
         "outputPath": "dist/packages/state",
-        "github": true,
-        "changelog": true,
-        "npm": true,
+        "npm": false,
+        "plugins": [
+          [
+            "@semantic-release/pnpm",
+            {
+              "pkgRoot": "dist/packages/state",
+              "npmPublish": false
+            }
+          ],
+          [
+            "@semantic-release/pnpm",
+            {
+              "pkgRoot": "packages/state",
+              "tarballDir": "dist/packages/state"
+            }
+          ]
+        ],
         "tagFormat": "state-v${VERSION}"
       }
     }
-  },
-  "tags": []
+  }
 }

@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [main, alpha, beta, 'rc-**']
+    branches: [main, alpha, beta, 'rc**', 'dev-**', 'feat-**', 'fix-**']
   pull_request:
-    branches: [main, alpha, beta, 'rc-**']
+    branches: [main, alpha, beta, 'rc**', 'dev-**', 'feat-**', 'fix-**']
 
 jobs:
   main:
@@ -13,32 +13,51 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        node-version: [latest]
+        node-version: [16.14.0]
 
     runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout git repository
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - uses: nrwl/nx-set-shas@v3
-      - uses: pnpm/action-setup@v2
-        with:
-          version: 7
-      - name: Use Node.js ${{ matrix.node-version }}
+
+      - name: Setup nx shas
+        uses: nrwl/nx-set-shas@v3
+
+      - name: Setup Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'pnpm'
+
+      - name: Check npm version
+        run: npm --version
+
+      - name: Install pnpm
+        run: npm i -g pnpm@7.25.0
+
       - name: Install dependencies
         run: pnpm install
 
-      - run: pnpx nx workspace-lint
-      - run: pnpx nx format:write --base=${{env.NX_BASE}} --head=${{env.NX_HEAD}}
+      - name: Check pnpm version
+        run: |
+          pnpm --version
+          npm --version
 
-      - run: pnpm nx affected --target=test --parallel=3 --base=${{env.NX_BASE}} --head=${{env.NX_HEAD}} --ci --code-coverage
-      - run: pnpm nx affected --target=build --parallel=3 --base=${{env.NX_BASE}} --head=${{env.NX_HEAD}}
-      - run: pnpx nx affected --target=lint --parallel=3 --base=${{env.NX_BASE}} --head=${{env.NX_HEAD}}
+      - name: Format
+        run: pnpx nx format:check
+
+      - name: Lint
+        run: |
+          pnpx nx workspace-lint
+          pnpx nx affected --target=lint --parallel=3 --base=${{env.NX_BASE}} --head=${{env.NX_HEAD}}
+
+      - name: Test
+        run: pnpm nx affected --target=test --parallel=3 --base=${{env.NX_BASE}} --head=${{env.NX_HEAD}} --ci --code-coverage
+
+      - name: Build
+        run: pnpm nx affected --target=build --parallel=3 --base=${{env.NX_BASE}} --head=${{env.NX_HEAD}}
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
@@ -48,23 +67,27 @@ jobs:
     needs: ['main']
     if: "!contains(github.event.head_commit.message, 'skip-release') && !contains(github.event.head_commit.message, 'skip-ci') && github.event_name != 'pull_request'"
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout git repository
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - uses: nrwl/nx-set-shas@v3
-      - uses: pnpm/action-setup@v2
-        with:
-          version: 7
-      - name: Use Node.js ${{ matrix.node-version }}
+
+      - name: Setup nx shas
+        uses: nrwl/nx-set-shas@v3
+
+      - name: Setup Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'pnpm'
+
+      - name: Install pnpm
+        run: npm i -g pnpm@7.25.0
+
       - name: Install dependencies
         run: pnpm install
 
-      - run: pnpm nx affected --verbose --target=semantic-release --maxParallel=1 --base=${{env.NX_BASE}} --head=${{env.NX_HEAD}}
-
+      - name: Release
+        run: pnpm nx affected --target=semantic-release --maxParallel=1 --base=${{env.NX_BASE}} --head=${{env.NX_HEAD}}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

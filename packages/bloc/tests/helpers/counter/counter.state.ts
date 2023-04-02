@@ -1,3 +1,17 @@
-import { State } from "@bloc-state/state"
+type CounterStatus = 'initial' | 'loading' | 'ready' | 'failed';
 
-export class CounterState extends State<number> {}
+export class CounterState {
+  constructor(public data: number, public status: CounterStatus = 'initial') {}
+
+  ready(data: number) {
+    return new CounterState(data, 'ready');
+  }
+
+  loading() {
+    return new CounterState(this.data, 'loading');
+  }
+
+  failed() {
+    return new CounterState(this.data, 'failed');
+  }
+}

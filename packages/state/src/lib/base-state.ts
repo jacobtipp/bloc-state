@@ -1,15 +1,13 @@
-import produce, { Draft, immerable } from "immer"
+import produce, { Draft, immerable } from 'immer';
 
 export abstract class BaseState {
-  constructor(_name?: string) {
-    this.stateName = _name ?? this.constructor.name
+  constructor(public readonly name?: string) {
+    this.name = name ?? this.constructor.name;
   }
 
-  [immerable] = true
-
-  readonly stateName: string
+  [immerable] = true;
 
   copyWith(draft: (state: Draft<this>) => void): this {
-    return produce(this, draft)
+    return produce(this, draft);
   }
 }

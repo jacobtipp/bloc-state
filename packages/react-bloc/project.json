@@ -1,0 +1,75 @@
+{
+  "name": "react-bloc",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/react-bloc/src",
+  "projectType": "library",
+  "tags": [],
+  "targets": {
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": [
+          "packages/react-bloc/src/**/*.{ts,tsx,js,jsx}",
+          "packages/react-bloc/tests/**/*.{ts,tsx,js,jsx}"
+        ]
+      }
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["tsc --noEmit -p packages/react-bloc/tsconfig.lib.json"]
+      }
+    },
+    "build": {
+      "executor": "@nrwl/vite:build",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "outputPath": "dist/packages/react-bloc"
+      },
+      "configurations": {
+        "development": {
+          "mode": "development"
+        },
+        "production": {
+          "mode": "production"
+        }
+      },
+      "dependsOn": ["typecheck"]
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "packages/react-bloc/jest.config.ts",
+        "passWithNoTests": true
+      }
+    },
+    "semantic-release": {
+      "executor": "@theunderscorer/nx-semantic-release:semantic-release",
+      "options": {
+        "buildTarget": "react-bloc:build",
+        "outputPath": "dist/packages/react-bloc",
+        "npm": false,
+        "plugins": [
+          [
+            "@semantic-release/pnpm",
+            {
+              "pkgRoot": "dist/packages/react-bloc",
+              "npmPublish": false
+            }
+          ],
+          [
+            "@semantic-release/pnpm",
+            {
+              "pkgRoot": "packages/react-bloc",
+              "tarballDir": "dist/packages/react-bloc"
+            }
+          ]
+        ],
+        "tagFormat": "react-bloc-v${VERSION}"
+      }
+    }
+  }
+}

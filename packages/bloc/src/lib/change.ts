@@ -1,3 +1,3 @@
 export class Change<State> {
-  constructor(public currentState: State, public nextState: State) {}
+  constructor(public current: State, public nextState: State) {}
 }

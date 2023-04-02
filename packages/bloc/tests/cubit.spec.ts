@@ -1,6 +1,9 @@
-import { Observable, tap } from 'rxjs';
-import { Cubit, Change } from '../src/lib';
+import { Observable } from 'rxjs';
+import { tap } from 'rxjs/operators';
+import { Cubit, Change } from '../src';
+import { StateError } from '../src';
 import { CounterCubit } from './helpers/counter/counter.cubit';
+import { SeededCounterCubit } from './helpers/counter/counter.seeded.cubit';
 
 describe('Cubit', () => {
   let cubit: CounterCubit;
@@ -16,23 +19,22 @@ describe('Cubit', () => {
     expect(cubit).toBeInstanceOf(Cubit);
   });
 
-  it('should close a cubit', async () => {
+  it('should close a cubit', () => {
     expect.assertions(2);
     expect(cubit.isClosed).toBe(false);
     cubit.close();
-    await expect(cubit.isClosed).toBe(true);
+    expect(cubit.isClosed).toBe(true);
   });
 
   it('should return new state from actions', (done) => {
-    expect.assertions(4);
+    expect.assertions(3);
     const states: number[] = [];
     state$.pipe(tap((state) => states.push(state))).subscribe({
       complete: () => {
-        const [first, second, third] = states;
-        expect(states.length).toBe(3);
-        expect(first).toBe(0);
-        expect(second).toBe(1);
-        expect(third).toBe(2);
+        const [first, second] = states;
+        expect(states.length).toBe(2);
+        expect(first).toBe(1);
+        expect(second).toBe(2);
         done();
       },
     });
@@ -42,17 +44,16 @@ describe('Cubit', () => {
   });
 
   it('should handle async actions', (done) => {
-    expect.assertions(5);
+    expect.assertions(4);
     void (async () => {
       const states: number[] = [];
       state$.pipe(tap((state) => states.push(state))).subscribe({
         complete: () => {
-          const [first, second, third, fourth] = states;
-          expect(states.length).toBe(4);
-          expect(first).toBe(0);
-          expect(second).toBe(1);
-          expect(third).toBe(0);
-          expect(fourth).toBe(1);
+          const [first, second, third] = states;
+          expect(states.length).toBe(3);
+          expect(first).toBe(1);
+          expect(second).toBe(0);
+          expect(third).toBe(1);
           done();
         },
       });
@@ -64,10 +65,6 @@ describe('Cubit', () => {
   describe('Cubit.onError', () => {
     let errors: Error[] = [];
 
-    class OnEmitError extends Error {
-      override message = 'emit error';
-    }
-
     class OnChangeError extends Error {
       override message = 'onchange error';
     }
@@ -75,16 +72,6 @@ describe('Cubit', () => {
     class ErrorTestBloc extends Cubit<number> {
       constructor() {
         super(0);
-      }
-
-      triggerError() {
-        try {
-          this.emit((_state) => {
-            throw new OnEmitError();
-          });
-        } catch (e) {
-          console.error(e);
-        }
       }
 
       triggerChange() {
@@ -112,21 +99,12 @@ describe('Cubit', () => {
       errorBloc.close();
     });
 
-    it('should be invoked when an error is thrown from BlocBase.emit', () => {
-      expect.assertions(1);
-      errorBloc.triggerError();
-      const [a] = errors;
-
-      expect(a.message).toBe('emit error');
-    });
-
     it('should be invoked when an error is thrown from BlocBase.onChange', () => {
       expect.assertions(1);
       try {
         errorBloc.triggerChange();
-      } catch (e) {
-        console.error(e);
-      }
+        // eslint-disable-next-line no-empty
+      } catch (e) {}
 
       const [a] = errors;
 
@@ -134,27 +112,70 @@ describe('Cubit', () => {
     });
   });
 
-  it('should not emit values if the bloc is closed', (done) => {
-    expect.assertions(4);
-    const states: number[] = [];
-    cubit.state$.subscribe({
-      next: (state) => states.push(state),
+  describe('Cubit.emit', () => {
+    let errors: Error[] = [];
+
+    let states: number[] = [];
+
+    class EmitTestBloc extends SeededCounterCubit {
+      protected override onError(error: Error): void {
+        errors.push(error);
+        super.onError(error);
+      }
+    }
+
+    let emitBloc: EmitTestBloc;
+
+    beforeEach(() => {
+      emitBloc = new EmitTestBloc();
+      emitBloc.state$.subscribe(states.push.bind(states));
     });
 
-    cubit.emit(2);
-    cubit.emit((previous) => previous + 1);
+    afterEach(() => {
+      errors = [];
+      states = [];
+      emitBloc.close();
+    });
 
-    cubit.close();
+    it('should throw a StateError when the Cubit is closed', () => {
+      expect.assertions(6);
 
-    cubit.emit(4);
-    cubit.emit((previous) => previous + 1);
+      emitBloc.increment();
+      emitBloc.increment();
 
-    const [a, b, c] = states;
+      emitBloc.close();
 
-    expect(states.length).toBe(3);
-    expect(a).toBe(0);
-    expect(b).toBe(2);
-    expect(c).toBe(3);
-    done();
+      try {
+        emitBloc.increment();
+      } catch (err) {
+        expect(err).toBeInstanceOf(StateError);
+      }
+
+      const [a, b] = states;
+      const [error] = errors;
+
+      expect(states.length).toBe(2);
+      expect(errors.length).toBe(1);
+      expect(error).toBeInstanceOf(StateError);
+      expect(a).toBe(1);
+      expect(b).toBe(2);
+    });
+
+    it('should emit states in the correct order', () => {
+      expect.assertions(2);
+      emitBloc.increment();
+      const [a] = states;
+      expect(states.length).toBe(1);
+      expect(a).toBe(1);
+    });
+
+    it('should emit initial state only once', () => {
+      expect.assertions(2);
+      emitBloc.seed();
+      emitBloc.seed();
+      const [a] = states;
+      expect(states.length).toBe(1);
+      expect(a).toBe(0);
+    });
   });
 });

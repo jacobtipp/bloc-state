@@ -2,13 +2,13 @@
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
   "npmScope": "jacobtipp",
   "affected": {
-    "defaultBase": "main"
+    "defaultBase": "origin/main"
   },
   "tasksRunnerOptions": {
     "default": {
       "runner": "@nrwl/nx-cloud",
       "options": {
-        "cacheableOperations": ["build", "lint", "test", "e2e"],
+        "cacheableOperations": ["build", "lint", "e2e", "test"],
         "accessToken": "YmEzYjNiOGEtMGZlZi00MzQxLTk1NDktY2MwNjU0NzY2YmZjfHJlYWQtd3JpdGU="
       }
     }
@@ -23,6 +23,9 @@
     },
     "test": {
       "inputs": ["default", "^production", "{workspaceRoot}/jest.preset.js"]
+    },
+    "e2e": {
+      "inputs": ["default", "^production"]
     }
   },
   "namedInputs": {
@@ -37,7 +40,25 @@
     "sharedGlobals": ["{workspaceRoot}/babel.config.json"]
   },
   "workspaceLayout": {
-    "appsDir": "packages",
+    "appsDir": "examples",
     "libsDir": "packages"
+  },
+  "generators": {
+    "@nrwl/react": {
+      "application": {
+        "style": "css",
+        "linter": "eslint",
+        "bundler": "vite",
+        "babel": true
+      },
+      "library": {
+        "style": "css",
+        "linter": "eslint",
+        "unitTestRunner": "jest"
+      },
+      "component": {
+        "style": "css"
+      }
+    }
   }
 }

@@ -1,4 +1,4 @@
-import { isStateInstance } from '../src/lib/state';
+import { isStateInstance } from '../src';
 import { CounterState } from './helpers/counter/counter.state';
 import { TodoState } from './helpers/todo/todo.state';
 
@@ -152,12 +152,12 @@ describe('State', () => {
     });
   });
 
-  describe('State.stateName', () => {
+  describe('State.name', () => {
     it('should accept an optional name that can be used instead of constructor name', () => {
       expect.assertions(2);
       const specialState = new CounterState(0, 'SpecialCounterState');
-      expect(state.stateName).toBe('CounterState');
-      expect(specialState.stateName).toBe('SpecialCounterState');
+      expect(state.name).toBe('CounterState');
+      expect(specialState.name).toBe('SpecialCounterState');
     });
   });
 

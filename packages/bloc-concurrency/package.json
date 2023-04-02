@@ -1,0 +1,25 @@
+{
+  "name": "@jacobtipp/bloc-concurrency",
+  "version": "1.0.0-beta.9",
+  "main": "./index.js",
+  "private": false,
+  "sideEffects": false,
+  "publishConfig": {
+    "directory": "../../dist/packages/bloc-concurrency",
+    "linkDirectory": true,
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "types": "./bloc-concurrency/src/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./index.mjs",
+      "require": "./index.js"
+    }
+  },
+  "dependencies": {},
+  "peerDependencies": {
+    "@jacobtipp/bloc": "workspace:*",
+    "rxjs": "7.8.0"
+  }
+}

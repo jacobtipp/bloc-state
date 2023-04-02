@@ -3,7 +3,18 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "packages/bloc/src",
   "projectType": "library",
+  "tags": [],
   "targets": {
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": [
+          "packages/bloc/src/**/*.{ts,tsx,js,jsx}",
+          "packages/bloc/tests/**/*.{ts,tsx,js,jsx}"
+        ]
+      }
+    },
     "typecheck": {
       "executor": "nx:run-commands",
       "options": {
@@ -11,41 +22,21 @@
       }
     },
     "build": {
-      "executor": "@nrwl/rollup:rollup",
+      "executor": "@nrwl/vite:build",
       "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
       "options": {
-        "outputPath": "dist/packages/bloc",
-        "format": ["cjs", "esm"],
-        "compiler": "babel",
-        "entryFile": "packages/bloc/src/index.ts",
-        "tsConfig": "packages/bloc/tsconfig.lib.json",
-        "project": "packages/bloc/package.json",
-        "assets": [
-          {
-            "glob": "packages/bloc/README.md",
-            "input": ".",
-            "output": "."
-          }
-        ]
+        "outputPath": "dist/packages/bloc"
+      },
+      "configurations": {
+        "development": {
+          "mode": "development"
+        },
+        "production": {
+          "mode": "production"
+        }
       },
       "dependsOn": ["typecheck"]
-    },
-    "publish": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "node tools/scripts/publish.mjs bloc {args.ver} {args.tag}"
-      },
-      "dependsOn": ["build"]
-    },
-    "lint": {
-      "executor": "@nrwl/linter:eslint",
-      "outputs": ["{options.outputFile}"],
-      "options": {
-        "lintFilePatterns": [
-          "packages/bloc/src/**/*.ts",
-          "packages/bloc/tests/**/*.ts"
-        ]
-      }
     },
     "test": {
       "executor": "@nrwl/jest:jest",
@@ -60,12 +51,24 @@
       "options": {
         "buildTarget": "bloc:build",
         "outputPath": "dist/packages/bloc",
-        "github": true,
-        "changelog": true,
-        "npm": true,
+        "plugins": [
+          [
+            "@semantic-release/pnpm",
+            {
+              "pkgRoot": "dist/packages/bloc",
+              "npmPublish": false
+            }
+          ],
+          [
+            "@semantic-release/pnpm",
+            {
+              "pkgRoot": "packages/bloc",
+              "tarballDir": "dist/packages/bloc"
+            }
+          ]
+        ],
         "tagFormat": "bloc-v${VERSION}"
       }
     }
-  },
-  "tags": []
+  }
 }

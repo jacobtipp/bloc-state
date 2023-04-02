@@ -1,1 +1,1 @@
-export type StateStatus = "initial" | "loading" | "ready" | "failed"
+export type StateStatus = 'initial' | 'loading' | 'ready' | 'failed';

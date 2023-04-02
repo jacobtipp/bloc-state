@@ -5,13 +5,22 @@ export default {
   globals: {
     'ts-jest': {
       tsconfig: '<rootDir>/tsconfig.spec.json',
-      diagnostics: true
     },
   },
   transform: {
-    '^.+\\.[tj]s$': 'ts-jest',
+    '^.+\\.[tj]s?$': 'ts-jest',
   },
-  moduleFileExtensions: ['ts', 'js', 'html'],
-  collectCoverage: true,
+  testEnvironment: 'node',
+  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
+  coverageThreshold: {
+    global: {
+      branches: 100,
+      functions: 100,
+      lines: 100,
+      statements: 100,
+    },
+  },
+  collectCoverageFrom: ['src/lib/**/*.{js,ts,tsx,jsx}'],
+  coverageReporters: ['clover', 'json', 'lcov', 'text'],
   coverageDirectory: '../../coverage/packages/state',
 };

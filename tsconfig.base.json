@@ -8,9 +8,9 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "importHelpers": true,
-    "target": "es2015",
+    "target": "esnext",
     "module": "esnext",
-    "lib": ["es2017", "dom"],
+    "lib": ["esnext", "dom"],
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
@@ -26,8 +26,10 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@bloc-state/bloc": ["packages/bloc/src/index.ts"],
-      "@bloc-state/state": ["packages/state/src/index.ts"]
+      "@jacobtipp/bloc": ["packages/bloc/src/index.ts"],
+      "@jacobtipp/bloc-concurrency": ["packages/bloc-concurrency/src/index.ts"],
+      "@jacobtipp/react-bloc": ["packages/react-bloc/src/index.ts"],
+      "@jacobtipp/state": ["packages/state/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

@@ -1,16 +1,23 @@
 {
   "name": "@jacobtipp/state",
-  "version": "0.0.0-semantic-release",
+  "version": "1.0.0-beta.5",
+  "main": "./index.js",
+  "private": false,
+  "sideEffects": false,
   "publishConfig": {
+    "directory": "../../dist/packages/state",
+    "linkDirectory": true,
     "access": "public",
     "registry": "https://registry.npmjs.org/"
   },
-  "private": false,
-  "license": "MIT",
-  "type": "commonjs",
-  "dependencies": {
-    "@swc/helpers": "~0.4.11",
-    "immer": "9.0.17"
+  "types": "./index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./index.mjs",
+      "require": "./index.js"
+    }
   },
-  "devDependencies": {}
+  "peerDependencies": {
+    "immer": "9.0.18"
+  }
 }

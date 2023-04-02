@@ -1,0 +1,77 @@
+{
+  "name": "bloc-concurrency",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/bloc-concurrency/src",
+  "projectType": "library",
+  "tags": [],
+  "targets": {
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": [
+          "packages/bloc-concurrency/src/**/*.{ts,tsx,js,jsx}",
+          "packages/bloc-concurrency/tests/**/*.{ts,tsx,js,jsx}"
+        ]
+      }
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "tsc --noEmit -p packages/bloc-concurrency/tsconfig.lib.json"
+        ]
+      }
+    },
+    "build": {
+      "executor": "@nrwl/vite:build",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "outputPath": "dist/packages/bloc-concurrency"
+      },
+      "configurations": {
+        "development": {
+          "mode": "development"
+        },
+        "production": {
+          "mode": "production"
+        }
+      },
+      "dependsOn": ["typecheck"]
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "packages/bloc-concurrency/jest.config.ts",
+        "passWithNoTests": true
+      }
+    },
+    "semantic-release": {
+      "executor": "@theunderscorer/nx-semantic-release:semantic-release",
+      "options": {
+        "buildTarget": "bloc-concurrency:build",
+        "outputPath": "dist/packages/bloc-concurrency",
+        "npm": false,
+        "plugins": [
+          [
+            "@semantic-release/pnpm",
+            {
+              "pkgRoot": "dist/packages/bloc-concurrency",
+              "npmPublish": false
+            }
+          ],
+          [
+            "@semantic-release/pnpm",
+            {
+              "pkgRoot": "packages/bloc-concurrency",
+              "tarballDir": "dist/packages/bloc-concurrency"
+            }
+          ]
+        ],
+        "tagFormat": "bloc-concurrency-v${VERSION}"
+      }
+    }
+  }
+}

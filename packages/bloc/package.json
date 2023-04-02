@@ -1,15 +1,27 @@
 {
   "name": "@jacobtipp/bloc",
-  "version": "0.0.0-semantic-release",
+  "version": "1.0.0-beta.10",
+  "main": "./index.js",
+  "private": false,
+  "sideEffects": false,
   "publishConfig": {
+    "directory": "../../dist/packages/bloc",
+    "linkDirectory": true,
     "access": "public",
     "registry": "https://registry.npmjs.org/"
   },
-  "private": false,
-  "license": "MIT",
-  "type": "commonjs",
+  "types": "./index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./index.mjs",
+      "require": "./index.js"
+    }
+  },
   "dependencies": {},
   "devDependencies": {
-    "@jacobtipp/state": "*"
+    "@jacobtipp/state": "workspace:*"
+  },
+  "peerDependencies": {
+    "rxjs": "7.8.0"
   }
 }
