@@ -1,6 +1,6 @@
 {
   "name": "@jacobtipp/bloc",
-  "version": "1.0.0-beta.10",
+  "version": "1.0.0",
   "main": "./index.js",
   "private": false,
   "sideEffects": false,
