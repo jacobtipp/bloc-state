@@ -86,6 +86,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
+      - name: Build
+        run: pnpm nx affected --target=build --parallel=3 --base=${{env.NX_BASE}} --head=${{env.NX_HEAD}}
+
       - name: Release
         run: pnpm nx affected --target=semantic-release --maxParallel=1 --base=${{env.NX_BASE}} --head=${{env.NX_HEAD}}
         env:
