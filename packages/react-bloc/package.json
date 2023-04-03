@@ -18,7 +18,8 @@
     }
   },
   "dependencies": {
-    "observable-hooks": "4.2.1"
+    "observable-hooks": "4.2.1",
+    "use-sync-external-store": "^1.2.0"
   },
   "devDependencies": {
     "immer": "9.0.18"

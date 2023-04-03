@@ -9,7 +9,7 @@ React components and hooks for bloc-state
 </br>
 
 ```
-npm install @jacobtipp/react-bloc@beta
+npm install @jacobtipp/react-bloc
 ```
 
 ## Components
@@ -21,8 +21,10 @@ npm install @jacobtipp/react-bloc@beta
 ```ts
 const UserPage = () => (
   <BlocProvider
-    bloc={[UserBloc]} // pass blocs to a provider
-    onCreate={(get) => get(UserBloc).add(new UserInitializedEvent())}
+    bloc={[{
+      key: UserBloc,
+      create: () => new UserBloc()
+    }]}
   >
     <SomeChildComponent />
   </BlocProvider>
@@ -38,15 +40,15 @@ const UserPage = () => {
 
   return (
     <BlocProvider
-      bloc={[ UserBloc ]}
-      onCreate={(get) => {
-        get(UserBloc).add(new UserInitializedEvent())
-      }
+      bloc={[{
+        key: UserBloc,
+        create: () => new UserBloc()
+      }]} 
     >
       <BlocListener
         bloc={UserBloc}
         listenWhen={(previous, current) => current.status === "failure"}
-        listener={(get, state) => snackbar.open(state.error?.message) }
+        listener={(bloc, state) => snackbar.open(state.error?.message) }
       >
         <SomeChildComponent />
       </BlocListener>
@@ -61,21 +63,21 @@ const UserPage = () => {
 
   return (
     <BlocProvider
-      bloc={[ UserBloc ]} // pass N number of bloc classes
-      onCreate={(get) =>
-        get(UserBloc).add(new UserInitializedEvent())
-      }
+      bloc={[{
+        key: UserBloc,
+        create: () => new UserBloc()
+      }]} 
     >
       <>
         <BlocListener
           bloc={UserBloc}
           listenWhen={(previous, current) => !current.data.isAuthenticated}
-          listener={(get, state) => history.push("/login")}
+          listener={(bloc, state) => history.push("/login")}
         />
         <BlocListener
           bloc={UserBloc}
-          listenWhen={(previous, current) => previous.data.randomeData && !current.data.someOtherData}
-          listener={(get, state) => openSnackBar(state)} // some other side-effect
+          listenWhen={(previous, current) => previous.data.randomData && !current.data.someOtherData}
+          listener={(bloc, state) => openSnackBar(state)} // some other side-effect
         />
         <SomeChildComponent />
       </>
@@ -115,22 +117,6 @@ export const SomeComponent = () => {
 };
 ```
 
-### useSetBloc
-
-```ts
-export const SomeComponent = () => {
-  const emit = useSetValue(CounterCubit); // returns the emitter method from a bloc/cubit
-
-  // should only be used with cubits, blocs use events to change state in a bloc
-
-  return (
-    <>
-      <a onClick={() => emit((count) => count + 1)}></a>
-    </>
-  );
-};
-```
-
 ### useBlocSelector
 
 ```ts
@@ -140,7 +126,7 @@ type SomeComponentProps = {
 
 export const SomeComponent = ({ id }: SomeComponentProps) => {
   const lastName = useBlocSelector(UserBloc, {
-    // required: a pure selector function for narrowing your state
+    // required: a pure selector function for deriving your state
     selector: (state) => state.name.last,
 
     // optional: decide which state changes a component should react to
@@ -151,7 +137,6 @@ export const SomeComponent = ({ id }: SomeComponentProps) => {
     suspendWhen: (state) => state.status === 'loading',
 
     // optional: decide when a component should trigger error boundary based on current state
-
     errorWhen: (state) => state.error != null,
   });
 
@@ -167,9 +152,9 @@ export const SomeComponent = ({ id }: SomeComponentProps) => {
 
 ```ts
 export const SomeComponent = () => {
+
   // returns a tuple with the state as first index and the bloc instance as second index
   // optionally takes a useBlocSelector config object, so it can be used to read as well as emit events with bloc instance
-
   const [id, bloc] = useBloc(UserBloc, {
     selector: (state) => state.data.id,
   });

@@ -4,6 +4,12 @@ module.exports = {
   github: true,
   commitMessage: 'chore(release): ${nextRelease.version} [skip ci]',
   repositoryUrl: 'https://github.com/jacobtipp/bloc-state.git',
+  releaseRules: [
+    { type: 'docs', scope: 'readme', release: 'patch' },
+    { type: 'refactor', release: 'patch' },
+    { type: 'style', release: 'patch' },
+    { type: 'build', scope: 'deps', release: 'patch' },
+  ],
   plugins: [
     [
       '@semantic-release/npm',
