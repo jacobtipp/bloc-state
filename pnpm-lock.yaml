@@ -238,6 +238,9 @@ importers:
       ts-node:
         specifier: 10.9.1
         version: 10.9.1(@types/node@18.11.9)(typescript@4.8.4)
+      typedoc:
+        specifier: ^0.23.28
+        version: 0.23.28(typescript@4.8.4)
       typescript:
         specifier: ~4.8.2
         version: 4.8.4
@@ -6437,6 +6440,13 @@ packages:
         integrity: sha512-quJQXlTSUGL2LH9SUXo8VwsY4soanhgo6LNSm84E1LBcE8s3O0wpdiRzyR9z/ZZJMlMWv37qOOb9pdJlMUEKFQ==,
       }
     engines: { node: '>=8' }
+    dev: true
+
+  /ansi-sequence-parser@1.1.0:
+    resolution:
+      {
+        integrity: sha512-lEm8mt52to2fT8GhciPCGeCXACSz2UwIN4X2e2LJSnZ5uAbn2/dsYdOmUXq0AtWS5cpAupysIneExOgH0Vd2TQ==,
+      }
     dev: true
 
   /ansi-styles@3.2.1:
@@ -13560,6 +13570,13 @@ packages:
     engines: { node: '>=12' }
     dev: true
 
+  /lunr@2.3.9:
+    resolution:
+      {
+        integrity: sha512-zTU3DaZaF3Rt9rhN3uBMGQD3dD2/vFQqnvZCDv4dl5iOzq2IZQqTxu90r4E5J+nP70J3ilqVCrbho2eWaeW8Ow==,
+      }
+    dev: true
+
   /lz-string@1.4.4:
     resolution:
       {
@@ -13893,6 +13910,16 @@ packages:
     resolution:
       {
         integrity: sha512-lKwV/1brpG6mBUFHtb7NUmtABCb2WZZmm2wNiOA5hAb8VdCS4B3dtMWyvcoViccwAW/COERjXLt0zP1zXUN26g==,
+      }
+    engines: { node: '>=10' }
+    dependencies:
+      brace-expansion: 2.0.1
+    dev: true
+
+  /minimatch@7.4.5:
+    resolution:
+      {
+        integrity: sha512-OzOamaOmNBJZUv2qqY1OSWa+++4YPpOkLgkc0w30Oov5ufKlWWXnFUl0l4dgmSv5Shq/zRVkEOXAe2NaqO4l5Q==,
       }
     engines: { node: '>=10' }
     dependencies:
@@ -17724,6 +17751,18 @@ packages:
     engines: { node: '>=8' }
     dev: true
 
+  /shiki@0.14.1:
+    resolution:
+      {
+        integrity: sha512-+Jz4nBkCBe0mEDqo1eKRcCdjRtrCjozmcbTUjbPTX7OOJfEbTZzlUWlZtGe3Gb5oV1/jnojhG//YZc3rs9zSEw==,
+      }
+    dependencies:
+      ansi-sequence-parser: 1.1.0
+      jsonc-parser: 3.2.0
+      vscode-oniguruma: 1.7.0
+      vscode-textmate: 8.0.0
+    dev: true
+
   /side-channel@1.0.4:
     resolution:
       {
@@ -19093,6 +19132,23 @@ packages:
       }
     dev: true
 
+  /typedoc@0.23.28(typescript@4.8.4):
+    resolution:
+      {
+        integrity: sha512-9x1+hZWTHEQcGoP7qFmlo4unUoVJLB0H/8vfO/7wqTnZxg4kPuji9y3uRzEu0ZKez63OJAUmiGhUrtukC6Uj3w==,
+      }
+    engines: { node: '>= 14.14' }
+    hasBin: true
+    peerDependencies:
+      typescript: 4.6.x || 4.7.x || 4.8.x || 4.9.x || 5.0.x
+    dependencies:
+      lunr: 2.3.9
+      marked: 4.2.12
+      minimatch: 7.4.5
+      shiki: 0.14.1
+      typescript: 4.8.4
+    dev: true
+
   /typescript@4.8.4:
     resolution:
       {
@@ -19532,6 +19588,20 @@ packages:
       - sugarss
       - supports-color
       - terser
+    dev: true
+
+  /vscode-oniguruma@1.7.0:
+    resolution:
+      {
+        integrity: sha512-L9WMGRfrjOhgHSdOYgCt/yRMsXzLDJSL7BPrOZt73gU0iWO4mpqzqQzOz5srxqTvMBaR0XZTSrVWo4j55Rc6cA==,
+      }
+    dev: true
+
+  /vscode-textmate@8.0.0:
+    resolution:
+      {
+        integrity: sha512-AFbieoL7a5LMqcnOF04ji+rpXadgOXnZsxQr//r83kLPr7biP7am3g9zbaZIaBGwBRWeSvoMD4mgPdX3e4NWBg==,
+      }
     dev: true
 
   /w3c-hr-time@1.0.2:
