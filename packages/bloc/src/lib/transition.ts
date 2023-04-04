@@ -1,15 +1,17 @@
 /**
- * Occurs when an event is added after `mapEventToState` has been called
- * but before the bloc's state has been updated.
- * A `Transition` consists of the `currentState`, the `event` which was
- * added, and the `nextState`.
+ * Represents a transition between two states caused by an event of a given type.
  *
- * @export
- * @class Transition
- * @template Event
- * @template State
+ * @template Event The type of the event that caused the transition.
+ * @template State The type of the states being transitioned.
  */
 export class Transition<Event, State> {
+  /**
+   * Creates a new instance of the `Transition` class.
+   *
+   * @param currentState The current state.
+   * @param event The event that caused the transition.
+   * @param nextState The next state.
+   */
   constructor(
     public currentState: State,
     public event: Event,
