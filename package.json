@@ -4,12 +4,17 @@
   "private": true,
   "license": "MIT",
   "scripts": {
-    "commit": "pnpm format && git add . && git-cz",
-    "commit-retry": "pnpm format && git add . && git-cz --retry",
+    "build": "pnpm clean && pnpx nx affected --target=build",
+    "clean": "rimraf dist",
+    "commit": "pnpm format:write && git add . && git-cz",
+    "commit-retry": "pnpm format:write && git add . && git-cz --retry",
     "commit-msg": "commitlint --edit",
-    "format": "pnpx nx format:write",
+    "format:write": "pnpx nx format:write",
+    "format:check": "pnpx nx format:check",
+    "lint": "pnpx nx affected --target=lint",
     "prepare": "is-ci || husky install",
-    "preinstall": "npx only-allow pnpm"
+    "preinstall": "npx only-allow pnpm",
+    "test": "pnpm clean && pnpx nx affected --target=test --ci --code-coverage"
   },
   "dependencies": {
     "@emotion/react": "^11.10.5",
@@ -88,6 +93,7 @@
     "prettier": "^2.6.2",
     "react-error-boundary": "^3.1.4",
     "react-test-renderer": "18.2.0",
+    "rimraf": "^4.4.1",
     "rollup-plugin-visualizer": "^5.9.0",
     "ts-jest": "28.0.5",
     "ts-node": "10.9.1",
