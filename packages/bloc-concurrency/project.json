@@ -23,6 +23,13 @@
         ]
       }
     },
+    "typedoc": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "packages/bloc-concurrency/src",
+        "commands": ["typedoc --out ../../../docs/bloc-concurrency index.ts"]
+      }
+    },
     "build": {
       "executor": "@nrwl/vite:build",
       "outputs": ["{options.outputPath}"],

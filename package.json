@@ -9,6 +9,7 @@
     "commit": "pnpm format:write && git add . && git-cz",
     "commit-retry": "pnpm format:write && git add . && git-cz --retry",
     "commit-msg": "commitlint --edit",
+    "docs:write": "pnpx nx affected --target=typedoc",
     "format:write": "pnpx nx format:write",
     "format:check": "pnpx nx format:check",
     "lint": "pnpx nx affected --target=lint",

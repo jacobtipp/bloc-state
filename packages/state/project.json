@@ -21,6 +21,13 @@
         "commands": ["tsc --noEmit -p packages/state/tsconfig.lib.json"]
       }
     },
+    "typedoc": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "packages/state/src",
+        "commands": ["typedoc --out ../../../docs/state index.ts"]
+      }
+    },
     "build": {
       "executor": "@nrwl/vite:build",
       "outputs": ["{options.outputPath}"],
