@@ -39,7 +39,7 @@ export class UserState {
 export abstract class UserEvent extends BlocEvent {}
 
 export class UserNameChangedEvent extends UserEvent {
-  constructor(public name: { first: string; last: string }) {
+  constructor(public userName: { first: string; last: string }) {
     super();
   }
 }
@@ -58,7 +58,7 @@ export class UserBloc extends Bloc<UserEvent, UserState> {
       emit(
         this.state.ready({
           ...this.state.data,
-          name: event.name,
+          name: event.userName,
         })
       );
     });

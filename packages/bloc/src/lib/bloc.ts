@@ -223,8 +223,8 @@ export abstract class Bloc<
   add(event: Event) {
     if (!this._eventMap.has(event.constructor as ClassType<Event>)) {
       throw new StateError(`
-        add(${event.blockEventName}) was called without a registered event handler.
-        Make sure to register a handler via on(${event.blockEventName}, (event, emit) {...})
+        add(${event.name}) was called without a registered event handler.
+        Make sure to register a handler via on(${event.name}, (event, emit) {...})
       `);
     }
 
