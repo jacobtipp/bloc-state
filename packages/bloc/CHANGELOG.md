@@ -1,3 +1,10 @@
+## [1.0.3](https://github.com/jacobtipp/bloc-state/compare/bloc-v1.0.2...bloc-v1.0.3) (2023-04-09)
+
+
+### Bug Fixes
+
+* **bloc:** 🐛 updated BlocEvent with overridable name property ([9bc3b45](https://github.com/jacobtipp/bloc-state/commit/9bc3b45c5dceb197faf98c73cf1c4dac672baae1))
+
 ## [1.0.2](https://github.com/jacobtipp/bloc-state/compare/bloc-v1.0.1...bloc-v1.0.2) (2023-04-04)
 
 ## [1.0.1](https://github.com/jacobtipp/bloc-state/compare/bloc-v1.0.0...bloc-v1.0.1) (2023-04-03)
