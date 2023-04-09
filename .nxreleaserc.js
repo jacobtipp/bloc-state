@@ -12,6 +12,27 @@ module.exports = {
   ],
   plugins: [
     [
+      '@semantic-release/release-notes-generator',
+      {
+        preset: 'conventionalcommits',
+        presetConfig: {
+          types: [
+            { type: 'feat', section: 'Features' },
+            { type: 'fix', section: 'Bug Fixes' },
+            { type: 'perf', section: 'Performance Improvements' },
+            { type: 'revert', section: 'Reverts' },
+            { type: 'docs', section: 'Documentation' },
+            { type: 'style', section: 'Styles' },
+            { type: 'chore', section: 'Miscellaneous Chores' },
+            { type: 'refactor', section: 'Code Refactoring' },
+            { type: 'test', section: 'Tests' },
+            { type: 'build', section: 'Build System' },
+            { type: 'ci', section: 'Continuous Integration' },
+          ],
+        },
+      },
+    ],
+    [
       '@semantic-release/npm',
       {
         npmPublish: false,
