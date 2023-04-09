@@ -1,23 +1,33 @@
 import { BlocBase, ClassType } from '@jacobtipp/bloc';
-import { useMemo } from 'react';
 import { StateType } from '../types';
 import { useBlocInstance } from './use-bloc-instance';
-import { useBlocSelector, UseBlocSelectorConfig } from './use-bloc-selector';
+import {
+  defaultSuspendWhen,
+  useBlocSelector,
+  UseBlocSelectorConfig,
+} from './use-bloc-selector';
 
-export function useBloc<B extends BlocBase<any>, P = StateType<B>>(
-  bloc: ClassType<B>,
-  config?: UseBlocSelectorConfig<B, P>
-): ReturnType<() => [P, B]> {
+/**
+ * Returns a tuple containing the selected state and provided Bloc instance.
+ *
+ * @typeparam Bloc The type of the Bloc instance.
+ * @typeparam SelectedState The type of the selected state.
+ * @param bloc The class of the Bloc instance.
+ * @param config A configuration object for selecting the desired state.
+ * @returns A tuple containing the selected state and provided Bloc instance.
+ */
+export function useBloc<
+  Bloc extends BlocBase<any>,
+  SelectedState = StateType<Bloc>
+>(
+  bloc: ClassType<Bloc>,
+  config: UseBlocSelectorConfig<Bloc, SelectedState> = {
+    selector: (state) => state,
+    suspendWhen: defaultSuspendWhen,
+  }
+): readonly [SelectedState, Bloc] {
+  const selectedState = useBlocSelector(bloc, config);
   const providedBloc = useBlocInstance(bloc);
-  const selector = useMemo(
-    () => config?.selector ?? ((state: any) => state),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
-  );
-  const memoizedConfig = useMemo(
-    () => ({ ...config, selector }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
-  );
-  return [useBlocSelector(bloc, memoizedConfig), providedBloc];
+
+  return [selectedState, providedBloc] as const;
 }
