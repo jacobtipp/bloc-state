@@ -1,3 +1,5 @@
+## [1.0.4](https://github.com/jacobtipp/bloc-state/compare/react-bloc-v1.0.3...react-bloc-v1.0.4) (2023-04-09)
+
 ## [1.0.3](https://github.com/jacobtipp/bloc-state/compare/react-bloc-v1.0.2...react-bloc-v1.0.3) (2023-04-04)
 
 ## [1.0.2](https://github.com/jacobtipp/bloc-state/compare/react-bloc-v1.0.1...react-bloc-v1.0.2) (2023-04-03)
