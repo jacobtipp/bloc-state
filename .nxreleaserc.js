@@ -12,30 +12,24 @@ module.exports = {
     { type: 'revert', release: 'patch' },
     { type: 'perf', release: 'patch' },
   ],
-  plugins: [
-    [
-      '@semantic-release/release-notes-generator',
-      {
-        preset: 'conventionalcommits',
-        presetConfig: {
-          types: [
-            { type: 'feat', section: 'Features' },
-            { type: 'fix', section: 'Bug Fixes' },
-            { type: 'perf', section: 'Performance Improvements' },
-            { type: 'revert', section: 'Reverts' },
-            { type: 'refactor', section: 'Code Refactoring' },
-            { type: 'style', section: 'Styles' },
-            { type: 'build', scope: 'deps', section: 'Build System' },
-            { type: 'docs', scope: 'readme', section: 'Documentation' },
-            { type: 'docs', section: 'Documentation', hidden: true },
-            { type: 'chore', section: 'Miscellaneous Chores', hidden: true },
-            { type: 'test', section: 'Tests', hidden: true },
-            { type: 'build', section: 'Build System', hidden: true },
-            { type: 'ci', section: 'Continuous Integration', hidden: true },
-          ],
-        },
-      },
+  preset: 'conventionalcommits',
+  presetConfig: {
+    types: [
+      { type: 'feat', section: 'Features' },
+      { type: 'fix', section: 'Bug Fixes' },
+      { type: 'perf', section: 'Performance Improvements' },
+      { type: 'revert', section: 'Reverts' },
+      { type: 'refactor', section: 'Code Refactoring' },
+      { type: 'style', section: 'Styles' },
+      { type: 'build', scope: 'deps', section: 'Build System' },
+      { type: 'docs', scope: 'readme', section: 'Documentation' },
+      { type: 'docs', section: 'Documentation', hidden: true },
+      { type: 'chore', section: 'Miscellaneous Chores', hidden: true },
+      { type: 'test', section: 'Tests', hidden: true },
+      { type: 'ci', section: 'Continuous Integration', hidden: true },
     ],
+  },
+  plugins: [
     [
       '@semantic-release/npm',
       {
