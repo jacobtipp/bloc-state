@@ -1,0 +1,62 @@
+name: Tests
+
+on:
+  pull_request:
+    branches: ['*']
+
+jobs:
+  test:
+    name: Test
+    if: "!contains(github.event.head_commit.message, 'ci skip')"
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        node-version: [16.14.0]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout git repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Setup nx shas
+        uses: nrwl/nx-set-shas@v3
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Check npm version
+        run: npm --version
+
+      - name: Install pnpm
+        run: npm i -g pnpm@7.25.0
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Check pnpm version
+        run: |
+          pnpm --version
+          npm --version
+
+      - name: Format
+        run: pnpx nx format:check
+
+      - name: Lint
+        run: |
+          pnpm nx workspace-lint
+          pnpm nx affected --target=lint --parallel=3 --base=${{env.NX_BASE}} --head=${{env.NX_HEAD}}
+
+      - name: Test
+        run: pnpm nx affected --target=test --parallel=3 --base=${{env.NX_BASE}} --head=${{env.NX_HEAD}} --ci --code-coverage
+
+      - name: Build
+        run: pnpm nx run-many --target=build --parallel=3 --base=${{env.NX_BASE}} --head=${{env.NX_HEAD}}
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3

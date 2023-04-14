@@ -1,0 +1,49 @@
+name: Release
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  release:
+    name: Release
+    if: "!contains(github.event.head_commit.message, 'skip-release') && !contains(github.event.head_commit.message, 'skip-ci') && github.event_name != 'pull_request'"
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        node-version: [16.14.0]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout git repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Setup nx shas
+        uses: nrwl/nx-set-shas@v3
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install pnpm
+        run: npm i -g pnpm@7.25.0
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Test
+        run: pnpm nx affected --target=test --parallel=3 --base=${{env.NX_BASE}} --head=${{env.NX_HEAD}}
+
+      - name: Build
+        run: pnpm nx run-many --target=build --parallel=3 --base=${{env.NX_BASE}} --head=${{env.NX_HEAD}}
+
+      - name: Release
+        run: pnpm nx affected --target=semantic-release --maxParallel=1 --base=${{env.NX_BASE}} --head=${{env.NX_HEAD}}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
