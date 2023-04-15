@@ -1,11 +1,11 @@
 import { cleanup, render, waitFor, screen } from '@testing-library/react';
 import { UserSingleBlocListenerProvider } from '../test-helpers';
-import { globalContext } from '../../src/lib/context/bloc-context';
+import { getProviderContext } from '../../src/lib/context/provider-context';
 
 describe('BlocListener', () => {
   afterEach(() => {
     cleanup();
-    globalContext.clear();
+    getProviderContext().clear();
   });
 
   it('should listen to states when single bloc listener', async () => {

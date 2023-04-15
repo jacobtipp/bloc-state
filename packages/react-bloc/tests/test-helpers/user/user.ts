@@ -22,13 +22,13 @@ export class UserEvent extends BlocEvent {}
 export class UserLastNameChangedEvent extends UserEvent {}
 
 export class UserNameChangedEvent extends UserEvent {
-  constructor(public name: { first: string; last: string }) {
+  constructor(public userName: { first: string; last: string }) {
     super();
   }
 }
 
 export class UserLastNameAsyncChangedEvent extends UserEvent {
-  constructor(public name: string) {
+  constructor(public userName: string) {
     super();
   }
 }
@@ -57,7 +57,7 @@ export class UserBloc extends Bloc<UserEvent, UserState> {
       await delay(1000);
       emit(
         this.state.ready((user) => {
-          user.name.last = event.name;
+          user.name.last = event.userName;
         })
       );
     });
@@ -65,7 +65,7 @@ export class UserBloc extends Bloc<UserEvent, UserState> {
     this.on(UserNameChangedEvent, (event, emit) =>
       emit(
         this.state.ready((user) => {
-          user.name = event.name;
+          user.name.first = event.userName.first;
         })
       )
     );

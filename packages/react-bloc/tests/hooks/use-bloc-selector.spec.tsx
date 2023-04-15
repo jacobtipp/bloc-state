@@ -7,7 +7,7 @@ import {
   act,
   fireEvent,
 } from '@testing-library/react';
-import { useBlocSelector } from '../../src';
+import { getProviderContext, useBlocSelector } from '../../src';
 import { UserBloc, UserBlocProvider } from '../test-helpers';
 import CounterCubit from '../test-helpers/counter/counter.cubit';
 import {
@@ -16,7 +16,6 @@ import {
 } from '../test-helpers/wrappers';
 import { State } from '@jacobtipp/state';
 import { CounterBlocProvider } from '../test-helpers/counter/components/counter-cubit-provider';
-import { globalContext } from '../../src';
 
 describe('useBlocSelector', () => {
   let cubitCounterWrapper: ({ children }: any) => JSX.Element;
@@ -34,7 +33,7 @@ describe('useBlocSelector', () => {
 
   afterEach(() => {
     console.error = originalConsoleError;
-    globalContext.clear();
+    getProviderContext().clear();
     bloc.close();
     cleanup();
   });

@@ -6,6 +6,7 @@ import {
   AbstractClassType,
 } from '@jacobtipp/bloc';
 import { State } from '@jacobtipp/state';
+import { Disposable } from './components';
 
 /**
  * StateType is a generic type that returns the state type of the given bloc object.
@@ -31,21 +32,13 @@ export type StateType<T extends BlocBase<any>> = T extends Cubit<infer U>
 export type SuspenseDataType<T> = T extends State<infer U> ? U : T;
 
 /**
- * CreatorKey is a generic type that can represent one of three different types:
- * A class type,
- * An abstract class type, or
- * A string.
- *
- * @typeParam T - The type that the CreatorKey represents.
- */
-export type CreatorKey<T> = ClassType<T> | AbstractClassType<T> | string;
-
-/**
  * Create represents a function that creates a new instance of an object of type T.
  *
  * @typeParam T - The type of object that the Create function creates.
  */
 export type Create<T> = () => T;
+
+export type CreatorKey<T> = ClassType<T> | AbstractClassType<T> | string;
 
 /**
  * Creator is an interface that defines an object that can create and dispose of objects of type T.
@@ -55,7 +48,7 @@ export type Create<T> = () => T;
 export type Creator<T = unknown> = {
   key: CreatorKey<T>; // The key that identifies the Creator.
   create: Create<T>; // The function that creates the new instance of T.
-  dispose?: (value: T) => void; // An optional dispose function to dispose of instances of T.
+  dispose?: Disposable<T>; // An optional dispose function to dispose of instances of T.
 };
 
 /**

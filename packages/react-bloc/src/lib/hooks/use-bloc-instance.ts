@@ -1,6 +1,6 @@
 import { BlocBase, ClassType } from '@jacobtipp/bloc';
+import { getProviderContext } from '../context';
 import { useContext } from 'react';
-import { globalContext } from '../context';
 
 /**
  * This function returns a bloc instance based on the provided bloc class type.
@@ -12,15 +12,12 @@ import { globalContext } from '../context';
 export const useBlocInstance = <Bloc extends BlocBase<any>>(
   bloc: ClassType<Bloc>
 ): Bloc => {
-  const blocContext = globalContext.get(bloc.name);
-
-  if (!blocContext) {
+  const blocContextContainer = getProviderContext<Bloc>().get(bloc.name);
+  if (!blocContextContainer) {
     throw new UseBlocInstanceError(bloc.name);
   }
 
-  const blocInstance = useContext(blocContext.context);
-
-  return blocInstance as Bloc;
+  return useContext(blocContextContainer.context);
 };
 
 export class UseBlocInstanceError extends Error {
