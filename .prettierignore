@@ -3,3 +3,4 @@
 /dist
 /coverage
 *.md
+*.pnpm-store
