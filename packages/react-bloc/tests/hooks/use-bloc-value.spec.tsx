@@ -1,19 +1,18 @@
 import { cubitCounterWrapper as ccw } from '../test-helpers/wrappers';
 import { cleanup, renderHook } from '@testing-library/react';
-import { useBlocValue } from '../../src';
+import { getProviderContext, useBlocValue } from '../../src';
 import CounterCubit from '../test-helpers/counter/counter.cubit';
-import { globalContext } from '../../src';
 
 describe('useBlocValue', () => {
   let cubitCounterWrapper: ({ children }: any) => JSX.Element;
 
   beforeEach(() => {
-    globalContext.clear();
+    getProviderContext().clear();
     cubitCounterWrapper = ccw;
   });
 
   afterEach(() => {
-    globalContext.clear();
+    getProviderContext().clear();
     cleanup();
   });
 

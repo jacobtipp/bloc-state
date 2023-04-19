@@ -1,43 +1,31 @@
-import { BlocBase } from '@jacobtipp/bloc';
-import React, { PropsWithChildren, useMemo } from 'react';
+import React, { PropsWithChildren, useCallback } from 'react';
 import { MultiCreator } from '../../types';
-import { createProvider } from './provider';
+import { MultiProvider } from './provider';
+import { BlocBase } from '@jacobtipp/bloc';
 
-export type MultiBlocProvider = {
+/**
+ * MultiBlocProvider type defines the data structure for providing multiple Blocs at once.
+ *
+ * @property {MultiCreator<BlocBase<any>>} blocs - An array of creator functions that return a BlocBase instance.
+ * @property {React.DependencyList | undefined} deps - (optional) An array of dependencies to be passed down to the provider.
+ */
+export type MultiBlocProviderProps = {
   blocs: MultiCreator<BlocBase<any>>;
   deps?: React.DependencyList;
 };
 
-const Provider = createProvider<BlocBase<any>>((bloc) => bloc.close());
-export const BlocProvider = (props: PropsWithChildren<MultiBlocProvider>) => {
-  const components = useMemo(() => {
-    return props.blocs.map((creator) => {
-      return ({ children }: PropsWithChildren) => (
-        <Provider creator={creator} deps={props.deps}>
-          {children}
-        </Provider>
-      );
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, props.deps);
+export const BlocProvider = (
+  props: PropsWithChildren<MultiBlocProviderProps>
+) => {
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const dispose = useCallback<(value: BlocBase<any>) => void>(
+    (bloc) => bloc.close(),
+    []
+  );
 
-  // https://javascript.plainenglish.io/how-to-combine-context-providers-for-cleaner-react-code-9ed24f20225e
-  const Providers = useMemo(() => {
-    return components.reduce(
-      (Acc, Current) => {
-        return ({ children }) => {
-          return (
-            <Acc>
-              <Current>{children}</Current>
-            </Acc>
-          );
-        };
-      },
-      // eslint-disable-next-line react/jsx-no-useless-fragment
-      ({ children }) => <>{children}</>
-    );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [components]);
-
-  return <Providers>{props.children}</Providers>;
+  return (
+    <MultiProvider creators={props.blocs} dispose={dispose} deps={props.deps}>
+      {props.children}
+    </MultiProvider>
+  );
 };

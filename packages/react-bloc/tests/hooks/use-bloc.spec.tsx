@@ -1,5 +1,5 @@
 import { renderHook, act, cleanup } from '@testing-library/react';
-import { globalContext } from '../../src';
+import { getProviderContext } from '../../src';
 import { useBloc } from '../../src';
 import CounterCubit from '../test-helpers/counter/counter.cubit';
 import { UserBloc, UserNameChangedEvent } from '../test-helpers/user/user';
@@ -18,7 +18,7 @@ describe('useBloc', () => {
   });
 
   afterEach(() => {
-    globalContext.clear();
+    getProviderContext().clear();
     cleanup();
   });
 

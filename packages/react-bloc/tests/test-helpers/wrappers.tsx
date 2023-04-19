@@ -1,19 +1,29 @@
-import { BlocProvider } from '../../src';
+import { BlocProvider, RepositoryProvider } from '../../src';
+import { CounterRepository } from './counter';
 import { CounterBloc } from './counter/counter.bloc';
 import CounterCubit from './counter/counter.cubit';
 import { UserBloc, UserLastNameAsyncChangedEvent } from './user/user';
 
 export const cubitCounterWrapper = ({ children }: any) => (
-  <BlocProvider
-    blocs={[
+  <RepositoryProvider
+    repositories={[
       {
-        key: CounterCubit,
-        create: () => new CounterCubit(),
+        key: CounterRepository,
+        create: () => new CounterRepository(),
       },
     ]}
   >
-    {children}
-  </BlocProvider>
+    <BlocProvider
+      blocs={[
+        {
+          key: CounterCubit,
+          create: () => new CounterCubit(),
+        },
+      ]}
+    >
+      {children}
+    </BlocProvider>
+  </RepositoryProvider>
 );
 
 export const blocCounterWrapper = ({ children }: any) => (

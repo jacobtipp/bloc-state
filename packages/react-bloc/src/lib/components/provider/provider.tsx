@@ -2,12 +2,16 @@ import React, {
   Context,
   createContext,
   Fragment,
+  PropsWithChildren,
   useEffect,
+  useMemo,
   useState,
 } from 'react';
-import { globalContext } from '../../context/bloc-context';
-import { Creator } from '../../types';
-import { extractKey } from '../../util';
+import {
+  ContextContainer,
+  getProviderContext,
+} from '../../context/provider-context';
+import { Creator, MultiCreator } from '../../types';
 
 /**
  * Disposable is a generic type that defines a function that disposes of a resource of type T.
@@ -23,7 +27,14 @@ export type Disposable<T> = (value: T) => void;
  */
 export type ProviderProps<T> = {
   creator: Creator<T>; // The Creator object used to create instances of T.
-  deps?: React.DependencyList; // An optional array of dependencies used to recompute the Provider state.
+  dispose?: Disposable<T>;
+  deps?: React.DependencyList;
+};
+
+export type MultiProviderProps<T> = {
+  creators: MultiCreator<T>;
+  dispose?: Disposable<T>;
+  deps?: React.DependencyList;
 };
 
 /**
@@ -50,16 +61,16 @@ function getStateFromProps<T>(
   { creator }: ProviderProps<T>,
   dispose?: Disposable<T>
 ): ProviderState {
-  const name = extractKey(creator.key);
+  const name = typeof creator.key === 'string' ? creator.key : creator.key.name;
   const value = creator.create();
-  const container = globalContext.get(name) ?? {
-    creator: creator.dispose ? creator : { ...creator, dispose },
+  const container: ContextContainer<T> = getProviderContext<T>().get(name) ?? {
     context: createContext(value),
     count: 0,
   };
 
   container.context.displayName = name;
-  globalContext.add(name, container);
+
+  getProviderContext<T>().add(name, container);
 
   return {
     context: container.context,
@@ -88,9 +99,9 @@ export function createProvider<T>(dispose?: Disposable<T>) {
       setState(stateFromProps);
 
       return () => {
-        globalContext.remove(stateFromProps.name);
-        if (stateFromProps.dispose) {
-          stateFromProps.dispose(stateFromProps.value);
+        getProviderContext<T>().remove(stateFromProps.name);
+        if (dispose) {
+          dispose(stateFromProps.value);
         }
       };
       // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -107,4 +118,39 @@ export function createProvider<T>(dispose?: Disposable<T>) {
     // eslint-disable-next-line react/jsx-no-useless-fragment
     return <Fragment></Fragment>;
   };
+}
+
+export function MultiProvider<T>(
+  props: PropsWithChildren<MultiProviderProps<T>>
+) {
+  const components = useMemo(() => {
+    return props.creators.map((creator) => {
+      const Provider = createProvider<T>(creator.dispose ?? props.dispose);
+      return ({ children }: PropsWithChildren) => (
+        <Provider creator={creator} deps={props.deps}>
+          {children}
+        </Provider>
+      );
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, props.deps);
+
+  // https://javascript.plainenglish.io/how-to-combine-context-providers-for-cleaner-react-code-9ed24f20225e
+  const Providers = useMemo(() => {
+    return components.reduce(
+      (Acc, Current) => {
+        return ({ children }) => {
+          return (
+            <Acc>
+              <Current>{children}</Current>
+            </Acc>
+          );
+        };
+      },
+      // eslint-disable-next-line react/jsx-no-useless-fragment
+      ({ children }) => <>{children}</>
+    );
+  }, [components]);
+
+  return <Providers>{props.children}</Providers>;
 }

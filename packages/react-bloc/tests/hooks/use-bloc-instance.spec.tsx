@@ -7,7 +7,7 @@ import {
 } from '../test-helpers/wrappers';
 import CounterCubit from '../test-helpers/counter/counter.cubit';
 import { CounterBlocConsumer } from '../test-helpers/counter/components/counter-cubit-consumer';
-import { globalContext } from '../../src/lib/';
+import { getProviderContext } from '../../src/lib/';
 
 describe('useBlocInstance', () => {
   let cubitCounterWrapper: ({ children }: any) => JSX.Element;
@@ -23,7 +23,7 @@ describe('useBlocInstance', () => {
 
   afterEach(() => {
     console.error = originalConsoleError;
-    globalContext.clear();
+    getProviderContext().clear();
     cleanup();
   });
 
