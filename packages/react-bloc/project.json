@@ -58,8 +58,65 @@
       "options": {
         "buildTarget": "react-bloc:build",
         "outputPath": "dist/packages/react-bloc",
+        "changelog": true,
+        "github": true,
         "npm": false,
+        "repositoryUrl": "https://github.com/jacobtipp/bloc-state.git",
+        "preset": "conventionalcommits",
+        "presetConfig": {
+          "types": [
+            { "type": "feat", "section": "Features" },
+            { "type": "fix", "section": "Bug Fixes" },
+            {
+              "type": "refactor",
+              "section": "Code Refactoring",
+              "hidden": false
+            },
+            {
+              "type": "docs",
+              "scope": "readme",
+              "section": "Documentation",
+              "hidden": false
+            },
+            {
+              "type": "build",
+              "scope": "deps",
+              "section": "Build System Dependencies",
+              "hidden": false
+            },
+            {
+              "type": "perf",
+              "section": "Performance Improvements",
+              "hidden": false
+            },
+            {
+              "type": "revert",
+              "section": "Revert Changes",
+              "hidden": false
+            }
+          ]
+        },
+        "releaseRules": [
+          { "type": "docs", "scope": "readme", "release": "patch" },
+          { "type": "refactor", "release": "patch" },
+          { "type": "build", "scope": "deps", "release": "patch" },
+          { "type": "revert", "release": "patch" },
+          { "type": "perf", "release": "patch" }
+        ],
+        "branches": [
+          "main",
+          {
+            "name": "dev-react-bloc",
+            "prerelease": true
+          }
+        ],
         "plugins": [
+          [
+            "@semantic-release/npm",
+            {
+              "npmPublish": false
+            }
+          ],
           [
             "@semantic-release/pnpm",
             {
