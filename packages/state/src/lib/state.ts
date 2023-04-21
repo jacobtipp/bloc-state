@@ -30,7 +30,7 @@ export abstract class State<Data = any> extends BaseState {
   readonly isStateInstance = true;
 
   /** The data in the state object. */
-  data: Data;
+  readonly data: Data;
 
   /**
    * Produces a new instance of the state object with the specified mutations
