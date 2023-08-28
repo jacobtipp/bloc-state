@@ -1,6 +1,4 @@
-import { BlocEvent } from '../../../src';
-
-export abstract class EventTransformerEvent extends BlocEvent {}
+export abstract class EventTransformerEvent {}
 
 export class EventTransformerRestartableEvent extends EventTransformerEvent {
   constructor(public num = 1) {
