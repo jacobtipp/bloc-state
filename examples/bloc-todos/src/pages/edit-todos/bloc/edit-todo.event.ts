@@ -1,6 +1,4 @@
-import { BlocEvent } from '@jacobtipp/bloc';
-
-export abstract class EditTodoEvent extends BlocEvent {}
+export abstract class EditTodoEvent {}
 
 export class EditTodoTitleChanged extends EditTodoEvent {
   constructor(public title: string) {

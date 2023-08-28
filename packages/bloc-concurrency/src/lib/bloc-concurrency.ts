@@ -1,4 +1,4 @@
-import { BlocEvent, EventTransformer } from '@jacobtipp/bloc';
+import { EventTransformer } from '@jacobtipp/bloc';
 import { concatMap, mergeMap, switchMap } from 'rxjs';
 
 /**
@@ -7,7 +7,7 @@ import { concatMap, mergeMap, switchMap } from 'rxjs';
  * @returns A new EventTransformer that applies the `switchMap` operator to the input Observable and maps each event to an Observable using the provided mapper function.
  */
 export const restartable =
-  <Event extends BlocEvent>(): EventTransformer<Event> =>
+  <Event>(): EventTransformer<Event> =>
   (events$, mapper) =>
     events$.pipe(switchMap(mapper));
 
@@ -17,7 +17,7 @@ export const restartable =
  * @returns A new EventTransformer that applies the `concatMap` operator to the input Observable and maps each event to an Observable using the provided mapper function.
  */
 export const sequential =
-  <Event extends BlocEvent>(): EventTransformer<Event> =>
+  <Event>(): EventTransformer<Event> =>
   (events$, mapper) =>
     events$.pipe(concatMap(mapper));
 
@@ -27,6 +27,6 @@ export const sequential =
  * @returns A new EventTransformer that applies the `mergeMap` operator to the input Observable and maps each event to an Observable using the provided mapper function.
  */
 export const concurrent =
-  <Event extends BlocEvent>(): EventTransformer<Event> =>
+  <Event>(): EventTransformer<Event> =>
   (events$, mapper) =>
     events$.pipe(mergeMap(mapper));
