@@ -106,6 +106,10 @@
         "branches": [
           "main",
           {
+            "name": "dev",
+            "prerelease": true
+          },
+          {
             "name": "dev-bloc",
             "prerelease": true
           }

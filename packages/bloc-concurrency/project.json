@@ -108,6 +108,10 @@
         "branches": [
           "main",
           {
+            "name": "dev",
+            "prerelease": true
+          },
+          {
             "name": "dev-bloc-concurrency",
             "prerelease": true
           }
