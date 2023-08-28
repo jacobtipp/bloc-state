@@ -1,6 +1,6 @@
 {
   "name": "@jacobtipp/react-bloc",
-  "version": "1.0.7",
+  "version": "2.0.0-dev.1",
   "main": "./index.js",
   "private": false,
   "sideEffects": false,
