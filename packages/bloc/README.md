@@ -80,7 +80,7 @@ Bloc.observer = AppBlocObserver();
 
 ```ts
 /// The events which `CounterBloc` will react to.
-abstract class CounterEvent extends BlocEvent {}
+abstract class CounterEvent {}
 
 class CounterIncrementEvent extends CounterEvent {}
 class CounterDecrementEvent extends CounterEvent {}

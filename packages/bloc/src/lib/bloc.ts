@@ -4,17 +4,16 @@ import { BlocBase } from './base';
 import { BlocObserver } from './bloc-observer';
 import { Emitter, _Emitter } from './emitter';
 import { StateError } from './errors';
-import { BlocEvent } from './event';
 import { Transition } from './transition';
 import { ClassType } from './types';
 
 /**
  * EventHandler that takes an event and emits state changes.
  *
- * @template E - The generic type of the BlocEvent.
+ * @template E - The generic type of the event.
  * @template S - The generic type of the state.
  */
-export type EventHandler<E extends BlocEvent, S> = (
+export type EventHandler<E, S> = (
   event: InstanceType<ClassType<E>>,
   emitter: Emitter<S>
 ) => void | Promise<void>;
@@ -39,13 +38,10 @@ export type EventTransformer<Event> = (
 /**
  * An abstract class representing a BLoC.
  *
- * @template Event - The generic type of the BlocEvent.
+ * @template Event - The generic type of the event.
  * @template State - The generic type of the state.
  */
-export abstract class Bloc<
-  Event extends BlocEvent,
-  State
-> extends BlocBase<State> {
+export abstract class Bloc<Event, State> extends BlocBase<State> {
   /**
    * Creates a new instance of the Bloc class.
    *
@@ -221,10 +217,10 @@ export abstract class Bloc<
    * @returns The instance of the Bloc.
    */
   add(event: Event) {
-    if (!this._eventMap.has(event.constructor as ClassType<Event>)) {
+    if (!this._eventMap.has(Object.getPrototypeOf(event).constructor)) {
       throw new StateError(`
-        add(${event.name}) was called without a registered event handler.
-        Make sure to register a handler via on(${event.name}, (event, emit) {...})
+        add(${event}) was called without a registered event handler.
+        Make sure to register a handler via on(${event}, (event, emit) {...})
       `);
     }
 
