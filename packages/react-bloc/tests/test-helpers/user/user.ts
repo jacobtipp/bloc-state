@@ -1,4 +1,4 @@
-import { BlocEvent, Bloc } from '@jacobtipp/bloc';
+import { Bloc } from '@jacobtipp/bloc';
 import { State } from '@jacobtipp/state';
 
 import { delay } from '../counter/delay';
@@ -17,7 +17,7 @@ export class UserState extends State<User> {
   }
 }
 
-export class UserEvent extends BlocEvent {}
+export class UserEvent {}
 
 export class UserLastNameChangedEvent extends UserEvent {}
 

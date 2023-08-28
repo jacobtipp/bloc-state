@@ -1,11 +1,11 @@
-import { Bloc, BlocEvent } from '@jacobtipp/bloc';
+import { Bloc } from '@jacobtipp/bloc';
 import { State } from '@jacobtipp/state';
 import { startWith } from 'rxjs';
 import { restartable, sequential, concurrent } from '../src';
 import { delay } from './helpers/delay';
 
 describe('transformers', () => {
-  abstract class EventTransformerEvent extends BlocEvent {}
+  abstract class EventTransformerEvent {}
   class EventTransformerSequentialEvent extends EventTransformerEvent {}
   class EventTransformerRestartableEvent extends EventTransformerEvent {
     constructor(public num: number = 1) {

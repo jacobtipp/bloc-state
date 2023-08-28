@@ -1,7 +1,6 @@
-import { BlocEvent } from '@jacobtipp/bloc';
 import { PostTransformer } from '../../pages-common/post-transformer';
 
-export abstract class PostEvent extends BlocEvent {}
+export abstract class PostEvent {}
 
 export class PostSubscribed extends PostEvent {
   constructor(public id: number, public transformer: PostTransformer) {
