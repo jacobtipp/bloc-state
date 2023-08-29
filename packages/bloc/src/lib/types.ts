@@ -3,6 +3,7 @@
  * `ClassType` is a generic interface.
  * @typeparam T - The type of the class that will be newable.
  */
+// eslint-disable-next-line @typescript-eslint/ban-types
 export interface ClassType<T> extends Function {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   new (...args: any[]): T;

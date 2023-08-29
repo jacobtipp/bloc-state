@@ -1,6 +1,0 @@
-# ignore everything except for packages and examples
-/*
-!.nxignore
-!packages/
-!examples/
-
