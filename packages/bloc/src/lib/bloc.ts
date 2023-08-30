@@ -1,39 +1,20 @@
-import { filter, mergeMap, Observable, Subject } from 'rxjs';
+import { filter, merge, mergeMap, Observable, Subject } from 'rxjs';
 
 import { BlocBase } from './base';
 import { BlocObserver } from './bloc-observer';
 import { Emitter, _Emitter } from './emitter';
 import { StateError } from './errors';
 import { Transition } from './transition';
-import { ClassType } from './types';
-
-/**
- * EventHandler that takes an event and emits state changes.
- *
- * @template E - The generic type of the event.
- * @template S - The generic type of the state.
- */
-export type EventHandler<E, S> = (
-  event: InstanceType<ClassType<E>>,
-  emitter: Emitter<S>
-) => void | Promise<void>;
-
-/**
- * A function that maps an event to an observable sequence of events.
- *
- * @template Event - The generic type of the event sequence being transformed.
- */
-export type EventMapper<Event> = (event: Event) => Observable<Event>;
-
-/**
- * A function that takes an observable sequence of events and a mapper and returns the transformed observable sequence of events.
- *
- * @template Event - The generic type of the event sequence being transformed.
- */
-export type EventTransformer<Event> = (
-  events$: Observable<Event>,
-  mapper: EventMapper<Event>
-) => Observable<Event>;
+import { ClassType, EventHandler, EventTransformer } from './types';
+import {
+  AtomBase,
+  AtomBloc,
+  AtomBlocProps,
+  Getter,
+  StateWatcher,
+  stateWatcher,
+} from './atom';
+import { Change } from './change';
 
 /**
  * An abstract class representing a BLoC.
@@ -214,7 +195,9 @@ export abstract class Bloc<Event, State> extends BlocBase<State> {
    * @returns The instance of the Bloc.
    */
   add(event: Event) {
-    if (!this._eventMap.has(Object.getPrototypeOf(event).constructor)) {
+    const prototype = Object.getPrototypeOf(event).constructor;
+    const hasEvent = this._eventMap.has(prototype);
+    if (!hasEvent) {
       throw new StateError(`
         add(${event}) was called without a registered event handler.
         Make sure to register a handler via on(${event}, (event, emit) {...})
@@ -249,3 +232,127 @@ export abstract class Bloc<Event, State> extends BlocBase<State> {
 export const isBlocInstance = (bloc: any): bloc is Bloc<any, any> => {
   return bloc instanceof Bloc || Boolean(bloc.isBlocInstance);
 };
+
+export class AtomBlocImpl<Event, State, Actions = unknown> extends Bloc<
+  Event,
+  State
+> {
+  constructor(
+    state: State,
+    props: AtomBlocProps<Event, State, Actions>,
+    get: Getter,
+    watcher: StateWatcher
+  ) {
+    super(state, props.name);
+    this.props = props;
+    this.watcher = watcher;
+    this.chainableOn = this.chainableOn.bind(this);
+    this.setState = this.setState.bind(this);
+    if (watcher.size > 0)
+      this.subscriptions.add(
+        merge(...watcher.watched).subscribe(() => {
+          this.emit((watcher.state as (getter: Getter) => State)(get));
+        })
+      );
+  }
+
+  readonly props: AtomBlocProps<Event, State, Actions>;
+
+  readonly watcher: StateWatcher;
+
+  chainableOn<T extends Event>(
+    event: ClassType<T>,
+    eventHandler: EventHandler<T, State>,
+    transformer?: EventTransformer<T>
+  ): this {
+    this.on(event, eventHandler, transformer);
+    return this;
+  }
+
+  setState(newState: State | ((currentState: State) => State)): void {
+    if (typeof newState === 'function')
+      this.emit((newState as (currentState: State) => State)(this.state));
+    else this.emit(newState);
+  }
+
+  protected override onClose(): void {
+    super.onClose();
+    if (this.props.onClose) this.props.onClose.call(this);
+  }
+
+  protected override onChange(change: Change<State>): void {
+    super.onChange(change);
+    if (this.props.onChange) this.props.onChange.call(this, change);
+  }
+
+  protected override onError(error: Error): void {
+    super.onError(error);
+    if (this.props.onError) this.props.onError.call(this, error);
+  }
+
+  protected override onTransition(transition: Transition<Event, State>): void {
+    super.onTransition(transition);
+    if (this.props.onTransition) this.props.onTransition.call(this, transition);
+  }
+
+  protected override onEvent(event: Event): void {
+    super.onEvent(event);
+    if (this.props.onEvent) this.props.onEvent.call(this, event);
+  }
+
+  override close(): void {
+    this.watcher.clear();
+    super.close();
+  }
+}
+
+export const bloc =
+  <Event, State, Actions = unknown>(state: State | ((get: Getter) => State)) =>
+  <
+    A = Actions,
+    R = unknown extends A
+      ? AtomBloc<Event, State> & ThisType<State>
+      : AtomBase<State> & A & ThisType<A & State>
+  >(
+    props: AtomBlocProps<Event, State, A>
+  ): R => {
+    let setup = false;
+    const watcher = stateWatcher(state);
+    const get: Getter = <S>(bloc: AtomBase<S>) => {
+      if (!setup) {
+        watcher.add(bloc.state$);
+      }
+      return bloc.state;
+    };
+    const blocState =
+      typeof state === 'function'
+        ? (state as (getter: Getter) => State)(get)
+        : state;
+    setup = true;
+
+    const atomBloc = new AtomBlocImpl(blocState, props, get, watcher);
+    const actions = props.actions ? props.actions(atomBloc.setState) : {};
+
+    if (props.actions) {
+      return {
+        get state() {
+          return atomBloc.state;
+        },
+        ...actions,
+        name: props.name,
+        state$: atomBloc.state$,
+        close: atomBloc.close,
+      } as R;
+    } else {
+      return {
+        get state() {
+          return atomBloc.state;
+        },
+        on: atomBloc.chainableOn,
+        add: atomBloc.add,
+        name: props.name,
+        state$: atomBloc.state$,
+        close: atomBloc.close,
+      } as R;
+    }
+  };

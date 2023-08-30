@@ -22,6 +22,8 @@ export abstract class BlocBase<State = unknown> {
     // Gets the name of the constructor function for this BLoC instance.
     this.name = name ?? this.constructor.name;
 
+    this.close = this.close.bind(this);
+
     this.subscriptions.add(this.state$.subscribe());
 
     // Executes the BlocObserver's `onCreate` method specific to this BLoC.
