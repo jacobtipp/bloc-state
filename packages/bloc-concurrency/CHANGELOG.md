@@ -1,3 +1,12 @@
+## [2.0.0-dev.2](https://github.com/jacobtipp/bloc-state/compare/bloc-concurrency-v2.0.0-dev.1...bloc-concurrency-v2.0.0-dev.2) (2023-08-30)
+
+
+### Features
+
+* **bloc:** ✨ add optional name property to BlocBase constructor ([ccc9bf3](https://github.com/jacobtipp/bloc-state/commit/ccc9bf321f671559257c9a137effa217c942b913))
+* **bloc:** ✨ add protected subscriptions set to BlocBase ([a2b5ba8](https://github.com/jacobtipp/bloc-state/commit/a2b5ba834a98d97740cec0ef93956e9a1227216d))
+* **bloc:** ✨ remove onCreate method from BlocBase ([69544f3](https://github.com/jacobtipp/bloc-state/commit/69544f37007c87692108a1eead94a4c4ec3916cb))
+
 ## [2.0.0-dev.1](https://github.com/jacobtipp/bloc-state/compare/bloc-concurrency-v1.0.4...bloc-concurrency-v2.0.0-dev.1) (2023-08-28)
 
 
