@@ -1,4 +1,4 @@
-import { filter, mergeMap, Observable, Subject, Subscription } from 'rxjs';
+import { filter, mergeMap, Observable, Subject } from 'rxjs';
 
 import { BlocBase } from './base';
 import { BlocObserver } from './bloc-observer';
@@ -59,9 +59,6 @@ export abstract class Bloc<Event, State> extends BlocBase<State> {
 
   /** A mapping of registered events to their corresponding handler. */
   private readonly _eventMap = new WeakMap<ClassType<Event>, 1>();
-
-  /** A set of subscriptions to the observable stream of events. */
-  private readonly _subscriptions = new Set<Subscription>();
 
   /** A set of emitters for the state. */
   private readonly _emitters = new Set<Emitter<State>>();
@@ -201,7 +198,7 @@ export abstract class Bloc<Event, State> extends BlocBase<State> {
 
     const subscription = transformStream$.subscribe();
 
-    this._subscriptions.add(subscription);
+    this.subscriptions.add(subscription);
   }
 
   /** An instance of the BlocObserver class. */
@@ -234,12 +231,10 @@ export abstract class Bloc<Event, State> extends BlocBase<State> {
     return this;
   }
 
-  /** Closes all the emitters and subscriptions. */
+  /** Closes all the emitters */
   override close(): void {
     this._emitters.forEach((emitter) => emitter.close());
-    this._subscriptions.forEach((subscription) => subscription.unsubscribe());
     this._emitters.clear();
-    this._subscriptions.clear();
     super.close();
   }
 }
