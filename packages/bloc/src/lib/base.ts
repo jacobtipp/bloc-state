@@ -22,8 +22,7 @@ export abstract class BlocBase<State = unknown> {
     // Gets the name of the constructor function for this BLoC instance.
     this.name = name ?? this.constructor.name;
 
-    // Subscribes to changes in the state of the BLoC.
-    this._stateSubscription = this._subscribeToState();
+    this.subscriptions.add(this.state$.subscribe());
 
     // Executes the `onCreate` method specific to this BLoC.
     this.onCreate();
@@ -38,6 +37,9 @@ export abstract class BlocBase<State = unknown> {
    * A read-only observable stream of the state maintained by the BLoC.
    */
   readonly state$: Observable<State>;
+
+  /** A set of stream subscriptions that a bloc has subscribed to. */
+  protected readonly subscriptions = new Set<Subscription>();
 
   /**
    * Whether or not the BLoC instance has been closed.
@@ -60,11 +62,6 @@ export abstract class BlocBase<State = unknown> {
   private readonly _stateSubject$: Subject<State>;
 
   /**
-   * The subscription to changes in the state of the BLoC.
-   */
-  private readonly _stateSubscription: Subscription;
-
-  /**
    * Returns the current state of the BLoC.
    *
    * @returns The current state of the BLoC.
@@ -80,15 +77,6 @@ export abstract class BlocBase<State = unknown> {
    */
   get isClosed() {
     return this._isClosed;
-  }
-
-  /**
-   * Subscribes to changes in the state of the BLoC.
-   *
-   * @returns The subscription to changes in the state of the BLoC.
-   */
-  private _subscribeToState(): Subscription {
-    return this.state$.subscribe();
   }
 
   /**
@@ -158,7 +146,8 @@ export abstract class BlocBase<State = unknown> {
   close() {
     this._isClosed = true;
     this._stateSubject$.complete();
-    this._stateSubscription.unsubscribe();
+    this.subscriptions.forEach((subscription) => subscription.unsubscribe());
+    this.subscriptions.clear();
 
     // Executes when the BLoC instance is closed.
     this.onClose();
