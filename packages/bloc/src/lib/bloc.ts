@@ -47,8 +47,8 @@ export abstract class Bloc<Event, State> extends BlocBase<State> {
    *
    * @param state - The initial state of the BLoC.
    */
-  constructor(state: State) {
-    super(state);
+  constructor(state: State, name?: string) {
+    super(state, name);
     this.on = this.on.bind(this);
     this.add = this.add.bind(this);
     this.emit = this.emit.bind(this);

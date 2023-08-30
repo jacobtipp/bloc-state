@@ -14,13 +14,13 @@ export abstract class BlocBase<State = unknown> {
    *
    * @param state - The initial state of the BLoC.
    */
-  constructor(state: State) {
+  constructor(state: State, name?: string) {
     this._state = state;
     this._stateSubject$ = new Subject();
     this.state$ = this._stateSubject$;
 
     // Gets the name of the constructor function for this BLoC instance.
-    this.name = this.constructor.name;
+    this.name = name ?? this.constructor.name;
 
     // Subscribes to changes in the state of the BLoC.
     this._stateSubscription = this._subscribeToState();
