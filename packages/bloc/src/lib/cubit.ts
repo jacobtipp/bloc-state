@@ -13,7 +13,7 @@ export abstract class Cubit<State> extends BlocBase<State> {
    *
    * @param {State} state - The initial state of the Cubit.
    */
-  constructor(state: State) {
-    super(state);
+  constructor(state: State, name?: string) {
+    super(state, name);
   }
 }
