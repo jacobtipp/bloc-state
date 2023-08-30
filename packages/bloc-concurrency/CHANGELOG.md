@@ -1,3 +1,10 @@
+## [2.0.0-dev.3](https://github.com/jacobtipp/bloc-state/compare/bloc-concurrency-v2.0.0-dev.2...bloc-concurrency-v2.0.0-dev.3) (2023-08-30)
+
+
+### Features
+
+* **bloc:** ✨ add bloc atom implementation ([f0077d5](https://github.com/jacobtipp/bloc-state/commit/f0077d50e2dfd14b4419bc9e0665fd92b511a079))
+
 ## [2.0.0-dev.2](https://github.com/jacobtipp/bloc-state/compare/bloc-concurrency-v2.0.0-dev.1...bloc-concurrency-v2.0.0-dev.2) (2023-08-30)
 
 
