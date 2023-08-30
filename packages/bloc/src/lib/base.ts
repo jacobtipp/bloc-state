@@ -24,8 +24,8 @@ export abstract class BlocBase<State = unknown> {
 
     this.subscriptions.add(this.state$.subscribe());
 
-    // Executes the `onCreate` method specific to this BLoC.
-    this.onCreate();
+    // Executes the BlocObserver's `onCreate` method specific to this BLoC.
+    Bloc.observer.onCreate(this);
   }
 
   /**
@@ -77,13 +77,6 @@ export abstract class BlocBase<State = unknown> {
    */
   get isClosed() {
     return this._isClosed;
-  }
-
-  /**
-   * Executes when a new instance of the `BlocBase` class is created.
-   */
-  protected onCreate() {
-    Bloc.observer.onCreate(this);
   }
 
   /**
