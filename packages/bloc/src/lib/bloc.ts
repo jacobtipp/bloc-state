@@ -8,8 +8,10 @@ import { Transition } from './transition';
 import { ClassType, EventHandler, EventTransformer } from './types';
 import {
   AtomBase,
+  AtomBaseProps,
   AtomBloc,
   AtomBlocProps,
+  AtomCubitProps,
   Getter,
   StateWatcher,
   stateWatcher,
@@ -233,16 +235,12 @@ export const isBlocInstance = (bloc: any): bloc is Bloc<any, any> => {
   return bloc instanceof Bloc || Boolean(bloc.isBlocInstance);
 };
 
-export class AtomBlocImpl<Event, State, Actions = unknown> extends Bloc<
+export class AtomBlocImpl<
   Event,
-  State
-> {
-  constructor(
-    state: State,
-    props: AtomBlocProps<Event, State, Actions>,
-    get: Getter,
-    watcher: StateWatcher
-  ) {
+  State,
+  Props extends AtomBaseProps<State>
+> extends Bloc<Event, State> {
+  constructor(state: State, props: Props, get: Getter, watcher: StateWatcher) {
     super(state, props.name);
     this.props = props;
     this.watcher = watcher;
@@ -256,7 +254,7 @@ export class AtomBlocImpl<Event, State, Actions = unknown> extends Bloc<
       );
   }
 
-  readonly props: AtomBlocProps<Event, State, Actions>;
+  readonly props: AtomBaseProps<State>;
 
   readonly watcher: StateWatcher;
 
@@ -292,12 +290,14 @@ export class AtomBlocImpl<Event, State, Actions = unknown> extends Bloc<
 
   protected override onTransition(transition: Transition<Event, State>): void {
     super.onTransition(transition);
-    if (this.props.onTransition) this.props.onTransition.call(this, transition);
+    const props = this.props as AtomBlocProps<Event, State>;
+    if (props.onTransition) props.onTransition.call(this, transition);
   }
 
   protected override onEvent(event: Event): void {
     super.onEvent(event);
-    if (this.props.onEvent) this.props.onEvent.call(this, event);
+    const props = this.props as AtomBlocProps<Event, State>;
+    if (props.onEvent) props.onEvent.call(this, event);
   }
 
   override close(): void {
@@ -307,14 +307,16 @@ export class AtomBlocImpl<Event, State, Actions = unknown> extends Bloc<
 }
 
 export const bloc =
-  <Event, State, Actions = unknown>(state: State | ((get: Getter) => State)) =>
+  <Event, State>(state: State | ((get: Getter) => State)) =>
   <
-    A = Actions,
-    R = unknown extends A
-      ? AtomBloc<Event, State> & ThisType<State>
-      : AtomBase<State> & A & ThisType<A & State>
+    A = unknown,
+    R = unknown extends Event
+      ? AtomBase<State> & A & ThisType<A & State>
+      : AtomBloc<Event, State> & ThisType<State>
   >(
-    props: AtomBlocProps<Event, State, A>
+    props: unknown extends Event
+      ? AtomCubitProps<State, A>
+      : AtomBlocProps<Event, State>
   ): R => {
     let setup = false;
     const watcher = stateWatcher(state);

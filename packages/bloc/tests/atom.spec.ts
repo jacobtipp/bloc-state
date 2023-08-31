@@ -9,7 +9,7 @@ describe('AtomBloc', () => {
   it('should work with actions', () => {
     expect.assertions(4);
 
-    const atom = bloc<CounterEvent, number>(0)({
+    const atom = bloc(0)({
       name: 'CounterBloc',
       actions: (set) => ({
         increment: () => set((state) => state + 1),
@@ -17,6 +17,7 @@ describe('AtomBloc', () => {
         setFive: () => set(5),
       }),
     });
+
     expect(atom.state).toBe(0);
     atom.increment();
     expect(atom.state).toBe(1);
