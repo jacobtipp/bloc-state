@@ -1,3 +1,10 @@
+## [2.0.0-dev.4](https://github.com/jacobtipp/bloc-state/compare/bloc-v2.0.0-dev.3...bloc-v2.0.0-dev.4) (2023-08-31)
+
+
+### Code Refactoring
+
+* **bloc:** ♻️ add more typesafety for bloc atom ([725f3ce](https://github.com/jacobtipp/bloc-state/commit/725f3cea1098b73fb2c5093d328bb3cafd4e2813))
+
 ## [2.0.0-dev.3](https://github.com/jacobtipp/bloc-state/compare/bloc-v2.0.0-dev.2...bloc-v2.0.0-dev.3) (2023-08-30)
 
 
