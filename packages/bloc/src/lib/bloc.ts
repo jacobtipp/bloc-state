@@ -2,7 +2,7 @@ import { filter, merge, mergeMap, Observable, Subject } from 'rxjs';
 
 import { BlocBase } from './base';
 import { BlocObserver } from './bloc-observer';
-import { Emitter, _Emitter } from './emitter';
+import { Emitter, BlocEmitterImpl } from './emitter';
 import { StateError } from './errors';
 import { Transition } from './transition';
 import { ClassType, EventHandler, EventTransformer } from './types';
@@ -124,31 +124,31 @@ export abstract class Bloc<Event, State> extends BlocBase<State> {
         }
       };
 
-      const _emitter = new _Emitter(onEmit.bind(this));
+      const emitter = new BlocEmitterImpl(onEmit.bind(this));
 
-      const _callableEmitter = (state: State) => _emitter.call(state);
+      const callableEmitter = (state: State) => emitter.call(state);
 
-      _callableEmitter.close = () => {
+      callableEmitter.close = () => {
         isClosed = true;
-        _emitter.close();
+        emitter.close();
       };
 
-      _callableEmitter.onEach = <T>(
+      callableEmitter.onEach = <T>(
         stream$: Observable<T>,
         onData: (data: T) => void,
         onError?: (error: Error) => void
-      ) => _emitter.onEach(stream$, onData, onError);
+      ) => emitter.onEach(stream$, onData, onError);
 
-      _callableEmitter.forEach = <T>(
+      callableEmitter.forEach = <T>(
         stream$: Observable<T>,
         onData: (data: T) => State,
         onError?: (error: Error) => State
-      ) => _emitter.forEach(stream$, onData, onError);
+      ) => emitter.forEach(stream$, onData, onError);
 
       const handleEvent = async () => {
         try {
-          this._emitters.add(_callableEmitter);
-          await eventHandler.call(this, event, _callableEmitter);
+          this._emitters.add(callableEmitter);
+          await eventHandler.call(this, event, callableEmitter);
         } catch (err) {
           this.onError(err as Error);
           throw err;
@@ -163,8 +163,8 @@ export abstract class Bloc<Event, State> extends BlocBase<State> {
           .catch(() => subscriber.complete());
 
         return () => {
-          _callableEmitter.close();
-          this._emitters.delete(_callableEmitter);
+          callableEmitter.close();
+          this._emitters.delete(callableEmitter);
           stateToBeEmittedStream$.complete();
         };
       });

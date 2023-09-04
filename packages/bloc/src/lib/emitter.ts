@@ -58,7 +58,7 @@ export interface Emitter<State> extends BlocEmitter<State> {
  *
  * @template State - The type of the state that can be emitted.
  */
-export class _Emitter<State> implements BlocEmitter<State> {
+export class BlocEmitterImpl<State> implements BlocEmitter<State> {
   /**
    * Initializes a new instance of `_Emitter`.
    *
