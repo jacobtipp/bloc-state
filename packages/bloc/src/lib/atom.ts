@@ -42,8 +42,7 @@ export interface AtomCubitProps<State, Actions> extends AtomBaseProps<State> {
   actions?: Setter<State, Actions>;
 }
 
-export interface AtomBlocProps<Event, State, Actions = unknown>
-  extends AtomCubitProps<State, Actions> {
+export interface AtomBlocProps<Event, State> extends AtomBaseProps<State> {
   onEvent?: (this: BlocBase<State>, event: Event) => void;
   onTransition?: (
     this: BlocBase<State>,

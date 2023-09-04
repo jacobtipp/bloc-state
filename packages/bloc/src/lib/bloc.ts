@@ -310,9 +310,7 @@ export const bloc =
   <Event, State>(state: State | ((get: Getter) => State)) =>
   <
     A = unknown,
-    R = unknown extends Event
-      ? AtomBase<State> & A & ThisType<A & State>
-      : AtomBloc<Event, State> & ThisType<State>
+    R = unknown extends Event ? AtomBase<State> & A : AtomBloc<Event, State>
   >(
     props: unknown extends Event
       ? AtomCubitProps<State, A>
@@ -333,28 +331,40 @@ export const bloc =
     setup = true;
 
     const atomBloc = new AtomBlocImpl(blocState, props, get, watcher);
-    const actions = props.actions ? props.actions(atomBloc.setState) : {};
+    let actions = {} as Record<string, A>;
 
-    if (props.actions) {
-      return {
-        get state() {
-          return atomBloc.state;
+    if ('actions' in props && props.actions) {
+      actions = props.actions(atomBloc.setState) as Record<string, A>;
+
+      for (const action in actions) {
+        const prop = actions[action];
+        if (typeof prop === 'function') {
+          actions[action] = prop.bind(actions);
+        }
+      }
+
+      // make sure bound actions have state getter and the atom name property defined
+      Object.defineProperties(actions, {
+        state: {
+          get: function () {
+            return atomBloc.state;
+          },
         },
-        ...actions,
-        name: props.name,
-        state$: atomBloc.state$,
-        close: atomBloc.close,
-      } as R;
-    } else {
-      return {
-        get state() {
-          return atomBloc.state;
+        name: {
+          value: atomBloc.name,
         },
-        on: atomBloc.chainableOn,
-        add: atomBloc.add,
-        name: props.name,
-        state$: atomBloc.state$,
-        close: atomBloc.close,
-      } as R;
+      });
     }
+
+    return {
+      get state() {
+        return atomBloc.state;
+      },
+      ...actions,
+      on: atomBloc.chainableOn,
+      add: atomBloc.add,
+      name: props.name,
+      state$: atomBloc.state$,
+      close: atomBloc.close,
+    } as R;
   };
