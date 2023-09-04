@@ -1,3 +1,11 @@
+## [2.0.0-dev.5](https://github.com/jacobtipp/bloc-state/compare/bloc-concurrency-v2.0.0-dev.4...bloc-concurrency-v2.0.0-dev.5) (2023-09-04)
+
+
+### Code Refactoring
+
+* **bloc:** ♻️ atom cubit binds actions to this ([79e8ce5](https://github.com/jacobtipp/bloc-state/commit/79e8ce5a6b82a78a11de3b5b62badd39e0ab1a74))
+* **bloc:** ♻️ rename _Emitter class to BlocEmitterImpl ([04b150d](https://github.com/jacobtipp/bloc-state/commit/04b150d6a88ee7859e20be26b7c3547cf27a3460))
+
 ## [2.0.0-dev.4](https://github.com/jacobtipp/bloc-state/compare/bloc-concurrency-v2.0.0-dev.3...bloc-concurrency-v2.0.0-dev.4) (2023-08-31)
 
 
