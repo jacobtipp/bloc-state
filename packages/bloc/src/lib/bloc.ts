@@ -244,7 +244,7 @@ export class AtomBlocImpl<
     super(state, props.name);
     this.props = props;
     this.watcher = watcher;
-    this.chainableOn = this.chainableOn.bind(this);
+    this.handleEvent = this.handleEvent.bind(this);
     this.setState = this.setState.bind(this);
     if (watcher.size > 0)
       this.subscriptions.add(
@@ -258,13 +258,12 @@ export class AtomBlocImpl<
 
   readonly watcher: StateWatcher;
 
-  chainableOn<T extends Event>(
+  handleEvent<T extends Event>(
     event: ClassType<T>,
     eventHandler: EventHandler<T, State>,
     transformer?: EventTransformer<T>
-  ): this {
+  ) {
     this.on(event, eventHandler, transformer);
-    return this;
   }
 
   setState(newState: State | ((currentState: State) => State)): void {
@@ -361,7 +360,15 @@ export const bloc =
         return atomBloc.state;
       },
       ...actions,
-      on: atomBloc.chainableOn,
+      on<T extends Event>(
+        this: AtomBloc<Event, State>,
+        event: ClassType<T>,
+        eventHandler: EventHandler<T, State>,
+        transformer?: EventTransformer<T>
+      ) {
+        atomBloc.handleEvent(event, eventHandler, transformer);
+        return this;
+      },
       add: atomBloc.add,
       name: props.name,
       state$: atomBloc.state$,
