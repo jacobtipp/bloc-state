@@ -1,3 +1,10 @@
+## [2.0.0-dev.6](https://github.com/jacobtipp/bloc-state/compare/react-bloc-v2.0.0-dev.5...react-bloc-v2.0.0-dev.6) (2023-09-19)
+
+
+### Code Refactoring
+
+* ♻️ on method must be chainable in public atom api ([53aa858](https://github.com/jacobtipp/bloc-state/commit/53aa8582561bc2f4ae84b8d9d8f6260347c724cd))
+
 ## [2.0.0-dev.5](https://github.com/jacobtipp/bloc-state/compare/react-bloc-v2.0.0-dev.4...react-bloc-v2.0.0-dev.5) (2023-09-04)
 
 
