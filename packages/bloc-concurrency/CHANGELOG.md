@@ -1,3 +1,10 @@
+## [2.0.0-dev.7](https://github.com/jacobtipp/bloc-state/compare/bloc-concurrency-v2.0.0-dev.6...bloc-concurrency-v2.0.0-dev.7) (2023-09-20)
+
+
+### Features
+
+* ✨ add public emit method to atom blocs ([2ce909d](https://github.com/jacobtipp/bloc-state/commit/2ce909da6405c22bd008cb27677d99b20a7aee48))
+
 ## [2.0.0-dev.6](https://github.com/jacobtipp/bloc-state/compare/bloc-concurrency-v2.0.0-dev.5...bloc-concurrency-v2.0.0-dev.6) (2023-09-19)
 
 
