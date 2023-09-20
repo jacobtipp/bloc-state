@@ -369,6 +369,7 @@ export const bloc =
         atomBloc.handleEvent(event, eventHandler, transformer);
         return this;
       },
+      emit: atomBloc.setState,
       add: atomBloc.add,
       name: props.name,
       state$: atomBloc.state$,

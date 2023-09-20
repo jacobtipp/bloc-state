@@ -10,6 +10,7 @@ export type AtomBase<State> = {
   close: () => void;
   state$: Observable<State>;
   state: Readonly<State>;
+  emit: (setState: State | ((currentState: State) => State)) => void;
 };
 
 export interface AtomBloc<Event, State> extends AtomBase<State> {
