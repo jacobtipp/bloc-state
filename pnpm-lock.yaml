@@ -36,9 +36,6 @@ importers:
       nanoid:
         specifier: ^4.0.1
         version: 4.0.1
-      observable-hooks:
-        specifier: ^4.2.1
-        version: 4.2.1(react-dom@18.2.0)(react@18.2.0)(rxjs@7.8.0)
       react:
         specifier: 18.2.0
         version: 18.2.0
@@ -76,18 +73,15 @@ importers:
       '@commitlint/config-conventional':
         specifier: ^17.4.2
         version: 17.4.2
-      '@nrwl/eslint-plugin-nx':
-        specifier: 16.7.4
-        version: 16.7.4(@types/node@18.14.2)(@typescript-eslint/parser@5.62.0)(eslint-config-prettier@8.1.0)(eslint@8.46.0)(nx@16.7.4)(typescript@5.1.6)
-      '@nrwl/nx-plugin':
-        specifier: 16.7.4
-        version: 16.7.4(@types/node@18.14.2)(eslint@8.46.0)(nx@16.7.4)(ts-node@10.9.1)(typescript@5.1.6)
       '@nx/cypress':
         specifier: 16.7.4
         version: 16.7.4(@types/node@18.14.2)(cypress@12.2.0)(eslint@8.46.0)(nx@16.7.4)(typescript@5.1.6)
       '@nx/devkit':
         specifier: 16.7.4
         version: 16.7.4(nx@16.7.4)
+      '@nx/eslint-plugin':
+        specifier: ^16.7.4
+        version: 16.7.4(@types/node@18.14.2)(@typescript-eslint/parser@5.62.0)(eslint-config-prettier@8.1.0)(eslint@8.46.0)(nx@16.7.4)(typescript@5.1.6)
       '@nx/jest':
         specifier: 16.7.4
         version: 16.7.4(@types/node@18.14.2)(nx@16.7.4)(ts-node@10.9.1)(typescript@5.1.6)
@@ -99,6 +93,9 @@ importers:
         version: 16.7.4(@types/node@18.14.2)(eslint@8.46.0)(nx@16.7.4)(typescript@5.1.6)
       '@nx/node':
         specifier: 16.7.4
+        version: 16.7.4(@types/node@18.14.2)(eslint@8.46.0)(nx@16.7.4)(ts-node@10.9.1)(typescript@5.1.6)
+      '@nx/plugin':
+        specifier: ^16.7.4
         version: 16.7.4(@types/node@18.14.2)(eslint@8.46.0)(nx@16.7.4)(ts-node@10.9.1)(typescript@5.1.6)
       '@nx/react':
         specifier: 16.7.4
@@ -289,12 +286,6 @@ importers:
       '@jacobtipp/bloc':
         specifier: workspace:*
         version: link:../../dist/packages/bloc
-      '@jacobtipp/state':
-        specifier: workspace:*
-        version: link:../../dist/packages/state
-      observable-hooks:
-        specifier: 4.2.1
-        version: 4.2.1(react-dom@18.2.0)(react@18.2.0)(rxjs@7.8.0)
       react:
         specifier: 18.2.0
         version: 18.2.0
@@ -308,6 +299,9 @@ importers:
         specifier: ^1.2.0
         version: 1.2.0(react@18.2.0)
     devDependencies:
+      '@jacobtipp/state':
+        specifier: workspace:*
+        version: link:../../dist/packages/state
       immer:
         specifier: 9.0.18
         version: 9.0.18
@@ -15211,21 +15205,6 @@ packages:
       define-properties: 1.1.4
       es-abstract: 1.21.1
     dev: true
-
-  /observable-hooks@4.2.1(react-dom@18.2.0)(react@18.2.0)(rxjs@7.8.0):
-    resolution:
-      {
-        integrity: sha512-urZ0D28+oH+SRLQoCDd68rvvJIqK3zgH/Is0nubXDc+CF6d8rbDBN7A2n9mPAax7BtCRlwtnCBnkj8UwXRDf1Q==,
-      }
-    peerDependencies:
-      react: '>=16.8.0'
-      react-dom: '>=16.8.0'
-      rxjs: '>=6.0.0'
-    dependencies:
-      react: 18.2.0
-      react-dom: 18.2.0(react@18.2.0)
-      rxjs: 7.8.0
-    dev: false
 
   /once@1.4.0:
     resolution:
