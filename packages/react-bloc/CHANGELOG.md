@@ -1,3 +1,10 @@
+## [2.0.1](https://github.com/jacobtipp/bloc-state/compare/react-bloc-v2.0.0...react-bloc-v2.0.1) (2023-09-25)
+
+
+### Code Refactoring
+
+* **react-bloc:** ♻️ update hooks implementation ([e7e5152](https://github.com/jacobtipp/bloc-state/commit/e7e5152f9a1f4f01c9b5852d6819f13551991473))
+
 ## [2.0.0](https://github.com/jacobtipp/bloc-state/compare/react-bloc-v1.1.1...react-bloc-v2.0.0) (2023-09-25)
 
 
