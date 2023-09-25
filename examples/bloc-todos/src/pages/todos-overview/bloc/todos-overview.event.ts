@@ -1,7 +1,8 @@
+import { BlocEvent } from '@jacobtipp/bloc';
 import { Todo } from '../../../modules/todos/domain/model/todo';
 import { TodosOverviewFilter } from '../model/todos-overview-filter';
 
-export abstract class TodosOverviewEvent {}
+export abstract class TodosOverviewEvent extends BlocEvent {}
 
 export class TodosOverviewSubscriptionRequested extends TodosOverviewEvent {}
 
