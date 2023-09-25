@@ -22,11 +22,11 @@
     "use-sync-external-store": "^1.2.0"
   },
   "devDependencies": {
+    "@jacobtipp/state": "workspace:*",
     "immer": "9.0.18"
   },
   "peerDependencies": {
     "@jacobtipp/bloc": "workspace:*",
-    "@jacobtipp/state": "workspace:*",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "rxjs": "7.8.0"
