@@ -26,30 +26,27 @@ import { TodosOverviewOptionsButton } from '../components/todos-overview-options
 import { TodosOverviewFilterButton } from '../components/todos-overview-filter-button';
 import { TodosOverviewEmptyText } from '../components/todos-overview-empty-text';
 import { useMemo, useState } from 'react';
-import { TodosOverviewFilter } from '../model';
 import { Todo } from '../../../modules/todos/domain/model/todo';
-import {
-  BlocProvider,
-  useBloc,
-  BlocListener,
-  useRepository,
-} from '@jacobtipp/react-bloc';
-import { TodosRepository } from '../../../modules';
+import { todosRepository } from '../../../modules';
+import { BlocProvider, useBloc, useBlocListener } from '@jacobtipp/react-bloc';
+import { TodosOverviewFilter } from '../model';
+
+const todoFilterMap = (todo: Todo, filter: TodosOverviewFilter) =>
+  filter === 'all'
+    ? true
+    : filter === 'completed'
+    ? todo.isCompleted
+    : !todo.isCompleted;
 
 export default function TodosOverviewPage() {
-  const todosRepository = useRepository(TodosRepository);
-
   return (
     <BlocProvider
-      blocs={[
-        {
-          key: TodosOverviewBloc,
-          create: () =>
-            new TodosOverviewBloc(todosRepository).add(
-              new TodosOverviewSubscriptionRequested()
-            ),
-        },
-      ]}
+      bloc={TodosOverviewBloc}
+      create={() =>
+        new TodosOverviewBloc(todosRepository).add(
+          new TodosOverviewSubscriptionRequested()
+        )
+      }
     >
       <TodosOverviewView />
     </BlocProvider>
@@ -59,9 +56,8 @@ export default function TodosOverviewPage() {
 export function TodosOverviewView() {
   const [isSnackbarOpen, openSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
-
   const [filteredTodos, { add }] = useBloc(TodosOverviewBloc, {
-    selector: ({ todos, filter }) =>
+    selector: ({ data: { todos, filter } }) =>
       todos.filter((todo) => todoFilterMap(todo, filter)),
   });
 
@@ -93,23 +89,24 @@ export function TodosOverviewView() {
     );
   }, [add]);
 
+  useBlocListener(TodosOverviewBloc, {
+    listenWhen(previous, current) {
+      return (
+        previous.data.lastDeletedTodo !== current.data.lastDeletedTodo &&
+        current.data.lastDeletedTodo !== undefined
+      );
+    },
+    listener(_bloc, state) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const deletedTodo = state.data.lastDeletedTodo!;
+      setSnackbarMessage(`Todo "${deletedTodo.title}" deleted.`);
+      openSnackbar(false); // close snackbar if already open
+      openSnackbar(true); // open snackbar
+    },
+  });
+
   return (
-    <BlocListener
-      bloc={TodosOverviewBloc}
-      listenWhen={(previous, current) => {
-        return (
-          previous.data.lastDeletedTodo !== current.data.lastDeletedTodo &&
-          current.data.lastDeletedTodo !== undefined
-        );
-      }}
-      listener={(_get, state) => {
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        const deletedTodo = state.data.lastDeletedTodo!;
-        setSnackbarMessage(`Todo "${deletedTodo.title}" deleted.`);
-        openSnackbar(false); // close snackbar if already open
-        openSnackbar(true); // open snackbar
-      }}
-    >
+    <>
       <AppBar position="fixed">
         <Toolbar>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
@@ -182,13 +179,6 @@ export function TodosOverviewView() {
         action={action}
         sx={{ bottom: { xs: 100, sm: 100 } }}
       />
-    </BlocListener>
+    </>
   );
 }
-
-export const todoFilterMap = (todo: Todo, filter: TodosOverviewFilter) =>
-  filter === 'all'
-    ? true
-    : filter === 'completed'
-    ? todo.isCompleted
-    : !todo.isCompleted;

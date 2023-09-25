@@ -14,7 +14,6 @@ export class EditTodoBloc extends Bloc<EditTodoEvent, EditTodoState> {
   constructor(private todosRepository: TodosRepository) {
     super(new EditTodoState());
 
-    this.todosRepository = todosRepository;
     this.on(EditTodoSubscribed, this.onSubscribed);
     this.on(EditTodoTitleChanged, this.onTitleChanged);
     this.on(EditTodoDescriptionChanged, this.onDescriptionChanged);

@@ -1,12 +1,5 @@
-import {
-  BlocBase,
-  Bloc,
-  Cubit,
-  ClassType,
-  AbstractClassType,
-} from '@jacobtipp/bloc';
+import { BlocBase, Bloc, Cubit } from '@jacobtipp/bloc';
 import { State } from '@jacobtipp/state';
-import { Disposable } from './components';
 
 /**
  * StateType is a generic type that returns the state type of the given bloc object.
@@ -30,30 +23,3 @@ export type StateType<T extends BlocBase<any>> = T extends Cubit<infer U>
  * @typeParam T - The type of the data to be unwrapped.
  */
 export type SuspenseDataType<T> = T extends State<infer U> ? U : T;
-
-/**
- * Create represents a function that creates a new instance of an object of type T.
- *
- * @typeParam T - The type of object that the Create function creates.
- */
-export type Create<T> = () => T;
-
-export type CreatorKey<T> = ClassType<T> | AbstractClassType<T> | string;
-
-/**
- * Creator is an interface that defines an object that can create and dispose of objects of type T.
- *
- * @typeParam T - The type of object that the Creator can create and dispose of.
- */
-export type Creator<T = unknown> = {
-  key: CreatorKey<T>; // The key that identifies the Creator.
-  create: Create<T>; // The function that creates the new instance of T.
-  dispose?: Disposable<T>; // An optional dispose function to dispose of instances of T.
-};
-
-/**
- * MultiCreator is a generic type that represents an array of one or more Creator objects of type T.
- *
- * @typeParam T - The type of object that the creators can create and dispose of.
- */
-export type MultiCreator<T> = [Creator<T>, ...Creator<T>[]];

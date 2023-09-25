@@ -8,30 +8,19 @@ import {
   Typography,
 } from '@mui/material';
 import Icon from '@mui/material/Icon';
-import { StatsBloc } from '../bloc/stats.bloc';
 import { StatsSubscriptionRequested } from '../bloc/stats.event';
 import Grid from '@mui/material/Unstable_Grid2';
-import {
-  BlocProvider,
-  useBlocValue,
-  useRepository,
-} from '@jacobtipp/react-bloc';
-import { TodosRepository } from '../../../modules';
+import { StatsBloc } from '../bloc';
+import { BlocProvider, useBlocValue } from '@jacobtipp/react-bloc';
+import { todosRepository } from '../../../modules';
 
 export default function StatsPage() {
-  const todosRepository = useRepository(TodosRepository);
-
   return (
     <BlocProvider
-      blocs={[
-        {
-          key: StatsBloc,
-          create: () =>
-            new StatsBloc(todosRepository).add(
-              new StatsSubscriptionRequested()
-            ),
-        },
-      ]}
+      bloc={StatsBloc}
+      create={() =>
+        new StatsBloc(todosRepository).add(new StatsSubscriptionRequested())
+      }
     >
       <StatsView />
     </BlocProvider>

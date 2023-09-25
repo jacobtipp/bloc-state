@@ -1,4 +1,6 @@
-export abstract class EditTodoEvent {}
+export abstract class EditTodoEvent {
+  protected _!: void;
+}
 
 export class EditTodoTitleChanged extends EditTodoEvent {
   constructor(public title: string) {

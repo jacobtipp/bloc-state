@@ -2,6 +2,7 @@ import { Observable } from 'rxjs';
 import { Todo } from '../../domain/model/todo';
 import { TodosRepository } from '../../domain/repository/todos-repository';
 import type { TodosResource } from '../resource/todos-resource';
+import { todosResource } from '../resource';
 
 export class TodosRepositoryImpl implements TodosRepository {
   constructor(private todosResource: TodosResource) {}
@@ -19,3 +20,5 @@ export class TodosRepositoryImpl implements TodosRepository {
 
   deleteTodo = async (id: string) => await this.todosResource.deleteTodo(id);
 }
+
+export const todosRepository = new TodosRepositoryImpl(todosResource);

@@ -1,13 +1,12 @@
 import Parser from 'html-react-parser';
-import { PostBloc } from '../bloc';
 import { useBlocSelector } from '@jacobtipp/react-bloc';
+import { PostBloc } from '../bloc';
 
 export function PostDetails() {
   const details = useBlocSelector(PostBloc, {
-    selector: (data) => data.details,
+    selector: (state) => state.data.details,
     suspendWhen: (state) => state.status === 'loading',
   });
-
   const { by, text, time, title, url } = details;
 
   return (
