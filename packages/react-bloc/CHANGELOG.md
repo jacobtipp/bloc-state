@@ -1,3 +1,10 @@
+## [2.0.2](https://github.com/jacobtipp/bloc-state/compare/react-bloc-v2.0.1...react-bloc-v2.0.2) (2023-09-25)
+
+
+### Code Refactoring
+
+* **react-bloc:** ♻️ remove observable-hooks dependency ([8d209b0](https://github.com/jacobtipp/bloc-state/commit/8d209b0bbb7372179090aff3dee429f5500e8f88))
+
 ## [2.0.1](https://github.com/jacobtipp/bloc-state/compare/react-bloc-v2.0.0...react-bloc-v2.0.1) (2023-09-25)
 
 
