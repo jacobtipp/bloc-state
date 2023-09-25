@@ -1,4 +1,5 @@
 import { Bloc } from '../../../src';
+import { BlocEvent } from '../../../src';
 
 export type User = {
   name: {
@@ -35,7 +36,7 @@ export class UserState {
   }
 }
 
-export abstract class UserEvent {}
+export abstract class UserEvent extends BlocEvent {}
 
 export class UserNameChangedEvent extends UserEvent {
   constructor(public userName: { first: string; last: string }) {

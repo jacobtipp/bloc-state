@@ -1,5 +1,5 @@
 import { take } from 'rxjs/operators';
-import { Bloc, Transition, isBlocInstance } from '../src';
+import { BlocEvent, Bloc, Transition, isBlocInstance } from '../src';
 import { CounterBloc } from './helpers/counter/counter.bloc';
 import { CounterCubit } from './helpers/counter/counter.cubit';
 import {
@@ -77,7 +77,7 @@ describe('bloc', () => {
         }
       }
 
-      class TestEvent {}
+      class TestEvent extends BlocEvent {}
 
       class TestBloc extends Bloc<TestEvent, TestState> {
         constructor() {
@@ -103,7 +103,7 @@ describe('bloc', () => {
 
     it('should throw an error if attempting to subscribe to the same event more than once', () => {
       expect.assertions(1);
-      class TestEvent {}
+      class TestEvent extends BlocEvent {}
 
       class TestBloc extends Bloc<TestEvent, null> {
         constructor() {
@@ -177,7 +177,7 @@ describe('bloc', () => {
   describe('Bloc.onError', () => {
     it('should be invoked when an error is thrown from Bloc.onEvent', (done) => {
       expect.assertions(1);
-      class TestEvent {}
+      class TestEvent extends BlocEvent {}
 
       class TestBloc extends Bloc<TestEvent, null> {
         constructor() {
@@ -204,7 +204,7 @@ describe('bloc', () => {
 
     it('should be invoked when an error is thrown inside an event handler', (done) => {
       expect.assertions(1);
-      class TestEvent {}
+      class TestEvent extends BlocEvent {}
 
       class TestBloc extends Bloc<TestEvent, null> {
         constructor() {
@@ -245,7 +245,7 @@ describe('bloc', () => {
         }
       }
 
-      class TestEvent {}
+      class TestEvent extends BlocEvent {}
 
       class TestBloc extends Bloc<TestEvent, TestState> {
         constructor() {

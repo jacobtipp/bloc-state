@@ -1,4 +1,6 @@
-export abstract class IntervalEvent {}
+import { BlocEvent } from '../../../src';
+
+export abstract class IntervalEvent extends BlocEvent {}
 export class IntervalOnEachEvent extends IntervalEvent {}
 export class IntervalOnEachEventWithoutOnError extends IntervalEvent {}
 export class IntervalForEachEvent extends IntervalEvent {}
