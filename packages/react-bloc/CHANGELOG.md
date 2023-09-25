@@ -1,3 +1,14 @@
+## [2.0.0](https://github.com/jacobtipp/bloc-state/compare/react-bloc-v1.1.1...react-bloc-v2.0.0) (2023-09-25)
+
+
+### ⚠ BREAKING CHANGES
+
+* **bloc:** Bloc events no longer need to extend BlocEvent abstract class
+
+### Features
+
+* **bloc:** 💥 ✨ remove BlocEvent abstract class ([1b80fb0](https://github.com/jacobtipp/bloc-state/commit/1b80fb058b67c1c42bafb37e67db6da4cecfba27))
+
 ## [1.1.1](https://github.com/jacobtipp/bloc-state/compare/react-bloc-v1.1.0...react-bloc-v1.1.1) (2023-09-25)
 
 
