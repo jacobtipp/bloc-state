@@ -1,33 +1,33 @@
 import {
-  Bloc,
-  BlocBase,
   BlocObserver,
+  BlocBase,
+  Bloc,
   Change,
   Transition,
 } from '@jacobtipp/bloc';
 
 export class AppBlocObserver extends BlocObserver {
-  override onCreate(bloc: BlocBase<any>): void {
-    console.log(`created bloc: ${bloc.constructor.name}`);
+  override onCreate(_bloc: BlocBase<any>): void {
+    return;
   }
+
   override onEvent(_bloc: Bloc<any, any>, _event: any): void {
-    //console.log(event)
+    return;
   }
 
-  override onError(_bloc: BlocBase<any>, error: any): void {
-    console.error(error);
+  override onError(_bloc: BlocBase<any>, _error: Error): void {
+    return;
   }
 
-  override onChange(_bloc: BlocBase<any>, change: Change<any>): void {
-    console.log(change.current);
+  override onChange(_bloc: BlocBase<any>, _change: Change<any>): void {
+    return;
   }
 
   override onTransition(
     _bloc: Bloc<any, any>,
     _transition: Transition<any, any>
   ): void {
-    //console.log(transition.currentState)
-    //console.log(transition.nextState)
+    return;
   }
 
   override onClose(bloc: BlocBase<any>): void {

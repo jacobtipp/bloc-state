@@ -17,9 +17,10 @@ import { PostTransformer } from '../../pages-common/post-transformer';
 import { Bloc, Emitter } from '@jacobtipp/bloc';
 
 export class PostBloc extends Bloc<PostEvent, PostState> {
-  private transformer: PostTransformer | undefined;
-
-  constructor(private postRepository: PostRepository) {
+  constructor(
+    private postRepository: PostRepository,
+    private transformer: PostTransformer
+  ) {
     super(new PostState());
 
     this.on(PostRestartable, this.getPost, restartable());
@@ -29,7 +30,7 @@ export class PostBloc extends Bloc<PostEvent, PostState> {
     this.on(PostSubscribed, this.onSubscribed);
   }
 
-  onFetched(
+  private onFetched(
     event: PostFetched,
     emit: Emitter<PostState>
   ): void | Promise<void> {
@@ -56,7 +57,6 @@ export class PostBloc extends Bloc<PostEvent, PostState> {
   }
 
   private onSubscribed = (event: PostSubscribed, _emit: Emitter<PostState>) => {
-    this.transformer = event.transformer;
-    this.add(new PostFetched(event.id));
+    this.add(new PostFetched(event.id, event.transformer));
   };
 }

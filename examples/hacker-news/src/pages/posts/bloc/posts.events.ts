@@ -1,6 +1,8 @@
 import { PostTransformer } from '../../pages-common/post-transformer';
 
-export abstract class PostEvent {}
+export abstract class PostEvent {
+  protected _!: void;
+}
 
 export class PostSubscribed extends PostEvent {
   constructor(public id: number, public transformer: PostTransformer) {
@@ -14,7 +16,11 @@ export abstract class PostTransformerEvent extends PostEvent {
   }
 }
 
-export class PostFetched extends PostTransformerEvent {}
+export class PostFetched extends PostTransformerEvent {
+  constructor(public override id: number, public transformer: PostTransformer) {
+    super(id);
+  }
+}
 
 export class PostSequential extends PostTransformerEvent {}
 

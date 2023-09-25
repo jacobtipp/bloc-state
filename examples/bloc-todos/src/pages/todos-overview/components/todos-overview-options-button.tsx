@@ -10,7 +10,7 @@ import { useBloc } from '@jacobtipp/react-bloc';
 
 export function TodosOverviewOptionsButton() {
   const [todos, { add }] = useBloc(TodosOverviewBloc, {
-    selector: (data) => data.todos,
+    selector: (state) => state.data.todos,
   });
 
   const hasTodos = todos.length > 0;

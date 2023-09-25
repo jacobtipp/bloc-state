@@ -1,7 +1,7 @@
 import { IconButton, Menu, MenuItem } from '@mui/material';
 import PopupState, { bindTrigger, bindMenu } from 'material-ui-popup-state';
-import { TodosOverviewBloc, TodosOverviewFilterChanged } from '../bloc';
 import Icon from '@mui/material/Icon';
+import { TodosOverviewBloc, TodosOverviewFilterChanged } from '../bloc';
 import { useBlocInstance } from '@jacobtipp/react-bloc';
 
 export function TodosOverviewFilterButton() {

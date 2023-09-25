@@ -1,36 +1,30 @@
-import {
-  BlocListener,
-  BlocProvider,
-  useBlocInstance,
-  useBlocValue,
-  useRepository,
-} from '@jacobtipp/react-bloc';
 import { PostBloc, PostFetched, PostSubscribed } from '../bloc';
 import { PostId } from '../components/post-id';
 import { Suspense } from 'react';
 import { PostDetails } from '../components/post-details';
 import { PostNext } from '../components/post-next';
+import {
+  BlocProvider,
+  useBlocInstance,
+  useBlocListener,
+  useBlocValue,
+} from '@jacobtipp/react-bloc';
 import { HomeBloc } from '../../home/bloc';
-import { PostRepository } from '../../../modules';
+import { postRepository } from '../../../modules';
 
 export function PostPage() {
   const state = useBlocValue(HomeBloc);
   const { id, transformer } = state.data;
 
-  const postRepository = useRepository(PostRepository);
-
   return (
     <BlocProvider
-      blocs={[
-        {
-          key: PostBloc,
-          create: () =>
-            new PostBloc(postRepository).add(
-              new PostSubscribed(id, transformer)
-            ),
-        },
-      ]}
-      deps={[transformer]}
+      bloc={PostBloc}
+      create={() =>
+        new PostBloc(postRepository, transformer).add(
+          new PostSubscribed(id, transformer)
+        )
+      }
+      dependencies={[transformer]}
     >
       <PostView id={id} />
     </BlocProvider>
@@ -43,16 +37,18 @@ type PostViewProps = {
 
 export function PostView({ id }: PostViewProps) {
   const postBloc = useBlocInstance(PostBloc);
+
+  useBlocListener(HomeBloc, {
+    listenWhen(previous, current) {
+      return previous.data.id !== current.data.id;
+    },
+    listener(_bloc, state) {
+      postBloc.add(new PostFetched(state.data.id, state.data.transformer));
+    },
+  });
+
   return (
-    <BlocListener
-      bloc={HomeBloc}
-      listenWhen={(previous, next) => {
-        return previous.data.id !== next.data.id;
-      }}
-      listener={(_, state) => {
-        postBloc.add(new PostFetched(state.data.id));
-      }}
-    >
+    <>
       <PostId id={id} />
       <div>
         <Suspense fallback={<h2>Loading...</h2>}>
@@ -60,6 +56,6 @@ export function PostView({ id }: PostViewProps) {
         </Suspense>
       </div>
       <PostNext id={id} />
-    </BlocListener>
+    </>
   );
 }

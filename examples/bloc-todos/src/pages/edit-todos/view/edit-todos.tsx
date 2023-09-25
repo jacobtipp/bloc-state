@@ -8,15 +8,9 @@ import {
   Box,
   Typography,
 } from '@mui/material';
-import {
-  BlocListener,
-  BlocProvider,
-  useBloc,
-  useRepository,
-} from '@jacobtipp/react-bloc';
+
 import { useForm, Controller } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router-dom';
-import { EditTodoBloc } from '../bloc/edit-todo.bloc';
 import {
   EditTodoDescriptionChanged,
   EditTodoSubmitted,
@@ -24,24 +18,21 @@ import {
   EditTodoTitleChanged,
 } from '../bloc/edit-todo.event';
 import Icon from '@mui/material/Icon';
-import { TodosRepository } from '../../../modules';
+import { EditTodoBloc } from '../bloc';
+import { todosRepository } from '../../../modules';
+import { BlocProvider, useBloc, useBlocListener } from '@jacobtipp/react-bloc';
 
 export default function EditTodoPage() {
   const { todoId } = useParams();
-  const todosRepository = useRepository(TodosRepository);
 
   return (
     <BlocProvider
-      blocs={[
-        {
-          key: EditTodoBloc,
-          create: () => {
-            const bloc = new EditTodoBloc(todosRepository);
-            if (todoId) bloc.add(new EditTodoSubscribed(todoId));
-            return bloc;
-          },
-        },
-      ]}
+      bloc={EditTodoBloc}
+      create={() => {
+        const editTodoBloc = new EditTodoBloc(todosRepository);
+        if (todoId) editTodoBloc.add(new EditTodoSubscribed(todoId));
+        return editTodoBloc;
+      }}
     >
       <EditTodoView isNew={todoId === undefined} />
     </BlocProvider>
@@ -54,9 +45,17 @@ export type EditTodoViewProps = {
 
 export function EditTodoView({ isNew }: EditTodoViewProps) {
   const navigate = useNavigate();
-
   const [[title, description], { add }] = useBloc(EditTodoBloc, {
-    selector: ({ title, description }) => [title, description],
+    selector: ({ data: { title, description } }) => [title, description],
+  });
+
+  useBlocListener(EditTodoBloc, {
+    listenWhen(_previous, current) {
+      return current.submitSuccess;
+    },
+    listener() {
+      navigate('/');
+    },
   });
 
   const { control, handleSubmit } = useForm({
@@ -69,13 +68,7 @@ export function EditTodoView({ isNew }: EditTodoViewProps) {
   const onSubmit = (_data: any) => add(new EditTodoSubmitted());
 
   return (
-    <BlocListener
-      bloc={EditTodoBloc}
-      listenWhen={(_previous, current) => current.submitSuccess}
-      listener={(_, _state) => {
-        navigate('/');
-      }}
-    >
+    <>
       <Container
         sx={{
           position: 'fixed',
@@ -177,6 +170,6 @@ export function EditTodoView({ isNew }: EditTodoViewProps) {
       >
         <Icon>check_rounded</Icon>
       </Fab>
-    </BlocListener>
+    </>
   );
 }

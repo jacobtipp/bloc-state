@@ -1,3 +1,5 @@
-export abstract class StatsEvent {}
+export abstract class StatsEvent {
+  protected _!: void;
+}
 
 export class StatsSubscriptionRequested extends StatsEvent {}
