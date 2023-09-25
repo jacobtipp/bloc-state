@@ -1,3 +1,10 @@
+## [1.1.1](https://github.com/jacobtipp/bloc-state/compare/bloc-v1.1.0...bloc-v1.1.1) (2023-09-25)
+
+
+### Revert Changes
+
+* **bloc): "refactor(bloc:** 💥 ✨ remove BlocEvent abstract class" ([d4bb6b1](https://github.com/jacobtipp/bloc-state/commit/d4bb6b11b18ec03a221ec0af9f4c85d4de70343c))
+
 ## [1.1.0](https://github.com/jacobtipp/bloc-state/compare/bloc-v1.0.4...bloc-v1.1.0) (2023-09-25)
 
 
