@@ -1,3 +1,10 @@
+## [2.0.2](https://github.com/jacobtipp/bloc-state/compare/bloc-concurrency-v2.0.1...bloc-concurrency-v2.0.2) (2023-09-26)
+
+
+### Build System Dependencies
+
+* **deps:** 📦️ update build type declaration paths ([0814d2b](https://github.com/jacobtipp/bloc-state/commit/0814d2b25b0614c3de1b86d14e4aaf7ffb03c0cf))
+
 ## [2.0.1](https://github.com/jacobtipp/bloc-state/compare/bloc-concurrency-v2.0.0...bloc-concurrency-v2.0.1) (2023-09-25)
 
 
