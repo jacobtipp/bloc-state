@@ -10,7 +10,7 @@
     "access": "public",
     "registry": "https://registry.npmjs.org/"
   },
-  "types": "./bloc-concurrency/src/index.d.ts",
+  "types": "./bloc-state/packages/bloc-concurrency/src/lib/index.d.ts",
   "exports": {
     ".": {
       "import": "./index.mjs",

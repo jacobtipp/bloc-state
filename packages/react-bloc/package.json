@@ -10,7 +10,7 @@
     "access": "public",
     "registry": "https://registry.npmjs.org/"
   },
-  "types": "./react-bloc/src/index.d.ts",
+  "types": "./bloc-state/packages/react-bloc/src/lib/index.d.ts",
   "exports": {
     ".": {
       "import": "./index.mjs",
