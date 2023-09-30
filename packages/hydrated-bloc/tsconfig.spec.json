@@ -1,0 +1,17 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../../dist/out-tsc",
+    "module": "commonjs",
+    "types": ["jest", "node"],
+    "noUncheckedIndexedAccess": false
+  },
+  "include": [
+    "jest.config.ts",
+    "tests/**/*.test.ts",
+    "tests/**/*.spec.ts",
+    "tests/**/*.d.ts",
+    "tests/hydrated-cubit.spec.ts",
+    "tests/hydrated-storage.spec.ts"
+  ]
+}
