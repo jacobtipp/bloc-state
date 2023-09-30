@@ -1,6 +1,6 @@
 {
   "name": "@jacobtipp/hydrated-bloc",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "main": "./index.js",
   "private": false,
   "sideEffects": false,
