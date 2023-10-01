@@ -1,3 +1,5 @@
+import { Bloc, BlocBase, Cubit } from '.';
+
 /**
  * A type definition for classes that can be instantiated.
  * `ClassType` is a generic interface.
@@ -15,3 +17,9 @@ export interface ClassType<T> extends Function {
  * @typeparam T - The type of the class that will be abstract and newable.
  */
 export type AbstractClassType<T> = abstract new (...args: any[]) => T;
+
+export type StateType<T extends BlocBase<any>> = T extends Cubit<infer U>
+  ? U
+  : T extends Bloc<any, infer D>
+  ? D
+  : never;
