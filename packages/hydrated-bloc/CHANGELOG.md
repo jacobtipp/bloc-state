@@ -1,3 +1,10 @@
+## [2.0.1](https://github.com/jacobtipp/bloc-state/compare/hydrated-bloc-v2.0.0...hydrated-bloc-v2.0.1) (2023-10-01)
+
+
+### Code Refactoring
+
+* **hydrate-bloc:** ♻️ remove hydrate invocation from constructor ([ae10fbb](https://github.com/jacobtipp/bloc-state/commit/ae10fbb7da910ee77123da54da0e4d317f203eb6))
+
 ## [2.0.0](https://github.com/jacobtipp/bloc-state/compare/hydrated-bloc-v1.0.1...hydrated-bloc-v2.0.0) (2023-10-01)
 
 
