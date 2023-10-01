@@ -1,5 +1,4 @@
-import { BlocBase, ClassType } from '@jacobtipp/bloc';
-import { StateType } from '../types';
+import { BlocBase, ClassType, StateType } from '@jacobtipp/bloc';
 import {
   useRef,
   useMemo,
