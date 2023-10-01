@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/jacobtipp/bloc-state/compare/hydrated-bloc-v1.0.0...hydrated-bloc-v1.0.1) (2023-10-01)
+
+
+### Code Refactoring
+
+* **bloc:** ♻️ export StateType from bloc package instead of react-bloc ([1f463be](https://github.com/jacobtipp/bloc-state/commit/1f463bed0335a0b5291484832ae9e5e59b9984e4))
+
 ## 1.0.0 (2023-09-30)
 
 
