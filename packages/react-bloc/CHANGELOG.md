@@ -1,3 +1,10 @@
+## [2.0.4](https://github.com/jacobtipp/bloc-state/compare/react-bloc-v2.0.3...react-bloc-v2.0.4) (2023-10-01)
+
+
+### Code Refactoring
+
+* **bloc:** ♻️ export StateType from bloc package instead of react-bloc ([1f463be](https://github.com/jacobtipp/bloc-state/commit/1f463bed0335a0b5291484832ae9e5e59b9984e4))
+
 ## [2.0.3](https://github.com/jacobtipp/bloc-state/compare/react-bloc-v2.0.2...react-bloc-v2.0.3) (2023-09-26)
 
 
