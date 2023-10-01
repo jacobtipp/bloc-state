@@ -1,3 +1,14 @@
+## [2.0.0](https://github.com/jacobtipp/bloc-state/compare/hydrated-bloc-v1.0.1...hydrated-bloc-v2.0.0) (2023-10-01)
+
+
+### ⚠ BREAKING CHANGES
+
+* **hydrated-bloc:** HydratedMixin is now a required return type for mixins
+
+### Features
+
+* **hydrated-bloc:** 💥 ✨ add HydratedMixin interface ([3db39d6](https://github.com/jacobtipp/bloc-state/commit/3db39d6680c6d517ac7ea4ffdd46739006fdf9cc))
+
 ## [1.0.1](https://github.com/jacobtipp/bloc-state/compare/hydrated-bloc-v1.0.0...hydrated-bloc-v1.0.1) (2023-10-01)
 
 
