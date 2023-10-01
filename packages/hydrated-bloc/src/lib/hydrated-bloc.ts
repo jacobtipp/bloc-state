@@ -11,7 +11,6 @@ export const WithHydratedBloc = <
   return class HydrateMixin extends Base implements HydratedMixin<State> {
     constructor(...args: any[]) {
       super(...args);
-      this.hydrate();
     }
     get id() {
       return '';

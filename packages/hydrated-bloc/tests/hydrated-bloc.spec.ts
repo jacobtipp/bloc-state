@@ -55,7 +55,12 @@ describe('hydrated-bloc', () => {
   });
 
   it('should persist state', async () => {
-    class CounterBloc extends WithHydratedBloc(CounterBlocBase) {}
+    class CounterBloc extends WithHydratedBloc(CounterBlocBase) {
+      constructor(state: number) {
+        super(state);
+        this.hydrate();
+      }
+    }
     const bloc = new CounterBloc(0);
 
     expect(bloc.state).toBe(0);
@@ -72,7 +77,12 @@ describe('hydrated-bloc', () => {
   });
 
   it('should clear storage', () => {
-    class CounterBloc extends WithHydratedBloc(CounterBlocBase) {}
+    class CounterBloc extends WithHydratedBloc(CounterBlocBase) {
+      constructor(state: number) {
+        super(state);
+        this.hydrate();
+      }
+    }
     const bloc = new CounterBloc(0);
 
     bloc.add(new Increment());
@@ -89,6 +99,7 @@ describe('hydrated-bloc', () => {
     class CounterBloc extends WithHydratedBloc(CounterBlocBase) {
       constructor(state: number) {
         super(state);
+        this.hydrate();
       }
 
       override fromJson(_json: string): number {
@@ -163,6 +174,7 @@ describe('hydrated-bloc', () => {
     class CounterBloc extends WithHydratedBloc(CounterBlocBase) {
       constructor(state: number) {
         super(state);
+        this.hydrate();
       }
 
       override toJson(_state: number): string {
