@@ -9,10 +9,12 @@ describe('HydratedStorage', () => {
   it('should handle StorageNotFoundError with Cubit', () => {
     let testError = '';
 
-    class CounterCubit extends WithHydratedCubit<number>(Cubit) {
+    class CounterCubitBase extends Cubit<number> {
       increment = () => this.emit(this.state + 1);
+    }
 
-      protected override toJson(_state: number): string {
+    class CounterCubit extends WithHydratedCubit(CounterCubitBase) {
+      override toJson(_state: number): string {
         throw new Error('Error was thrown');
       }
 
@@ -38,7 +40,7 @@ describe('HydratedStorage', () => {
 
     class Increment extends CounterEvent {}
 
-    class CounterBloc extends WithHydratedBloc<CounterEvent, number>(Bloc) {
+    class CounterBlocBase extends Bloc<CounterEvent, number> {
       constructor(state: number) {
         super(state);
 
@@ -46,8 +48,13 @@ describe('HydratedStorage', () => {
           emit(this.state + 1);
         });
       }
+    }
+    class CounterBloc extends WithHydratedBloc(CounterBlocBase) {
+      constructor(state: number) {
+        super(state);
+      }
 
-      protected override toJson(_state: number): string {
+      override toJson(_state: number): string {
         throw new Error('Error was thrown');
       }
 

@@ -1,14 +1,18 @@
-import { AbstractClassType, Change, Cubit } from '@jacobtipp/bloc';
-import { HydratedStorage, StorageNotFound } from './hydrated-storage';
+import { Change, ClassType, Cubit, StateType } from '@jacobtipp/bloc';
+import { HydratedMixin, HydratedStorage, StorageNotFound } from '.';
 
-export const WithHydratedCubit = <State>(
-  Base: AbstractClassType<Cubit<State>>
-) => {
-  abstract class HydrateMixin extends Base {
-    constructor(state: State, name?: string) {
-      super(state, name);
+export const WithHydratedCubit = <
+  BaseCubit extends ClassType<Cubit<any>>,
+  State = StateType<InstanceType<BaseCubit>>
+>(
+  Base: BaseCubit
+): BaseCubit & ClassType<HydratedMixin<State>> => {
+  return class HydrateMixin extends Base {
+    constructor(...args: any[]) {
+      super(...args);
       this.hydrate();
     }
+
     get id() {
       return '';
     }
@@ -27,11 +31,11 @@ export const WithHydratedCubit = <State>(
 
     private _cachedState: State | null = null;
 
-    protected fromJson(json: string): State {
+    fromJson(json: string): State {
       return JSON.parse(json) as State;
     }
 
-    protected toJson(state: State): string {
+    toJson(state: State): string {
       return JSON.stringify(state);
     }
 
@@ -84,7 +88,5 @@ export const WithHydratedCubit = <State>(
         if (error instanceof StorageNotFound) throw error;
       }
     }
-  }
-
-  return HydrateMixin;
+  };
 };

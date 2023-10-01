@@ -29,7 +29,7 @@ class MemoryStorage extends Storage {
   }
 }
 
-class CounterCubit extends WithHydratedCubit<number>(Cubit) {
+class CounterCubitBase extends Cubit<number> {
   increment = () => this.emit(this.state + 1);
 }
 
@@ -42,6 +42,7 @@ describe('hydrated-cubit', () => {
   });
 
   it('should persist state', () => {
+    class CounterCubit extends WithHydratedCubit(CounterCubitBase) {}
     const cubit = new CounterCubit(0);
     expect(cubit.state).toBe(0);
     cubit.increment();
@@ -55,6 +56,7 @@ describe('hydrated-cubit', () => {
   });
 
   it('should clear storage', () => {
+    class CounterCubit extends WithHydratedCubit(CounterCubitBase) {}
     const cubit = new CounterCubit(0);
 
     cubit.increment();
@@ -68,10 +70,8 @@ describe('hydrated-cubit', () => {
   it('should handle errors being thrown with fromJson', () => {
     let testError = '';
 
-    class CounterCubit extends WithHydratedCubit<number>(Cubit) {
-      increment = () => this.emit(this.state + 1);
-
-      protected override fromJson(_json: string): number {
+    class CounterCubit extends WithHydratedCubit(CounterCubitBase) {
+      override fromJson(_json: string): number {
         throw new Error('Error was thrown');
       }
 
@@ -99,14 +99,12 @@ describe('hydrated-cubit', () => {
   it('should handle errors being thrown with toJson in onChange', () => {
     let testError = '';
 
-    class CounterCubit extends WithHydratedCubit<number>(Cubit) {
-      increment = () => this.emit(this.state + 1);
-
+    class CounterCubit extends WithHydratedCubit(CounterCubitBase) {
       override hydrate(): void {
         return;
       }
 
-      protected override toJson(_state: number): string {
+      override toJson(_state: number): string {
         throw new Error('Error was thrown');
       }
 
@@ -126,10 +124,8 @@ describe('hydrated-cubit', () => {
   it('should handle errors being thrown with toJson in hydrate', () => {
     let testError = '';
 
-    class CounterCubit extends WithHydratedCubit<number>(Cubit) {
-      increment = () => this.emit(this.state + 1);
-
-      protected override toJson(_state: number): string {
+    class CounterCubit extends WithHydratedCubit(CounterCubitBase) {
+      override toJson(_state: number): string {
         throw new Error('Error was thrown');
       }
 

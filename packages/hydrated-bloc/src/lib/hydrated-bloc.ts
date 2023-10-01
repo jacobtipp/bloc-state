@@ -1,12 +1,16 @@
-import { AbstractClassType, Bloc, Change } from '@jacobtipp/bloc';
-import { HydratedStorage, StorageNotFound } from './hydrated-storage';
+import { Bloc, Change, ClassType, StateType } from '@jacobtipp/bloc';
+import { HydratedStorage, StorageNotFound } from '.';
+import { HydratedMixin } from '.';
 
-export const WithHydratedBloc = <Event, State>(
-  Base: AbstractClassType<Bloc<Event, State>>
-) => {
-  abstract class HydrateMixin extends Base {
-    constructor(state: State, name?: string) {
-      super(state, name);
+export const WithHydratedBloc = <
+  BaseBloc extends ClassType<Bloc<any, any>>,
+  State = StateType<InstanceType<BaseBloc>>
+>(
+  Base: BaseBloc
+): BaseBloc & ClassType<HydratedMixin<State>> => {
+  return class HydrateMixin extends Base implements HydratedMixin<State> {
+    constructor(...args: any[]) {
+      super(...args);
       this.hydrate();
     }
     get id() {
@@ -27,11 +31,11 @@ export const WithHydratedBloc = <Event, State>(
 
     private _cachedState: State | null = null;
 
-    protected fromJson(json: string): State {
+    fromJson(json: string): State {
       return JSON.parse(json) as State;
     }
 
-    protected toJson(state: State): string {
+    toJson(state: State): string {
       return JSON.stringify(state);
     }
 
@@ -84,7 +88,5 @@ export const WithHydratedBloc = <Event, State>(
         if (error instanceof StorageNotFound) throw error;
       }
     }
-  }
-
-  return HydrateMixin;
+  };
 };
