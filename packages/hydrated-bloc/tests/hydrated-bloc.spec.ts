@@ -36,7 +36,7 @@ abstract class CounterEvent {
 
 class Increment extends CounterEvent {}
 
-class CounterBloc extends WithHydratedBloc<CounterEvent, number>(Bloc) {
+class CounterBlocBase extends Bloc<CounterEvent, number> {
   constructor(state: number) {
     super(state);
 
@@ -55,6 +55,7 @@ describe('hydrated-bloc', () => {
   });
 
   it('should persist state', async () => {
+    class CounterBloc extends WithHydratedBloc(CounterBlocBase) {}
     const bloc = new CounterBloc(0);
 
     expect(bloc.state).toBe(0);
@@ -71,6 +72,7 @@ describe('hydrated-bloc', () => {
   });
 
   it('should clear storage', () => {
+    class CounterBloc extends WithHydratedBloc(CounterBlocBase) {}
     const bloc = new CounterBloc(0);
 
     bloc.add(new Increment());
@@ -84,20 +86,16 @@ describe('hydrated-bloc', () => {
   it('should handle errors being thrown with fromJson', async () => {
     let testError = '';
 
-    class CounterBloc extends WithHydratedBloc<CounterEvent, number>(Bloc) {
+    class CounterBloc extends WithHydratedBloc(CounterBlocBase) {
       constructor(state: number) {
         super(state);
-
-        this.on(Increment, (_event, emit) => {
-          emit(this.state + 1);
-        });
       }
 
-      protected override fromJson(_json: string): number {
+      override fromJson(_json: string): number {
         throw new Error('Error was thrown');
       }
 
-      protected override onError(error: Error): void {
+      override onError(error: Error): void {
         testError = error.message;
       }
     }
@@ -122,24 +120,20 @@ describe('hydrated-bloc', () => {
   it('should handle errors being thrown with toJson in onChange', async () => {
     let testError = '';
 
-    class CounterBloc extends WithHydratedBloc<CounterEvent, number>(Bloc) {
+    class CounterBloc extends WithHydratedBloc(CounterBlocBase) {
       constructor(state: number) {
         super(state);
-
-        this.on(Increment, (_event, emit) => {
-          emit(this.state + 1);
-        });
       }
 
       override hydrate(): void {
         return;
       }
 
-      protected override toJson(_state: number): string {
+      override toJson(_state: number): string {
         throw new Error('Error was thrown');
       }
 
-      protected override onChange(change: Change<number>): void {
+      override onChange(change: Change<number>): void {
         try {
           expect(super.onChange(change)).toThrow();
         } catch (error: any) {
@@ -166,16 +160,12 @@ describe('hydrated-bloc', () => {
   it('should handle errors being thrown with toJson in hydrate', () => {
     let testError = '';
 
-    class CounterBloc extends WithHydratedBloc<CounterEvent, number>(Bloc) {
+    class CounterBloc extends WithHydratedBloc(CounterBlocBase) {
       constructor(state: number) {
         super(state);
-
-        this.on(Increment, (_event, emit) => {
-          emit(this.state + 1);
-        });
       }
 
-      protected override toJson(_state: number): string {
+      override toJson(_state: number): string {
         throw new Error('Error was thrown');
       }
 
