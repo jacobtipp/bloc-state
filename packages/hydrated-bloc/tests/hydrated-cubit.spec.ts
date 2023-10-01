@@ -56,7 +56,12 @@ describe('hydrated-cubit', () => {
   });
 
   it('should clear storage', () => {
-    class CounterCubit extends WithHydratedCubit(CounterCubitBase) {}
+    class CounterCubit extends WithHydratedCubit(CounterCubitBase) {
+      constructor(state: number) {
+        super(state);
+        this.hydrate();
+      }
+    }
     const cubit = new CounterCubit(0);
 
     cubit.increment();
@@ -71,6 +76,10 @@ describe('hydrated-cubit', () => {
     let testError = '';
 
     class CounterCubit extends WithHydratedCubit(CounterCubitBase) {
+      constructor(state: number) {
+        super(state);
+        this.hydrate();
+      }
       override fromJson(_json: string): number {
         throw new Error('Error was thrown');
       }
@@ -125,6 +134,10 @@ describe('hydrated-cubit', () => {
     let testError = '';
 
     class CounterCubit extends WithHydratedCubit(CounterCubitBase) {
+      constructor(state: number) {
+        super(state);
+        this.hydrate();
+      }
       override toJson(_state: number): string {
         throw new Error('Error was thrown');
       }

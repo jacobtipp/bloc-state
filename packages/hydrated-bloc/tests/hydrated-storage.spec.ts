@@ -14,6 +14,10 @@ describe('HydratedStorage', () => {
     }
 
     class CounterCubit extends WithHydratedCubit(CounterCubitBase) {
+      constructor(state: number) {
+        super(state);
+        this.hydrate();
+      }
       override toJson(_state: number): string {
         throw new Error('Error was thrown');
       }
@@ -52,6 +56,7 @@ describe('HydratedStorage', () => {
     class CounterBloc extends WithHydratedBloc(CounterBlocBase) {
       constructor(state: number) {
         super(state);
+        this.hydrate();
       }
 
       override toJson(_state: number): string {
