@@ -13,10 +13,10 @@ export abstract class State<Data = any> extends BaseState {
    * @param status Initial status for the state object. Defaults to "initial".
    * @param error Initial error for the state object. Defaults to undefined.
    */
-  constructor(data: Data, status = 'initial' as const, error?: Error) {
+  constructor(data: Data, status?: StateStatus, error?: Error) {
     super();
     this.data = data;
-    this.status = status;
+    this.status = status ?? 'initial';
     this.error = error;
   }
 
