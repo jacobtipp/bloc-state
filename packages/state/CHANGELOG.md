@@ -1,3 +1,10 @@
+## [1.0.5](https://github.com/jacobtipp/bloc-state/compare/state-v1.0.4...state-v1.0.5) (2023-10-02)
+
+
+### Code Refactoring
+
+* **state:** ♻️ explicitly define status type in State constructor ([3ee96fb](https://github.com/jacobtipp/bloc-state/commit/3ee96fbc77daa57a04d4491d4ac3ebf804b60052))
+
 ## [1.0.4](https://github.com/jacobtipp/bloc-state/compare/state-v1.0.3...state-v1.0.4) (2023-09-25)
 
 
