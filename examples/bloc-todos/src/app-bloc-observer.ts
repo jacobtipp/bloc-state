@@ -31,6 +31,6 @@ export class AppBlocObserver extends BlocObserver {
   }
 
   override onClose(bloc: BlocBase<any>): void {
-    console.log(`closed bloc: ${bloc.constructor.name}`);
+    console.log(`closed bloc: ${bloc.name}`);
   }
 }
