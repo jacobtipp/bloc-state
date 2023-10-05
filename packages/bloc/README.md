@@ -3,15 +3,14 @@
 ## Introduction
 
 `@jacobtipp/bloc` is a state management library implementing the BLoC pattern that was first introduced
-by google at [DartConf](https://www.youtube.com/watch?v=PLHln7wHgPE) in 2018. This library conforms to the
-modern [Dart Bloc library](https://github.com/felangel/bloc/) `v8.x` api.
+by google at [DartConf](https://www.youtube.com/watch?v=PLHln7wHgPE) in 2018. This library is a Typescript port of [Bloc](https://github.com/felangel/bloc/) from the Dart ecosystem.
 
 ## Installation
 
 </br>
 
 ```
-npm install @jacobtipp/bloc@beta
+npm install @jacobtipp/bloc
 ```
 
 ## Creating a Cubit
@@ -19,15 +18,15 @@ npm install @jacobtipp/bloc@beta
 ```ts
 export class CounterCubit extends Cubit<number> {
   constructor() {
-    super(0); // pass initial state to super constructor
+    super(0); 
   }
 
   increment() {
-    this.emit((state) => state + 1);
+    this.emit(this.state + 1);
   }
 
-  increment() {
-    this.emit((state) => state - 1);
+  decrement() {
+    this.emit(this.state - 1);
   }
 }
 ```
@@ -35,16 +34,18 @@ export class CounterCubit extends Cubit<number> {
 ## Using a Cubit
 
 ```ts
-const counterCubit = new CounterCubit();
+function main() {
+  const counterCubit = new CounterCubit();
 
-console.log(counterCubit.state); // 0
+  console.log(counterCubit.state); // 0
 
-counterCubit.increment();
+  counterCubit.increment();
 
-console.log(counterCubit.state); // 1
+  console.log(counterCubit.state); // 1
 
-// cubit is closed and disposed, it will no longer emit new state and all observers will be unsubscribed
-cubit.close();
+  // cubit is closed and disposed, it will no longer emit new state and all observers will be unsubscribed
+  cubit.close();
+}
 ```
 
 ## Observing a Cubit
@@ -52,19 +53,19 @@ cubit.close();
 ```ts
 export class AppBlocObserver extends BlocObserver {
   override onCreate(bloc: BlocBase<any>): void {
-    console.log(`onCreate: ${bloc.constructor.name}`);
+    console.log(`onCreate: ${bloc.name}`);
   }
 
   override onError(bloc: BlocBase<any>, error: any): void {
-    console.log(`onError: ${bloc.constructor.name}`, error);
+    console.log(`onError: ${bloc.name}`, error);
   }
 
   override onChange(bloc: BlocBase<any>, change: Change<any>): void {
-    console.log(`onChange: ${bloc.constructor.name}`, change);
+    console.log(`onChange: ${bloc.name}`, change);
   }
 
   override onClose(bloc: BlocBase<any>): void {
-    console.log(`onClose: ${bloc.constructor.name}`);
+    console.log(`onClose: ${bloc.name}`);
   }
 }
 ```
@@ -73,21 +74,23 @@ export class AppBlocObserver extends BlocObserver {
 // main.tsx
 
 // composition root of your application
-Bloc.observer = AppBlocObserver();
+Bloc.observer = new AppBlocObserver();
 ```
 
 ## Creating a Bloc
 
 ```ts
 /// The events which `CounterBloc` will react to.
-abstract class CounterEvent {}
+abstract class CounterEvent {
+  protected _!: void
+}
 
 class CounterIncrementEvent extends CounterEvent {}
 class CounterDecrementEvent extends CounterEvent {}
 
 export class CounterBloc extends Bloc<CounterEvent, number> {
   constructor() {
-    super(new CounterState(0));
+    super(0);
 
     this.on(CounterIncrementEvent, (event, emit) => emit(this.state + 1));
 
@@ -114,5 +117,38 @@ async function main() {
   console.log(counterBloc.state); // 1
 
   counterBloc.close(); // close the bloc when no longer needed
+}
+```
+
+## Observing a Bloc
+
+```ts
+export class AppBlocObserver extends BlocObserver {
+  override onCreate(bloc: BlocBase<any>): void {
+    console.log(`onCreate: ${bloc.name}`)
+  }
+
+  override onEvent(bloc: Bloc<any, any>, event: any): void {
+    console.log(`onEvent: ${bloc.name}`)
+  }
+
+  override onError(bloc: BlocBase<any>, error: Error): void {
+    console.log(`onError: ${bloc.name}`)
+  }
+
+  override onChange(bloc: BlocBase<any>, change: Change<any>): void {
+    console.log(`onChange: ${bloc.name}`)
+  }
+
+  override onTransition(
+    bloc: Bloc<any, any>,
+    transition: Transition<any, any>
+  ): void {
+    console.log(`onTransition: ${bloc.name}`)
+  }
+
+  override onClose(bloc: BlocBase<any>): void {
+    console.log(`onClose: ${bloc.name}`)
+  }
 }
 ```
