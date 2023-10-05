@@ -1,4 +1,5 @@
-# hydrated-bloc
+# @jacobtipp/hydrated-bloc
+
 A package that provides mixins to persist and restore bloc and cubit states. 
 
 ## Usage
