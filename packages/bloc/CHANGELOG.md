@@ -1,3 +1,10 @@
+## [2.0.3](https://github.com/jacobtipp/bloc-state/compare/bloc-v2.0.2...bloc-v2.0.3) (2023-10-05)
+
+
+### Documentation
+
+* **readme:** 📚️ update readme for @jacobtipp/bloc [only bloc] ([1159d55](https://github.com/jacobtipp/bloc-state/commit/1159d55aa0ae98353b1c8394e60d2a73a1fc6f53))
+
 ## [2.0.2](https://github.com/jacobtipp/bloc-state/compare/bloc-v2.0.1...bloc-v2.0.2) (2023-10-01)
 
 
