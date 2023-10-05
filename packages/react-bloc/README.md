@@ -14,17 +14,13 @@ npm install @jacobtipp/react-bloc
 
 ## Components
 
-</br>
-
 ### BlocProvider
 
 ```ts
 const UserPage = () => (
   <BlocProvider
-    bloc={[{
-      key: UserBloc,
-      create: () => new UserBloc()
-    }]}
+    bloc={UserBloc}
+    create={() => new UserBloc()}
   >
     <SomeChildComponent />
   </BlocProvider>
@@ -33,6 +29,9 @@ const UserPage = () => (
 
 ### BlocListener
 
+alternatively you can use a `useBlocListener` hook instead of the `BlocListener` component
+see [Hooks](#hooks)
+
 ```ts
 const UserPage = () => {
   const history = useHistory()
@@ -40,10 +39,8 @@ const UserPage = () => {
 
   return (
     <BlocProvider
-      bloc={[{
-        key: UserBloc,
-        create: () => new UserBloc()
-      }]} 
+      bloc={UserBloc}
+      create={() => new UserBloc()}
     >
       <BlocListener
         bloc={UserBloc}
@@ -56,17 +53,15 @@ const UserPage = () => {
   )
 }
 
-// or if you need multiple bloc listeners, create siblings
+// if you need multiple bloc listeners, create siblings
 
 const UserPage = () => {
   const history = useHistory()
 
   return (
     <BlocProvider
-      bloc={[{
-        key: UserBloc,
-        create: () => new UserBloc()
-      }]} 
+      bloc={UserBloc}
+      create={() => new UserBloc()}
     >
       <>
         <BlocListener
@@ -129,8 +124,7 @@ export const SomeComponent = ({ id }: SomeComponentProps) => {
     // required: a pure selector function for deriving your state
     selector: (state) => state.name.last,
 
-    // optional: decide which state changes a component should react to
-    // it will rerender for all state changes by default
+    //optional: a predicate function that allows/ignores a state change, returns true by default
     listenWhen: (state) => state.id === id,
 
     // optional: decide when a component should suspend based on current state
@@ -153,8 +147,35 @@ export const SomeComponent = ({ id }: SomeComponentProps) => {
 ```ts
 export const SomeComponent = () => {
 
-  // returns a tuple with the state as first index and the bloc instance as second index
-  // optionally takes a useBlocSelector config object, so it can be used to read as well as emit events with bloc instance
+  // returns a tuple with the state as first item and the bloc instance as second item
+  // optionally takes a useBlocSelector config object, so it can be used to read as well as emit events with a bloc instance
+  const [id, bloc] = useBloc(UserBloc, {
+    selector: (state) => state.data.id,
+  });
+
+  return (
+    <>
+      <a onClick={() => bloc.add(new UserLoggedOutEvent(id))}></a>
+    </>
+  );
+};
+```
+
+### useBlocListener
+
+```ts
+export const SomeComponent = () => {
+  const history = useHistory()
+
+  useBlocListener(EditTodoBloc, {
+    listenWhen(_previous, current) {
+      return current.submitSuccess;
+    },
+    listener() {
+      history.push('/');
+    },
+  });
+  
   const [id, bloc] = useBloc(UserBloc, {
     selector: (state) => state.data.id,
   });
