@@ -4,6 +4,7 @@
   "main": "./index.js",
   "private": false,
   "sideEffects": false,
+  "license": "MIT",
   "publishConfig": {
     "directory": "../../dist/packages/hydrated-bloc",
     "linkDirectory": true,
