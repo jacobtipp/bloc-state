@@ -1,3 +1,10 @@
+## [1.0.7](https://github.com/jacobtipp/bloc-state/compare/state-v1.0.6...state-v1.0.7) (2023-10-05)
+
+
+### Build System Dependencies
+
+* **deps:** 📦️ add license to package.json for @jacobtipp/state ([ae987a4](https://github.com/jacobtipp/bloc-state/commit/ae987a4661639219fd3dbb1e0a5ae7ec500b7d9f))
+
 ## [1.0.6](https://github.com/jacobtipp/bloc-state/compare/state-v1.0.5...state-v1.0.6) (2023-10-05)
 
 
