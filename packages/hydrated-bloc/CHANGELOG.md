@@ -1,3 +1,10 @@
+## [2.0.3](https://github.com/jacobtipp/bloc-state/compare/hydrated-bloc-v2.0.2...hydrated-bloc-v2.0.3) (2023-10-05)
+
+
+### Documentation
+
+* **readme:** 📚️ update readme for @jacobtipp/hydrated-bloc ([87b6cea](https://github.com/jacobtipp/bloc-state/commit/87b6cea78aaf921ac668fc4236acf0897a4efe67))
+
 ## [2.0.2](https://github.com/jacobtipp/bloc-state/compare/hydrated-bloc-v2.0.1...hydrated-bloc-v2.0.2) (2023-10-03)
 
 
