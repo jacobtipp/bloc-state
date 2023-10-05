@@ -1,3 +1,10 @@
+## [2.0.6](https://github.com/jacobtipp/bloc-state/compare/react-bloc-v2.0.5...react-bloc-v2.0.6) (2023-10-05)
+
+
+### Documentation
+
+* **readme:** 📚️ update readme for @jacobtipp/bloc [only bloc] ([1159d55](https://github.com/jacobtipp/bloc-state/commit/1159d55aa0ae98353b1c8394e60d2a73a1fc6f53))
+
 ## [2.0.5](https://github.com/jacobtipp/bloc-state/compare/react-bloc-v2.0.4...react-bloc-v2.0.5) (2023-10-05)
 
 
