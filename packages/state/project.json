@@ -79,6 +79,12 @@
               "hidden": false
             },
             {
+              "type": "docs",
+              "scope": "license",
+              "section": "Documentation",
+              "hidden": false
+            },
+            {
               "type": "build",
               "scope": "deps",
               "section": "Build System Dependencies",
@@ -98,6 +104,7 @@
         },
         "releaseRules": [
           { "type": "docs", "scope": "readme", "release": "patch" },
+          { "type": "docs", "scope": "license", "release": "patch" },
           { "type": "refactor", "release": "patch" },
           { "type": "build", "scope": "deps", "release": "patch" },
           { "type": "revert", "release": "patch" },
