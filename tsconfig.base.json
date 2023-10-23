@@ -30,6 +30,7 @@
       "@jacobtipp/bloc-concurrency": ["packages/bloc-concurrency/src/index.ts"],
       "@jacobtipp/hydrated-bloc": ["packages/hydrated-bloc/src/index.ts"],
       "@jacobtipp/react-bloc": ["packages/react-bloc/src/index.ts"],
+      "@jacobtipp/replay-bloc": ["packages/replay-bloc/src/index.ts"],
       "@jacobtipp/state": ["packages/state/src/index.ts"]
     }
   },
