@@ -17,6 +17,10 @@ export const WithReplayBloc = <
   return class ReplayBlocMixin extends Base implements ReplayMixin<State> {
     constructor(...args: any[]) {
       super(...args);
+
+      this.undo = this.undo.bind(this);
+      this.redo = this.redo.bind(this);
+      this.clearHistory = this.clearHistory.bind(this);
     }
 
     private readonly _changeStack = new ChangeStack<State>(
