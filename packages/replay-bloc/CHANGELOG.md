@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/jacobtipp/bloc-state/compare/replay-bloc-v1.0.0...replay-bloc-v1.0.1) (2023-10-23)
+
+
+### Bug Fixes
+
+* **replay-bloc:** 🐛 bind undo, redo, and clearHistory methods ([87e179a](https://github.com/jacobtipp/bloc-state/commit/87e179add265f68caa3ead9c371ee75844f45bd0))
+
 ## 1.0.0 (2023-10-23)
 
 
