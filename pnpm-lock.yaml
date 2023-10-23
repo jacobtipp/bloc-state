@@ -324,6 +324,23 @@ importers:
         version: 9.0.18
     publishDirectory: ../../dist/packages/react-bloc
 
+  packages/replay-bloc:
+    dependencies:
+      '@jacobtipp/bloc':
+        specifier: workspace:*
+        version: link:../../dist/packages/bloc
+      rxjs:
+        specifier: 7.8.0
+        version: 7.8.0
+    devDependencies:
+      '@jacobtipp/hydrated-bloc':
+        specifier: workspace:*
+        version: link:../../dist/packages/hydrated-bloc
+      '@jacobtipp/state':
+        specifier: workspace:*
+        version: link:../../dist/packages/state
+    publishDirectory: ../../dist/packages/replay-bloc
+
   packages/state:
     dependencies:
       immer:
