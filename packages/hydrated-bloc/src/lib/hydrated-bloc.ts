@@ -11,6 +11,10 @@ export const WithHydratedBloc = <
   return class HydrateMixin extends Base implements HydratedMixin<State> {
     constructor(...args: any[]) {
       super(...args);
+      this.clear = this.clear.bind(this);
+      this.fromJson = this.fromJson.bind(this);
+      this.toJson = this.toJson.bind(this);
+      this.hydrate = this.hydrate.bind(this);
     }
     get id() {
       return '';

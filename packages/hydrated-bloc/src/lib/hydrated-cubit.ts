@@ -10,6 +10,10 @@ export const WithHydratedCubit = <
   return class HydrateMixin extends Base {
     constructor(...args: any[]) {
       super(...args);
+      this.clear = this.clear.bind(this);
+      this.fromJson = this.fromJson.bind(this);
+      this.toJson = this.toJson.bind(this);
+      this.hydrate = this.hydrate.bind(this);
     }
 
     get id() {
