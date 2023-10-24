@@ -51,7 +51,7 @@ export const WithReplayBloc = <
           (old) => {
             const event = new UndoEvent();
             this.onEvent(event);
-            this.onTransition(new Transition(this.state, event, newState));
+            this.onTransition(new Transition(this.state, event, old));
             super.emit(old);
           }
         )
