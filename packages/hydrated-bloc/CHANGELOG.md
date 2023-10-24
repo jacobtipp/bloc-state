@@ -1,3 +1,10 @@
+## [2.0.5](https://github.com/jacobtipp/bloc-state/compare/hydrated-bloc-v2.0.4...hydrated-bloc-v2.0.5) (2023-10-24)
+
+
+### Bug Fixes
+
+* **hydrated-bloc:** 🐛 bind clear, fromJson, toJson, and hydrate methods ([e3bac85](https://github.com/jacobtipp/bloc-state/commit/e3bac8524104346081024a42e79894868a6bfd0a))
+
 ## [2.0.4](https://github.com/jacobtipp/bloc-state/compare/hydrated-bloc-v2.0.3...hydrated-bloc-v2.0.4) (2023-10-05)
 
 
