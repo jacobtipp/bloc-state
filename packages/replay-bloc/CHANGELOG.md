@@ -1,3 +1,10 @@
+## [1.0.2](https://github.com/jacobtipp/bloc-state/compare/replay-bloc-v1.0.1...replay-bloc-v1.0.2) (2023-10-24)
+
+
+### Bug Fixes
+
+* **hydrated-bloc:** 🐛 bind clear, fromJson, toJson, and hydrate methods ([e3bac85](https://github.com/jacobtipp/bloc-state/commit/e3bac8524104346081024a42e79894868a6bfd0a))
+
 ## [1.0.1](https://github.com/jacobtipp/bloc-state/compare/replay-bloc-v1.0.0...replay-bloc-v1.0.1) (2023-10-23)
 
 
