@@ -1,3 +1,10 @@
+## [1.0.3](https://github.com/jacobtipp/bloc-state/compare/replay-bloc-v1.0.2...replay-bloc-v1.0.3) (2023-10-24)
+
+
+### Bug Fixes
+
+* **replay-bloc:** 🐛 transition from undo must use old state ([693d810](https://github.com/jacobtipp/bloc-state/commit/693d810d74f29eeaf1b0d7f29ff7da361c20a947))
+
 ## [1.0.2](https://github.com/jacobtipp/bloc-state/compare/replay-bloc-v1.0.1...replay-bloc-v1.0.2) (2023-10-24)
 
 
