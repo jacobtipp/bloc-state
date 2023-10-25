@@ -1,3 +1,16 @@
+## [1.0.4](https://github.com/jacobtipp/bloc-state/compare/replay-bloc-v1.0.3...replay-bloc-v1.0.4) (2023-10-25)
+
+
+### Documentation
+
+* **readme:** 📚️ add installation docs ([ac1d7ec](https://github.com/jacobtipp/bloc-state/commit/ac1d7eca936a2cfb96b7048a30b342976c4b8ab2))
+* **readme:** 📚️ CounterCubitBase should be CounterBlocBase for ReplayBloc ([c197ca8](https://github.com/jacobtipp/bloc-state/commit/c197ca852fb6cec1be0a17a47bc2200feef82f38))
+
+
+### Code Refactoring
+
+* **replay-bloc:** ♻️ make ReplayEvent nominally typed ([224a7ee](https://github.com/jacobtipp/bloc-state/commit/224a7ee846507fc719a4a506cc077145931bbfe7))
+
 ## [1.0.3](https://github.com/jacobtipp/bloc-state/compare/replay-bloc-v1.0.2...replay-bloc-v1.0.3) (2023-10-24)
 
 
