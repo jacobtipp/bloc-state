@@ -2,11 +2,13 @@ import { Bloc, ClassType, StateType, Transition } from '@jacobtipp/bloc';
 import { ReplayMixin } from './replay-mixin';
 import { Change, ChangeStack } from './change-stack';
 
-abstract class ReplayEvent {}
+export abstract class ReplayEvent {
+  protected _!: void;
+}
 
-class RedoEvent extends ReplayEvent {}
+export class RedoEvent extends ReplayEvent {}
 
-class UndoEvent extends ReplayEvent {}
+export class UndoEvent extends ReplayEvent {}
 
 export const WithReplayBloc = <
   BaseBloc extends ClassType<Bloc<ReplayEvent, any>>,
