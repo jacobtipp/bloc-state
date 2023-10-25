@@ -2,6 +2,13 @@
 
 A package that provides mixins which adds automatic undo and redo support and cubit states. Built to work with `@jacobtipp/bloc`.
 
+## Installation
+
+```
+npm install @jacobtipp/replay-bloc
+```
+
+
 ## Usage
 
 ### Creating a `ReplayCubit`
