@@ -1,3 +1,10 @@
+## [2.0.6](https://github.com/jacobtipp/bloc-state/compare/hydrated-bloc-v2.0.5...hydrated-bloc-v2.0.6) (2023-10-25)
+
+
+### Documentation
+
+* **readme:** 📚️ add installation docs ([ac1d7ec](https://github.com/jacobtipp/bloc-state/commit/ac1d7eca936a2cfb96b7048a30b342976c4b8ab2))
+
 ## [2.0.5](https://github.com/jacobtipp/bloc-state/compare/hydrated-bloc-v2.0.4...hydrated-bloc-v2.0.5) (2023-10-24)
 
 
