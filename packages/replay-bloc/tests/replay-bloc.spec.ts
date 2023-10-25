@@ -1,8 +1,8 @@
 import { Bloc } from '@jacobtipp/bloc';
-import { WithReplayBloc } from '../src';
+import { ReplayEvent, WithReplayBloc } from '../src';
 
 describe('ReplayBloc', () => {
-  abstract class CounterEvent {}
+  class CounterEvent extends ReplayEvent {}
 
   class Increment extends CounterEvent {}
 
