@@ -82,7 +82,7 @@ class CounterBlocBase extends Bloc<CounterEvent, number> {}
 
 ```ts
 // Wrap your Bloc with WithReplayBloc mixin 
-class CounterBloc extends WithReplayBloc(CounterCubitBase) {
+class CounterBloc extends WithReplayBloc(CounterBlocBase) {
   constructor(count: number) {
     super(count)
 
