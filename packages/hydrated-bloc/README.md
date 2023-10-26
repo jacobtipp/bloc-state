@@ -13,6 +13,8 @@ npm install @jacobtipp/hydrated-bloc
 ### Setup `HydratedStorage`
 
 ```jsx
+import { HydratedStorage, HydratedLocalStorage } from "@jacobtipp/hydrated-bloc"
+
 HydratedStorage.storage = new HydratedLocalStorage()
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
@@ -25,6 +27,9 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
 ### Create a `HydratedCubit`
 
 ```jsx
+import { Cubit } from "@jacobtipp/bloc"
+import { WithHydratedCubit } from "@jacobtipp/hydrated-bloc"
+
 // Create a base cubit that extends from Cubit
 class CounterCubitBase extends Cubit<number> {}
 ```
@@ -57,6 +62,13 @@ class CounterCubit extends WithHydratedCubit(CounterCubitBase) {
 ### Create a `HydratedBloc`
 
 ```jsx
+import { Cubit } from "@jacobtipp/bloc"
+import { WithHydratedBloc } from "@jacobtipp/hydrated-bloc"
+
+abstract class CounterEvent {}
+
+class Increment extends CounterEvent {}
+
 // Create a base bloc that extends from Bloc
 class CounterBlocBase extends Bloc<CounterEvent, number> {}
 ```

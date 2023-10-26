@@ -14,6 +14,9 @@ npm install @jacobtipp/replay-bloc
 ### Creating a `ReplayCubit`
 
 ```ts
+import { Cubit } from "@jacobtipp/bloc"
+import { WithReplayCubit } from "@jacobtipp/replay-bloc"
+// 
 // Create a base cubit that extends from Cubit
 class CounterCubitBase extends Cubit<number> {}
 ```
@@ -50,6 +53,10 @@ function main() {
 If you wish to be able to use a `WithReplayCubit` in conjuction with a different type of mixin like `WithHydratedCubit`, you can compose multiple mixins together.
 
 ```ts
+import { Cubit } from "@jacobtipp/bloc"
+import { WithReplayCubit } from "@jacobtipp/replay-bloc"
+import { WithHydratedCubit } from "@jacobtipp/hydrated-bloc"
+
 // Create a base cubit that extends from Cubit
 class CounterCubitBase extends Cubit<number> {}
 
@@ -71,8 +78,10 @@ class CounterCubit extends ReplayAndHydrated {
 ### Creating a `ReplayBloc`
 
 ```ts
+import { Cubit } from "@jacobtipp/bloc"
+import { WithReplayBloc } from "@jacobtipp/replay-bloc"
 // events
-abstract class CounterEvent {}
+abstract class CounterEvent extends ReplayEvent {}
 
 class Increment extends CounterEvent {}
 
@@ -118,7 +127,11 @@ If you wish to be able to use a `WithReplayBloc` in conjuction with a different 
 
 ```ts
 // events
-abstract class CounterEvent {}
+import { Cubit } from "@jacobtipp/bloc"
+import { WithReplayBloc } from "@jacobtipp/replay-bloc"
+import { WithHydratedBloc } from "@jacobtipp/hydrated-bloc"
+
+abstract class CounterEvent extends ReplayEvent {}
 
 class Increment extends CounterEvent {}
 
