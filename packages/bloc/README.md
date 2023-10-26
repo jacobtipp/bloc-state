@@ -2,8 +2,7 @@
 
 ## Introduction
 
-`@jacobtipp/bloc` is a state management library implementing the BLoC pattern that was first introduced
-by google at [DartConf](https://www.youtube.com/watch?v=PLHln7wHgPE) in 2018. This library is a Typescript port of [Bloc](https://github.com/felangel/bloc/) from the Dart ecosystem.
+`@jacobtipp/bloc` is an npm package that helps implement the BLoC (Business Logic only Components) pattern.
 
 ## Installation
 
