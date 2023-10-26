@@ -1,3 +1,10 @@
+## [2.0.6](https://github.com/jacobtipp/bloc-state/compare/bloc-concurrency-v2.0.5...bloc-concurrency-v2.0.6) (2023-10-26)
+
+
+### Documentation
+
+* **readme:** 📚️ update introduction for @jacobtipp/bloc ([0774f6e](https://github.com/jacobtipp/bloc-state/commit/0774f6e6b205ebd0e327e98e5e2698167ef7a057))
+
 ## [2.0.5](https://github.com/jacobtipp/bloc-state/compare/bloc-concurrency-v2.0.4...bloc-concurrency-v2.0.5) (2023-10-05)
 
 
