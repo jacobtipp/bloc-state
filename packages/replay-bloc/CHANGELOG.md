@@ -1,3 +1,11 @@
+## [1.0.5](https://github.com/jacobtipp/bloc-state/compare/replay-bloc-v1.0.4...replay-bloc-v1.0.5) (2023-10-26)
+
+
+### Documentation
+
+* **readme:** 📚️ add imports to doc examples ([3d52ef3](https://github.com/jacobtipp/bloc-state/commit/3d52ef33650c51460ef3c10b0d92a006315e0f33))
+* **readme:** 📚️ update introduction for @jacobtipp/bloc ([0774f6e](https://github.com/jacobtipp/bloc-state/commit/0774f6e6b205ebd0e327e98e5e2698167ef7a057))
+
 ## [1.0.4](https://github.com/jacobtipp/bloc-state/compare/replay-bloc-v1.0.3...replay-bloc-v1.0.4) (2023-10-25)
 
 
