@@ -1,13 +1,15 @@
 {
   "name": "bloc-todos",
-  "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "examples/bloc-todos/src",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/examples/bloc-todos/src",
   "projectType": "application",
   "targets": {
     "typecheck": {
       "executor": "nx:run-commands",
       "options": {
-        "commands": ["tsc --noEmit -p examples/bloc-todos/tsconfig.app.json"]
+        "commands": [
+          "tsc --noEmit -p apps/examples/bloc-todos/tsconfig.app.json"
+        ]
       }
     },
     "build": {
@@ -15,7 +17,7 @@
       "outputs": ["{options.outputPath}"],
       "defaultConfiguration": "production",
       "options": {
-        "outputPath": "dist/examples/bloc-todos"
+        "outputPath": "dist/apps/examples/bloc-todos"
       },
       "configurations": {
         "development": {
@@ -56,7 +58,7 @@
       "executor": "@nx/linter:eslint",
       "outputs": ["{options.outputFile}"],
       "options": {
-        "lintFilePatterns": ["examples/bloc-todos/**/*.{ts,tsx,js,jsx}"]
+        "lintFilePatterns": ["apps/examples/bloc-todos/**/*.{ts,tsx,js,jsx}"]
       }
     }
   },

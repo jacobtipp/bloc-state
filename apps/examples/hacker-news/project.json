@@ -1,13 +1,15 @@
 {
   "name": "hacker-news",
-  "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "examples/hacker-news/src",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/examples/hacker-news/src",
   "projectType": "application",
   "targets": {
     "typecheck": {
       "executor": "nx:run-commands",
       "options": {
-        "commands": ["tsc --noEmit -p examples/hacker-news/tsconfig.app.json"]
+        "commands": [
+          "tsc --noEmit -p apps/examples/hacker-news/tsconfig.app.json"
+        ]
       }
     },
     "build": {
@@ -15,7 +17,7 @@
       "outputs": ["{options.outputPath}"],
       "defaultConfiguration": "production",
       "options": {
-        "outputPath": "dist/examples/hacker-news"
+        "outputPath": "dist/apps/examples/hacker-news"
       },
       "configurations": {
         "development": {
@@ -56,7 +58,7 @@
       "executor": "@nx/linter:eslint",
       "outputs": ["{options.outputFile}"],
       "options": {
-        "lintFilePatterns": ["examples/hacker-news/**/*.{ts,tsx,js,jsx}"]
+        "lintFilePatterns": ["apps/examples/hacker-news/**/*.{ts,tsx,js,jsx}"]
       }
     }
   },
