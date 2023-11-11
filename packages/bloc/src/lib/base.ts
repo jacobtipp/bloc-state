@@ -117,12 +117,13 @@ export abstract class BlocBase<State = unknown> {
 
       if (newState == this._state && this._emitted) return;
 
-      // Notifies observers of the change in state.
-      this.onChange(new Change(this.state, newState));
+      const previous = this.state;
 
       // Sets the new state and notifies observers.
       this._state = newState;
       this._stateSubject$.next(newState);
+      // Notifies observers of the change in state.
+      this.onChange(new Change(previous, newState));
 
       // Marks the current state as emitted.
       this._emitted = true;
