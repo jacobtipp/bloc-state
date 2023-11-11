@@ -1,3 +1,10 @@
+## [2.1.0-dev-bloc.1](https://github.com/jacobtipp/bloc-state/compare/bloc-v2.0.5-dev-bloc.1...bloc-v2.1.0-dev-bloc.1) (2023-11-11)
+
+
+### Features
+
+* **bloc:** ✨ add fromJson and toJson to cubit/bloc ([0aa0870](https://github.com/jacobtipp/bloc-state/commit/0aa087033f8f51cc84015584cd02935a72c4d020))
+
 ## [2.0.5-dev-bloc.1](https://github.com/jacobtipp/bloc-state/compare/bloc-v2.0.4...bloc-v2.0.5-dev-bloc.1) (2023-11-11)
 
 
