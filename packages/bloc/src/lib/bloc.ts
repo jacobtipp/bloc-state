@@ -134,8 +134,9 @@ export abstract class Bloc<Event, State> extends BlocBase<State> {
         if (this.state === nextState && this._emitted) return;
 
         try {
-          this.onTransition(new Transition(this.state, event, nextState));
+          const previous = this.state;
           stateToBeEmittedStream$.next(nextState);
+          this.onTransition(new Transition(previous, event, nextState));
         } catch (error) {
           this.onError(error as Error);
         }
