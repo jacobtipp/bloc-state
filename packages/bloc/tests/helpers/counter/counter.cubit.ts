@@ -2,10 +2,6 @@ import { Cubit } from '../../../src';
 import { delay } from '../delay';
 
 export class CounterCubit extends Cubit<number> {
-  constructor() {
-    super(0);
-  }
-
   increment() {
     this.emit(this.state + 1);
   }

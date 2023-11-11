@@ -271,13 +271,51 @@ describe('bloc', () => {
       const testBloc = new TestBloc();
       testBloc.add(new TestEvent());
     });
+
+    it('should handle fromJson', () => {
+      class CounterCubitWithJson extends CounterCubit {
+        constructor(state: number) {
+          super(state);
+        }
+        override fromJson(json: string): number {
+          return super.fromJson(json);
+        }
+      }
+
+      const cubit = new CounterCubitWithJson(0);
+
+      const state = cubit.fromJson('1');
+
+      expect(state).toBe(1);
+
+      cubit.close();
+    });
+
+    it('should handle toJson', () => {
+      class CounterCubitWithJson extends CounterCubit {
+        constructor(state: number) {
+          super(state);
+        }
+        override toJson(number: number): string {
+          return super.toJson(number);
+        }
+      }
+
+      const cubit = new CounterCubitWithJson(0);
+
+      const state = cubit.toJson(0);
+
+      expect(state).toBe('0');
+
+      cubit.close();
+    });
   });
 
   describe('isBlocInstance', () => {
     it('should return true if provided an instance of a bloc', () => {
       expect.assertions(2);
       expect(isBlocInstance(bloc)).toBe(true);
-      const cubit = new CounterCubit();
+      const cubit = new CounterCubit(0);
       expect(isBlocInstance(cubit)).toBe(false);
     });
   });

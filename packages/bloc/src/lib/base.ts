@@ -134,6 +134,14 @@ export abstract class BlocBase<State = unknown> {
     }
   }
 
+  fromJson(json: string): State {
+    return JSON.parse(json) as State;
+  }
+
+  toJson(state: State): string {
+    return JSON.stringify(state);
+  }
+
   /**
    * Closes the BLoC instance.
    */
