@@ -1,3 +1,10 @@
+## [2.0.5-dev-bloc.1](https://github.com/jacobtipp/bloc-state/compare/bloc-v2.0.4...bloc-v2.0.5-dev-bloc.1) (2023-11-11)
+
+
+### Code Refactoring
+
+* **bloc:** ♻️ onChange and onTransition call after state is emitted ([e65206d](https://github.com/jacobtipp/bloc-state/commit/e65206d4165364028cf54bc8f54d36a223009ae8))
+
 ## [2.0.4](https://github.com/jacobtipp/bloc-state/compare/bloc-v2.0.3...bloc-v2.0.4) (2023-10-26)
 
 
