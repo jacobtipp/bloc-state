@@ -10,7 +10,7 @@ describe('Cubit', () => {
   let state$: Observable<number>;
 
   beforeEach(() => {
-    cubit = new CounterCubit();
+    cubit = new CounterCubit(0);
     state$ = cubit.state$;
   });
 
@@ -127,7 +127,7 @@ describe('Cubit', () => {
     let emitBloc: EmitTestBloc;
 
     beforeEach(() => {
-      emitBloc = new EmitTestBloc();
+      emitBloc = new EmitTestBloc(0);
       emitBloc.state$.subscribe(states.push.bind(states));
     });
 

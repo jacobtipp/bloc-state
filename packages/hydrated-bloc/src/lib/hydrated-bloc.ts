@@ -34,14 +34,6 @@ export const WithHydratedBloc = <
 
     private _cachedState: State | null = null;
 
-    fromJson(json: string): State {
-      return JSON.parse(json) as State;
-    }
-
-    toJson(state: State): string {
-      return JSON.stringify(state);
-    }
-
     override get state(): State {
       const storage = HydratedStorage.storage;
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
