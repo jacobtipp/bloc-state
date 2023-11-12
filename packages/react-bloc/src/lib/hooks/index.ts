@@ -11,13 +11,13 @@ import {
 import {
   Observable,
   Subscription,
+  distinctUntilChanged,
   filter,
   map,
   pairwise,
   startWith,
 } from 'rxjs';
 import { contextMap } from '../provider';
-import { useSyncExternalStoreWithSelector } from 'use-sync-external-store/with-selector';
 
 interface Handler<T = any> {
   suspender_: Promise<T>;
@@ -125,7 +125,13 @@ export const useBlocSelector = <
 
   const subscriptionCallback = useCallback((notify: () => void) => {
     const subscription = (blocInstance.state$ as Observable<State>)
-      .pipe(filter((state: State): state is State => listenWhen(state)))
+      .pipe(
+        startWith(blocInstance.state),
+        distinctUntilChanged(),
+        filter((state: State): state is State => listenWhen(state)),
+        map((state) => selector(state)),
+        distinctUntilChanged()
+      )
       .subscribe(notify);
     return () => {
       subscription.unsubscribe();
@@ -133,14 +139,10 @@ export const useBlocSelector = <
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const selected = useSyncExternalStoreWithSelector<
-    StateType<InstanceType<Bloc>>,
-    SelectedState
-  >(
+  const selected = useSyncExternalStore<SelectedState>(
     subscriptionCallback,
-    () => blocInstance.state as StateType<InstanceType<Bloc>>,
-    null,
-    selector
+    () => selector(blocInstance.state),
+    () => selector(blocInstance.state)
   );
 
   useDebugValue(selected);
@@ -163,6 +165,7 @@ export const useBlocValue = <
   const state = useSyncExternalStore<Value>(
     // Use the memoized subscription function here.
     subscriptionCallback,
+    () => blocInstance.state as Value,
     () => blocInstance.state as Value
   );
 

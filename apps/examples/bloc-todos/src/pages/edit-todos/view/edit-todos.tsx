@@ -18,9 +18,10 @@ import {
   EditTodoTitleChanged,
 } from '../bloc/edit-todo.event';
 import Icon from '@mui/material/Icon';
-import { EditTodoBloc } from '../bloc';
+import { EditTodoBloc, EditTodoState } from '../bloc';
 import { todosRepository } from '../../../modules';
 import { BlocProvider, useBloc, useBlocListener } from '@jacobtipp/react-bloc';
+import { createSelector } from 'reselect';
 
 export default function EditTodoPage() {
   const { todoId } = useParams();
@@ -43,10 +44,20 @@ export type EditTodoViewProps = {
   isNew: boolean;
 };
 
+const getData = (state: EditTodoState) => state.data;
+const title = createSelector(getData, (data) => data.title);
+const description = createSelector(getData, (data) => data.description);
+const titleAndDescriptionSelector = createSelector(
+  [title, description],
+  (title, description) => {
+    return [title, description];
+  }
+);
+
 export function EditTodoView({ isNew }: EditTodoViewProps) {
   const navigate = useNavigate();
   const [[title, description], { add }] = useBloc(EditTodoBloc, {
-    selector: ({ data: { title, description } }) => [title, description],
+    selector: titleAndDescriptionSelector,
   });
 
   useBlocListener(EditTodoBloc, {

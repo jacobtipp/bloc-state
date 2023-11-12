@@ -14,7 +14,6 @@ export class LocalStorageTodosResource
   init() {
     const todos = localStorage.getItem('todos');
     if (todos != null) {
-      console.log(todos);
       this.next(JSON.parse(todos));
     }
   }
