@@ -16,6 +16,7 @@ import {
 import Icon from '@mui/material/Icon';
 import {
   TodosOverviewBloc,
+  TodosOverviewState,
   TodosOverviewSubscriptionRequested,
   TodosOverviewTodoCompletionToggled,
   TodosOverviewTodoDeleted,
@@ -30,6 +31,7 @@ import { Todo } from '../../../modules/todos/domain/model/todo';
 import { todosRepository } from '../../../modules';
 import { BlocProvider, useBloc, useBlocListener } from '@jacobtipp/react-bloc';
 import { TodosOverviewFilter } from '../model';
+import { createSelector } from 'reselect';
 
 const todoFilterMap = (todo: Todo, filter: TodosOverviewFilter) =>
   filter === 'all'
@@ -37,6 +39,17 @@ const todoFilterMap = (todo: Todo, filter: TodosOverviewFilter) =>
     : filter === 'completed'
     ? todo.isCompleted
     : !todo.isCompleted;
+
+// memoized selectors
+const getData = (state: TodosOverviewState) => state.data;
+const filterSelector = createSelector(getData, (data) => data.filter);
+const todosSelector = createSelector(getData, (data) => data.todos);
+const filteredTodosSelector = createSelector(
+  [filterSelector, todosSelector],
+  (filter, todos) => {
+    return todos.filter((todo) => todoFilterMap(todo, filter));
+  }
+);
 
 export default function TodosOverviewPage() {
   return (
@@ -57,8 +70,7 @@ export function TodosOverviewView() {
   const [isSnackbarOpen, openSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [filteredTodos, { add }] = useBloc(TodosOverviewBloc, {
-    selector: ({ data: { todos, filter } }) =>
-      todos.filter((todo) => todoFilterMap(todo, filter)),
+    selector: filteredTodosSelector,
   });
 
   const navigate = useNavigate();

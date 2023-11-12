@@ -12,13 +12,19 @@ import {
   TodosOverviewUndoDeletionRequested,
 } from './todos-overview.event';
 import { TodosOverviewState } from './todos-overview.state';
+import { WithHydratedBloc } from '@jacobtipp/hydrated-bloc';
 
-export class TodosOverviewBloc extends Bloc<
+export class TodosOverviewBlocBase extends Bloc<
   TodosOverviewEvent,
   TodosOverviewState
 > {
   constructor(private readonly todosRepository: TodosRepository) {
-    super(new TodosOverviewState());
+    super(
+      new TodosOverviewState({
+        todos: [],
+        filter: 'all',
+      })
+    );
 
     this.on(TodosOverviewSubscriptionRequested, this.onSubscriptionRequested);
     this.on(TodosOverviewTodoCompletionToggled, this.onTodoCompletionToggled);
@@ -99,7 +105,6 @@ export class TodosOverviewBloc extends Bloc<
     await emit.forEach(
       this.todosRepository.getTodos(),
       (todos) => {
-        console.log(todos);
         return this.state.ready((data) => {
           data.todos = todos;
         });
@@ -114,5 +119,17 @@ export class TodosOverviewBloc extends Bloc<
   ) {
     const todo = { ...event.todo, isCompleted: event.isCompleted };
     await this.todosRepository.saveTodo(todo);
+  }
+
+  override fromJson(json: string): TodosOverviewState {
+    const parsed = super.fromJson(json);
+    return new TodosOverviewState(parsed.data, parsed.status);
+  }
+}
+
+export class TodosOverviewBloc extends WithHydratedBloc(TodosOverviewBlocBase) {
+  constructor(todosRepo: TodosRepository) {
+    super(todosRepo);
+    this.hydrate();
   }
 }

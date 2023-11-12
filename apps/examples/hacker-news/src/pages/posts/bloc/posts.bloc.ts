@@ -21,7 +21,16 @@ export class PostBloc extends Bloc<PostEvent, PostState> {
     private postRepository: PostRepository,
     private transformer: PostTransformer
   ) {
-    super(new PostState());
+    super(
+      new PostState({
+        transformer: 'concurrent',
+        details: {
+          by: '',
+          time: 0,
+          type: 'comment',
+        },
+      })
+    );
 
     this.on(PostRestartable, this.getPost, restartable());
     this.on(PostConcurrent, this.getPost, concurrent());
@@ -46,6 +55,11 @@ export class PostBloc extends Bloc<PostEvent, PostState> {
     if (this.transformer === 'sequential') {
       this.add(new PostSequential(event.id));
     }
+  }
+
+  override fromJson(json: string): PostState {
+    const parsed = super.fromJson(json);
+    return new PostState(parsed.data, parsed.status);
   }
 
   private async getPost(event: PostRestartable, emit: Emitter<PostState>) {

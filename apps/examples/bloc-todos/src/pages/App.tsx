@@ -3,6 +3,10 @@ import CssBaseline from '@mui/material/CssBaseline';
 import { Route, Routes } from 'react-router-dom';
 import { lazy, PropsWithChildren, Suspense } from 'react';
 import CircularLoader from './pages-common/components/circular-loader';
+import {
+  HydratedLocalStorage,
+  HydratedStorage,
+} from '@jacobtipp/hydrated-bloc';
 
 const HomePage = lazy(() => import('./home/view/home'));
 const StatsPage = lazy(() => import('./stats/view/stats'));
@@ -16,6 +20,8 @@ const darkTheme = createTheme({
     mode: 'dark',
   },
 });
+
+HydratedStorage.storage = new HydratedLocalStorage();
 
 function GlobalProviders({ children }: PropsWithChildren) {
   return (
