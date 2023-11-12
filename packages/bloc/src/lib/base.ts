@@ -105,6 +105,13 @@ export abstract class BlocBase<State = unknown> {
   }
 
   /**
+   * Emits new BLoC state, this should only be used in development (Redux/React Devtools) and testing.
+   */
+  __unsafeEmit__(newState: State): void {
+    return this.emit(newState);
+  }
+
+  /**
    * Emits a new state for the BLoC.
    *
    * @param newState - The new state of the BLoC.

@@ -177,5 +177,14 @@ describe('Cubit', () => {
       expect(states.length).toBe(1);
       expect(a).toBe(0);
     });
+
+    it('should emit initial state only once', () => {
+      expect.assertions(2);
+      emitBloc.seed();
+      emitBloc.__unsafeEmit__(1);
+      const [_, b] = states;
+      expect(states.length).toBe(2);
+      expect(b).toBe(1);
+    });
   });
 });
