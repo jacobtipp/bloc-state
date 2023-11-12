@@ -1,3 +1,10 @@
+## [2.1.0-dev-bloc.2](https://github.com/jacobtipp/bloc-state/compare/bloc-v2.1.0-dev-bloc.1...bloc-v2.1.0-dev-bloc.2) (2023-11-12)
+
+
+### Features
+
+* **bloc:** ✨ add public __unsafeEmit__ method to BlocBase ([dd31d9b](https://github.com/jacobtipp/bloc-state/commit/dd31d9bc7ca3003bfff713a0dbddffa4bc408cf2))
+
 ## [2.1.0-dev-bloc.1](https://github.com/jacobtipp/bloc-state/compare/bloc-v2.0.5-dev-bloc.1...bloc-v2.1.0-dev-bloc.1) (2023-11-11)
 
 
