@@ -25,7 +25,7 @@ export abstract class BlocBase<State = unknown> {
     this.subscriptions.add(this.state$.subscribe());
 
     // Executes the BlocObserver's `onCreate` method specific to this BLoC.
-    Bloc.observer.onCreate(this);
+    Bloc.observer.onCreate(this, this._state);
   }
 
   /**

@@ -11,7 +11,7 @@ export class BlocObserver {
    * Called when a new Bloc is created.
    * @param _bloc The newly created Bloc object.
    */
-  onCreate(_bloc: BlocBase<any>): void {
+  onCreate(_bloc: BlocBase<any>, _initialState: any): void {
     return;
   }
 
