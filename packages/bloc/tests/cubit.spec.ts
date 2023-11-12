@@ -178,7 +178,7 @@ describe('Cubit', () => {
       expect(a).toBe(0);
     });
 
-    it('should emit initial state only once', () => {
+    it('should publicly emit with __unsafeEmit__', () => {
       expect.assertions(2);
       emitBloc.seed();
       emitBloc.__unsafeEmit__(1);
