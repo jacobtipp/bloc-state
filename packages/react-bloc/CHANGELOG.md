@@ -1,3 +1,22 @@
+## [3.0.0](https://github.com/jacobtipp/bloc-state/compare/react-bloc-v2.0.7...react-bloc-v3.0.0) (2023-11-13)
+
+
+### ⚠ BREAKING CHANGES
+
+* **bloc:** BlocObserver.onCreate requires initialState as second required paramter
+
+### Features
+
+* **bloc:** ✨ add fromJson and toJson to cubit/bloc ([86b05d4](https://github.com/jacobtipp/bloc-state/commit/86b05d43446d72909c60e88b3e784a15cbaa3ab1))
+* **bloc:** ✨ add public __unsafeEmit__ method to BlocBase ([a785dec](https://github.com/jacobtipp/bloc-state/commit/a785dec8167e272498885b9b0b2328a33189bc00))
+* **bloc:** 💥 ✨ add initialState argument to BlocObserver.onCreate ([38a5de7](https://github.com/jacobtipp/bloc-state/commit/38a5de7766a3147c0384ef1564b085da8cdce247))
+
+
+### Code Refactoring
+
+* **bloc:** ♻️ onChange and onTransition call after state is emitted ([5753e21](https://github.com/jacobtipp/bloc-state/commit/5753e2139cdbe78f5a8fbe12e101f7fe0e63fe78))
+* **react-bloc:** ♻️ selectors now use useSyncExternalStore ([aaa3db5](https://github.com/jacobtipp/bloc-state/commit/aaa3db58f61d57b9250bcb6fd8d9d2355aa985cf))
+
 ## [2.0.7](https://github.com/jacobtipp/bloc-state/compare/react-bloc-v2.0.6...react-bloc-v2.0.7) (2023-10-26)
 
 
