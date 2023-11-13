@@ -12,7 +12,12 @@ import { EditTodoState } from './edit-todo.state';
 
 export class EditTodoBloc extends Bloc<EditTodoEvent, EditTodoState> {
   constructor(private todosRepository: TodosRepository) {
-    super(new EditTodoState());
+    super(
+      new EditTodoState({
+        title: '',
+        description: '',
+      })
+    );
 
     this.on(EditTodoSubscribed, this.onSubscribed);
     this.on(EditTodoTitleChanged, this.onTitleChanged);
@@ -73,5 +78,10 @@ export class EditTodoBloc extends Bloc<EditTodoEvent, EditTodoState> {
         emit(this.state.failed(error));
       }
     }
+  }
+
+  override fromJson(json: string): EditTodoState {
+    const parsed = super.fromJson(json);
+    return new EditTodoState(parsed.data, parsed.status);
   }
 }

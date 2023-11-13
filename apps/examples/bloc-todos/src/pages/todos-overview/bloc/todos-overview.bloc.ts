@@ -123,6 +123,9 @@ export class TodosOverviewBlocBase extends Bloc<
 
   override fromJson(json: string): TodosOverviewState {
     const parsed = super.fromJson(json);
+    if (!parsed) {
+      console.log(json);
+    }
     return new TodosOverviewState(parsed.data, parsed.status);
   }
 }
