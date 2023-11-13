@@ -4,7 +4,7 @@
   "sourceRoot": "packages/replay-bloc/src",
   "projectType": "library",
   "tags": [],
-  "implicitDependencies": ["!state"],
+  "implicitDependencies": ["!state", "!hydrated-bloc"],
   "targets": {
     "lint": {
       "executor": "@nx/linter:eslint",
