@@ -1,3 +1,14 @@
+## [3.0.0-dev-bloc.1](https://github.com/jacobtipp/bloc-state/compare/bloc-v2.1.0-dev-bloc.2...bloc-v3.0.0-dev-bloc.1) (2023-11-13)
+
+
+### ⚠ BREAKING CHANGES
+
+* **bloc:** BlocObserver.onCreate requires initialState as second required paramter
+
+### Features
+
+* **bloc:** 💥 ✨ add initialState argument to BlocObserver.onCreate ([eb06afa](https://github.com/jacobtipp/bloc-state/commit/eb06afadb83ad81e7345b88699bae1fb8d4e52d2))
+
 ## [2.1.0-dev-bloc.2](https://github.com/jacobtipp/bloc-state/compare/bloc-v2.1.0-dev-bloc.1...bloc-v2.1.0-dev-bloc.2) (2023-11-12)
 
 
