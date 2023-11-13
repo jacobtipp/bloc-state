@@ -1,1 +1,1 @@
-export * from './lib/bloc-devtools';
+export * from './lib';
