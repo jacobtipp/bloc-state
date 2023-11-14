@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/jacobtipp/bloc-state/compare/bloc-devtools-v1.0.0...bloc-devtools-v1.0.1) (2023-11-14)
+
+
+### Build System Dependencies
+
+* **deps:** 📦️ add @jacobtipp/bloc as external dependency to @jacobtipp/bloc-devtools ([9fb4187](https://github.com/jacobtipp/bloc-state/commit/9fb4187a8905af59964eadaa22c97d6bceea56df))
+
 ## 1.0.0 (2023-11-13)
 
 
