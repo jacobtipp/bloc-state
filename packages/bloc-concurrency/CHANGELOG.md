@@ -1,3 +1,10 @@
+## [3.0.1](https://github.com/jacobtipp/bloc-state/compare/bloc-concurrency-v3.0.0...bloc-concurrency-v3.0.1) (2023-11-14)
+
+
+### Build System Dependencies
+
+* **deps:** 📦️ add @jacobtipp/bloc as external dependency to @jacobtipp/bloc-concurrency ([402f112](https://github.com/jacobtipp/bloc-state/commit/402f112f8fa19cd3e0633bbd457904c2d6b8ec91))
+
 ## [3.0.0](https://github.com/jacobtipp/bloc-state/compare/bloc-concurrency-v2.0.6...bloc-concurrency-v3.0.0) (2023-11-13)
 
 
