@@ -1,3 +1,10 @@
+## [2.0.1](https://github.com/jacobtipp/bloc-state/compare/replay-bloc-v2.0.0...replay-bloc-v2.0.1) (2023-11-14)
+
+
+### Build System Dependencies
+
+* **deps:** 📦️ add @jacobtipp/bloc as external dependency to @jacobtipp/replay-bloc ([bda8bb7](https://github.com/jacobtipp/bloc-state/commit/bda8bb7b8aec41fd9146ed69ecd148bcd893cc29))
+
 ## [2.0.0](https://github.com/jacobtipp/bloc-state/compare/replay-bloc-v1.0.5...replay-bloc-v2.0.0) (2023-11-13)
 
 
