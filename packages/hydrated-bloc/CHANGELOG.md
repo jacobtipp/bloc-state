@@ -1,3 +1,10 @@
+## [3.0.1](https://github.com/jacobtipp/bloc-state/compare/hydrated-bloc-v3.0.0...hydrated-bloc-v3.0.1) (2023-11-14)
+
+
+### Build System Dependencies
+
+* **deps:** 📦️ add @jacobtipp/bloc as external dependency to @jacobtipp/hydrated-bloc ([51be20d](https://github.com/jacobtipp/bloc-state/commit/51be20dd3022203f64a52d70c08a04137f58ef6f))
+
 ## [3.0.0](https://github.com/jacobtipp/bloc-state/compare/hydrated-bloc-v2.0.7...hydrated-bloc-v3.0.0) (2023-11-13)
 
 
