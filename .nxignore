@@ -1,1 +1,3 @@
+apps/examples
 pnpm-lock.yaml
+tsconfig.base.json
