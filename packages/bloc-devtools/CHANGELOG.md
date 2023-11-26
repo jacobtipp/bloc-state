@@ -1,3 +1,10 @@
+## [1.0.2](https://github.com/jacobtipp/bloc-state/compare/bloc-devtools-v1.0.1...bloc-devtools-v1.0.2) (2023-11-26)
+
+
+### Bug Fixes
+
+* **bloc:** 🐛 errors should be rethrown ([d570228](https://github.com/jacobtipp/bloc-state/commit/d570228266c73d56cd8a2b19bc7203c64acc9ccd))
+
 ## [1.0.1](https://github.com/jacobtipp/bloc-state/compare/bloc-devtools-v1.0.0...bloc-devtools-v1.0.1) (2023-11-14)
 
 
