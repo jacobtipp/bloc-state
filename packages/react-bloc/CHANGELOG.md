@@ -1,3 +1,10 @@
+## [3.0.1](https://github.com/jacobtipp/bloc-state/compare/react-bloc-v3.0.0...react-bloc-v3.0.1) (2023-11-26)
+
+
+### Bug Fixes
+
+* **bloc:** 🐛 errors should be rethrown ([d570228](https://github.com/jacobtipp/bloc-state/commit/d570228266c73d56cd8a2b19bc7203c64acc9ccd))
+
 ## [3.0.0](https://github.com/jacobtipp/bloc-state/compare/react-bloc-v2.0.7...react-bloc-v3.0.0) (2023-11-13)
 
 
