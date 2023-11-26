@@ -176,7 +176,7 @@ describe('bloc', () => {
 
   describe('Bloc.onError', () => {
     it('should be invoked when an error is thrown from Bloc.onEvent', (done) => {
-      expect.assertions(1);
+      expect.assertions(2);
       class TestEvent {}
 
       class TestBloc extends Bloc<TestEvent, null> {
@@ -198,7 +198,11 @@ describe('bloc', () => {
 
       const testBloc = new TestBloc();
       testBloc.state$.subscribe({ complete: () => done() });
-      testBloc.add(new TestEvent());
+      try {
+        testBloc.add(new TestEvent());
+      } catch (e) {
+        expect(e).toBeInstanceOf(Error);
+      }
       testBloc.close();
     });
 
@@ -251,7 +255,11 @@ describe('bloc', () => {
         constructor() {
           super(new TestState(null));
           this.on(TestEvent, (_event, emit) => {
-            emit(this.state.loading());
+            try {
+              emit(this.state.loading());
+            } catch (e) {
+              /* empty */
+            }
           });
         }
 

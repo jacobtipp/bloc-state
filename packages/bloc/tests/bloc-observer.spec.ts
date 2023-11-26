@@ -44,7 +44,7 @@ describe('bloc-observer', () => {
   });
 
   it('should listen to errors ', () => {
-    expect.assertions(4);
+    expect.assertions(5);
     const errors: [bloc: BlocBase<any>, error: any][] = [];
 
     class TestBlocObserver extends BlocObserver {
@@ -64,7 +64,11 @@ describe('bloc-observer', () => {
     ).toBeUndefined();
 
     Bloc.observer = new TestBlocObserver();
-    counterBloc.add(new CounterIncrementEvent());
+    try {
+      counterBloc.add(new CounterIncrementEvent());
+    } catch (e) {
+      expect(e).toBeInstanceOf(Error);
+    }
 
     const [err] = errors;
     const [bloc, error] = err;

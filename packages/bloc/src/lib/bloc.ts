@@ -139,6 +139,7 @@ export abstract class Bloc<Event, State> extends BlocBase<State> {
           this.onTransition(new Transition(previous, event, nextState));
         } catch (error) {
           this.onError(error as Error);
+          throw error;
         }
       };
 
@@ -227,6 +228,7 @@ export abstract class Bloc<Event, State> extends BlocBase<State> {
       this._eventSubject$.next(event);
     } catch (error) {
       this.onError(error as Error);
+      throw error;
     }
 
     return this;
