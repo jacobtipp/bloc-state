@@ -40,7 +40,6 @@
     "sharedGlobals": ["{workspaceRoot}/babel.config.json"]
   },
   "workspaceLayout": {
-    "appsDir": "apps",
     "libsDir": "packages"
   },
   "generators": {
