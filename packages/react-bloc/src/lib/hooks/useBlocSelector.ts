@@ -62,6 +62,7 @@ const useSuspenseOrError = <
       .pipe(startWith(bloc.state as State))
       .subscribe((state) => {
         if (suspendWhen(state)) {
+          suspenseHandler.current?.resolve_();
           suspenseHandler.current = createHandler();
         } else if (suspenseHandler.current) {
           suspenseHandler.current.resolve_();
