@@ -2,9 +2,11 @@ import { FallbackProps } from 'react-error-boundary';
 
 import { UserSuspenseEvent } from '../user-event';
 import {
+  UserLastNameListenerComponent,
   useUserFirstName,
   useUserLastName,
   useUserLastNameListener,
+  useUserLastNameListenerWithDefaultListenWhen,
 } from '../user.hooks';
 import { useBlocInstance } from '../../../../src';
 import { UserBloc } from '../user-bloc';
@@ -35,6 +37,21 @@ export const UserBlocSelectorConsumer = () => {
 export const UserBlocListenerConsumer = () => {
   const last = useUserLastNameListener();
   return <p data-testid="test-last-name">{last}</p>;
+};
+
+export const UserBlocListenerConsumerWithDefaultListenWhen = () => {
+  const last = useUserLastNameListenerWithDefaultListenWhen();
+  return <p data-testid="test-last-name">{last}</p>;
+};
+
+export const UserBlocListenerConsumerWithListenerComponent = () => {
+  const last = useUserLastNameListener();
+  return (
+    <>
+      <p data-testid="test-last-name">{last}</p>
+      <UserLastNameListenerComponent />
+    </>
+  );
 };
 
 export const UserBlocErrorConsumer = () => {

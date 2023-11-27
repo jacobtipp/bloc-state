@@ -2,7 +2,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import { UserBlocValueProvider } from './user/components';
 
 describe('useBlocValue', () => {
-  it('should listen to states when single bloc listener', async () => {
+  it('should listen to states', async () => {
     render(<UserBlocValueProvider />);
 
     await waitFor(

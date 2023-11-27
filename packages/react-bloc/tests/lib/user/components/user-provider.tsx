@@ -3,7 +3,7 @@ import {
   UserErrorEvent,
   UserLastNameAsyncChangedEvent,
   UserNameChangedEvent,
-} from '../../../legacy/user/user-event';
+} from '../user-event';
 import {
   UserBlocErrorFallback,
   UserBlocValueConsumer,
@@ -11,9 +11,11 @@ import {
   UserBlocErrorConsumer,
   UserBlocSelectorConsumer,
   UserBlocSuspenseFallback,
+  UserBlocListenerConsumerWithListenerComponent,
+  UserBlocListenerConsumerWithDefaultListenWhen,
 } from './user-consumer';
 import { BlocErrorBoundary, BlocProvider } from '../../../../src';
-import { UserBloc } from '../../../legacy/user/user-bloc';
+import { UserBloc } from '../user-bloc';
 
 export const UserBlocListenerProvider = () => (
   <BlocProvider
@@ -24,6 +26,32 @@ export const UserBlocListenerProvider = () => (
   >
     <Suspense fallback={<UserBlocSuspenseFallback />}>
       <UserBlocListenerConsumer />
+    </Suspense>
+  </BlocProvider>
+);
+
+export const UserBlocListenerProviderWithDefaultListenWhen = () => (
+  <BlocProvider
+    bloc={UserBloc}
+    create={() =>
+      new UserBloc().add(new UserLastNameAsyncChangedEvent('richards'))
+    }
+  >
+    <Suspense fallback={<UserBlocSuspenseFallback />}>
+      <UserBlocListenerConsumerWithDefaultListenWhen />
+    </Suspense>
+  </BlocProvider>
+);
+
+export const UserBlocListenerWithComnponentProvider = () => (
+  <BlocProvider
+    bloc={UserBloc}
+    create={() =>
+      new UserBloc().add(new UserLastNameAsyncChangedEvent('richards'))
+    }
+  >
+    <Suspense fallback={<UserBlocSuspenseFallback />}>
+      <UserBlocListenerConsumerWithListenerComponent />
     </Suspense>
   </BlocProvider>
 );
