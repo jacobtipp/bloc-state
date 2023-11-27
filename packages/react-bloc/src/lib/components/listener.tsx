@@ -1,5 +1,5 @@
 import { BlocBase, ClassType } from '@jacobtipp/bloc';
-import { BlocListenerProps, useBlocListener } from '../../hooks';
+import { BlocListenerProps, useBlocListener } from '../hooks';
 
 export function BlocListener<Bloc extends ClassType<BlocBase<any>>>({
   bloc,
