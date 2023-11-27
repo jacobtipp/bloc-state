@@ -2,7 +2,7 @@ name: Release
 
 on:
   push:
-    branches: [main, dev-bloc]
+    branches: [main, dev-bloc, dev-react-bloc]
 
 jobs:
   release:
