@@ -1,6 +1,18 @@
 ## [3.0.2-dev-react-bloc.1](https://github.com/jacobtipp/bloc-state/compare/react-bloc-v3.0.1...react-bloc-v3.0.2-dev-react-bloc.1) (2023-11-27)
 
 
+### Bug Fixes
+
+* **react-bloc:** 🐛 resolve current suspense handler before creating a new one ([7d19829](https://github.com/jacobtipp/bloc-state/commit/7d198295da7de1f6b3b4e168fb69b5b3a2f2d082))
+
+
+### Build System Dependencies
+
+* **deps:** 📦️ remove dead types from @jacobtipp/react-bloc package ([aa3e1fe](https://github.com/jacobtipp/bloc-state/commit/aa3e1fe0bc3db2cb52b960c9abda1ef4b32f94e8))
+
+## [3.0.2-dev-react-bloc.1](https://github.com/jacobtipp/bloc-state/compare/react-bloc-v3.0.1...react-bloc-v3.0.2-dev-react-bloc.1) (2023-11-27)
+
+
 ### Build System Dependencies
 
 * **deps:** 📦️ remove dead types from @jacobtipp/react-bloc package ([0f1a58d](https://github.com/jacobtipp/bloc-state/commit/0f1a58dfd82b8906a23f5da5f4fca91a4fb8f443))
