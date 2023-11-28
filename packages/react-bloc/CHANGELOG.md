@@ -1,3 +1,10 @@
+## [3.1.0](https://github.com/jacobtipp/bloc-state/compare/react-bloc-v3.0.2...react-bloc-v3.1.0) (2023-11-28)
+
+
+### Features
+
+* **react-bloc:** ✨ add MultiBlocProvider ([fad3064](https://github.com/jacobtipp/bloc-state/commit/fad306433162ffa672eed810c1112014431e0865))
+
 ## [3.0.2](https://github.com/jacobtipp/bloc-state/compare/react-bloc-v3.0.1...react-bloc-v3.0.2) (2023-11-27)
 
 
