@@ -2,16 +2,15 @@ import { BlocBase, ClassType } from '@jacobtipp/bloc';
 import {
   Context,
   Fragment,
+  FunctionComponentElement,
   PropsWithChildren,
   ReactNode,
   createContext,
   createElement,
-  useCallback,
   useEffect,
+  useMemo,
   useState,
 } from 'react';
-import { ErrorBoundary, FallbackProps } from 'react-error-boundary';
-import { useBlocInstance } from '../hooks';
 
 export type BlocContextMap = WeakMap<
   ClassType<BlocBase<any>>,
@@ -24,12 +23,6 @@ export interface BlocCreatorProvider<Bloc extends ClassType<BlocBase<any>>> {
   children: ReactNode;
   dependencies?: any[];
 }
-
-export type BlocErrorBoundaryProps<Bloc extends ClassType<BlocBase<any>>> = {
-  bloc: Bloc;
-  onReset: (bloc: InstanceType<Bloc>) => void;
-  fallback: React.ComponentType<FallbackProps>;
-} & PropsWithChildren;
 
 export const contextMap: BlocContextMap = new WeakMap();
 
@@ -67,7 +60,9 @@ export const BlocProvider = <Bloc extends ClassType<BlocBase<any>>>({
   dependencies = [],
   children,
   create,
-}: BlocCreatorProvider<Bloc>) => {
+}: BlocCreatorProvider<Bloc>): FunctionComponentElement<{
+  value: InstanceType<Bloc> | undefined;
+}> => {
   const [state, setState] = useState<{
     bloc: InstanceType<Bloc>;
     context: Context<InstanceType<Bloc> | undefined>;
@@ -103,46 +98,22 @@ export const BlocProvider = <Bloc extends ClassType<BlocBase<any>>>({
   return <Fragment></Fragment>;
 };
 
-export const BlocErrorBoundary = <Bloc extends ClassType<BlocBase<any>>>({
-  bloc,
-  fallback,
-  onReset,
-  children,
-}: BlocErrorBoundaryProps<Bloc>) => {
-  const blocInstance = useBlocInstance(bloc);
-  const reset = useCallback(() => {
-    return onReset(blocInstance);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [blocInstance]);
-
-  return (
-    <ErrorBoundary FallbackComponent={fallback} onReset={reset}>
-      {children}
-    </ErrorBoundary>
-  );
-};
-
-/** MultiBlocProvider experimental 
-export interface ProviderProps<Bloc extends ClassType<BlocBase<any>>> {
-  bloc: Bloc;
-  create: () => InstanceType<Bloc>;
-  dependencies?: any[];
+export interface MultiBlocProviderProps {
+  providers: Array<
+    ({ children }: PropsWithChildren) => FunctionComponentElement<{
+      value: BlocBase<any> | undefined;
+    }>
+  >;
 }
 
-export type MultiProviderProps = {
-  blocs: readonly ProviderProps<any>[];
-};
-
 export const MultiBlocProvider = ({
-  blocs,
+  providers,
   children,
-}: PropsWithChildren<MultiProviderProps>) => {
+}: PropsWithChildren<MultiBlocProviderProps>) => {
   const components = useMemo(() => {
-    return blocs.map(({ bloc, create, dependencies }) => {
+    return providers.map((Provider) => {
       return ({ children }: PropsWithChildren) => (
-        <BlocProvider bloc={bloc} create={create} dependencies={dependencies}>
-          {children}
-        </BlocProvider>
+        <Provider>{children}</Provider>
       );
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -166,5 +137,3 @@ export const MultiBlocProvider = ({
 
   return <Providers>{children}</Providers>;
 };
-
-**/

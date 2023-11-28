@@ -1,5 +1,6 @@
 import { fireEvent, render } from '@testing-library/react';
 import { CounterExampleGroup } from './counter';
+import { CounterWithUserProvider } from './user';
 
 describe('MultiProvider', () => {
   it('should support providing multiple instances of the same store', async () => {
@@ -23,5 +24,13 @@ describe('MultiProvider', () => {
     if (resetB) fireEvent.click(resetB);
 
     getByText('loading...');
+  });
+
+  it('should support providing multiple blocs with MultiBlocProvider', async () => {
+    const { findByTestId } = render(<CounterWithUserProvider />);
+    const count = (await findByTestId('count')).textContent;
+    const first = (await findByTestId('first')).textContent;
+    expect(count).toBe('0');
+    expect(first).toBe('bob');
   });
 });

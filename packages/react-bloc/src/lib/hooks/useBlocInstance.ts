@@ -1,6 +1,6 @@
 import { BlocBase, ClassType } from '@jacobtipp/bloc';
 import { useContext } from 'react';
-import { contextMap } from '../provider';
+import { contextMap } from '../components/provider';
 
 export const useBlocInstance = <Bloc extends ClassType<BlocBase<any>>>(
   bloc: Bloc
