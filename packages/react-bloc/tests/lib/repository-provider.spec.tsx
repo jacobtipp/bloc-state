@@ -1,12 +1,3 @@
-import { Cubit } from '@jacobtipp/bloc';
-import {
-  BlocProvider,
-  RepositoryProvider,
-  useBlocValue,
-  useRepository,
-} from '../../src/lib';
-import { PropsWithChildren } from 'react';
-
 import { render } from '@testing-library/react';
 import { ArticleFeature } from './article';
 
