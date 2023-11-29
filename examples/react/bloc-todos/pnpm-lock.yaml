@@ -11,22 +11,22 @@ importers:
         specifier: 11.11.0
         version: 11.11.0(@emotion/react@11.11.1)(@types/react@18.2.38)(react@18.2.0)
       '@jacobtipp/bloc':
-        specifier: latest
+        specifier: ^3.0.1
         version: 3.0.1(rxjs@7.8.0)
       '@jacobtipp/bloc-concurrency':
-        specifier: latest
+        specifier: ^3.0.2
         version: 3.0.2(@jacobtipp/bloc@3.0.1)(rxjs@7.8.0)
       '@jacobtipp/bloc-devtools':
-        specifier: latest
+        specifier: ^1.0.2
         version: 1.0.2(@jacobtipp/bloc@3.0.1)(rxjs@7.8.0)
       '@jacobtipp/hydrated-bloc':
-        specifier: latest
+        specifier: ^3.0.2
         version: 3.0.2(@jacobtipp/bloc@3.0.1)(rxjs@7.8.0)
       '@jacobtipp/react-bloc':
-        specifier: latest
-        version: 3.0.1(@jacobtipp/bloc@3.0.1)(react-dom@18.2.0)(react@18.2.0)(rxjs@7.8.0)
+        specifier: ^3.2.0
+        version: 3.2.0(@jacobtipp/bloc@3.0.1)(react-dom@18.2.0)(react@18.2.0)(rxjs@7.8.0)
       '@jacobtipp/state':
-        specifier: latest
+        specifier: ^1.0.7
         version: 1.0.7(immer@9.0.18)
       '@mui/material':
         specifier: ^5.10.17
@@ -553,8 +553,8 @@ packages:
       rxjs: 7.8.0
     dev: false
 
-  /@jacobtipp/react-bloc@3.0.1(@jacobtipp/bloc@3.0.1)(react-dom@18.2.0)(react@18.2.0)(rxjs@7.8.0):
-    resolution: {integrity: sha512-svqXp4E7XR8LvbVsZ61+A1SNIIcjdDaZ72oWCOlFXVB0W0xP2g45M7lYB2gy9Yi6GXPDJ3Vc3t2wrwyyuJckog==}
+  /@jacobtipp/react-bloc@3.2.0(@jacobtipp/bloc@3.0.1)(react-dom@18.2.0)(react@18.2.0)(rxjs@7.8.0):
+    resolution: {integrity: sha512-F8neHSTI9SRUv+tEwSwy4spZvpqU61n11UVQ2yAdzFyHrsD31gy63W2QoiML2iWf1g5qidXxsYw3i+1LAunerw==}
     peerDependencies:
       '@jacobtipp/bloc': 3.0.1
       react: 18.2.0

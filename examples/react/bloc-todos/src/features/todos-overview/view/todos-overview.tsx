@@ -21,9 +21,13 @@ import { TodosOverviewFilterButton } from '../components/todos-overview-filter-b
 import { TodosOverviewEmptyText } from '../components/todos-overview-empty-text';
 import { useMemo, useState } from 'react';
 import { Todo } from '../../../packages/todos-client/model/todo';
-import { BlocProvider, useBloc, useBlocListener } from '@jacobtipp/react-bloc';
+import {
+  BlocProvider,
+  useBloc,
+  useBlocListener,
+  useRepository,
+} from '@jacobtipp/react-bloc';
 import { createSelector } from 'reselect';
-import { todosRepository } from '../../../packages/todos-repository/todos-repository';
 import { TodosOverviewBloc } from '../bloc/todos-overview.bloc';
 import {
   TodosOverviewSubscriptionRequested,
@@ -33,6 +37,7 @@ import {
 } from '../bloc/todos-overview.event';
 import { TodosOverviewState } from '../bloc/todos-overview.state';
 import { TodosOverviewFilter } from '../model/todos-overview-filter';
+import { TodosRepository } from '../../../packages/todos-repository/todos-repository';
 
 const todoFilterMap = (todo: Todo, filter: TodosOverviewFilter) =>
   filter === 'all'
@@ -53,6 +58,8 @@ const filteredTodosSelector = createSelector(
 );
 
 export default function TodosOverviewPage() {
+  const todosRepository = useRepository(TodosRepository);
+
   return (
     <BlocProvider
       bloc={TodosOverviewBloc}
