@@ -98,13 +98,11 @@ export const BlocProvider = <Bloc extends ClassType<BlocBase<any>>>({
   return <Fragment></Fragment>;
 };
 
-export interface MultiBlocProviderProps {
-  providers: Array<
-    ({ children }: PropsWithChildren) => FunctionComponentElement<{
-      value: BlocBase<any> | undefined;
-    }>
-  >;
-}
+type BlocProviderReturnType = ReturnType<typeof BlocProvider>;
+
+export type MultiBlocProviderProps = {
+  providers: Array<({ children }: PropsWithChildren) => BlocProviderReturnType>;
+};
 
 export const MultiBlocProvider = ({
   providers,
