@@ -1,3 +1,10 @@
+## [3.2.0](https://github.com/jacobtipp/bloc-state/compare/react-bloc-v3.1.0...react-bloc-v3.2.0) (2023-11-29)
+
+
+### Features
+
+* **react-bloc:** ✨ add RepositoryProvider/MultiRepositoryProvider ([97a3389](https://github.com/jacobtipp/bloc-state/commit/97a3389586f98645efe2af613daf5bed3ebfc8d4))
+
 ## [3.1.0](https://github.com/jacobtipp/bloc-state/compare/react-bloc-v3.0.2...react-bloc-v3.1.0) (2023-11-28)
 
 
