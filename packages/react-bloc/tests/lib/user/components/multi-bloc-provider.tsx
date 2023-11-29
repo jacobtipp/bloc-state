@@ -1,35 +1,8 @@
 import { PropsWithChildren } from 'react';
-import {
-  BlocProvider,
-  MultiBlocProvider,
-  RepositoryProvider,
-  useBlocValue,
-} from '../../../../src';
+import { BlocProvider, MultiBlocProvider, useBlocValue } from '../../../../src';
 import { UserBloc } from '../user-bloc';
 import { UserNameChangedEvent } from '../user-event';
 import { CounterBloc } from '../../counter';
-
-const nameGetter = {
-  getName() {
-    return 'bob';
-  },
-};
-
-class TestRepository {
-  constructor(private nameGetter: { getName: () => string }) {}
-
-  getName() {
-    return this.nameGetter.getName();
-  }
-}
-
-const TestRepositoryProvider = ({ children }: PropsWithChildren) => (
-  <RepositoryProvider
-    repository={TestRepository}
-    create={() => new TestRepository(nameGetter)}
-    children={children}
-  />
-);
 
 const UserBlocProvider = ({ children }: PropsWithChildren) => (
   <BlocProvider
