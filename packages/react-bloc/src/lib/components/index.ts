@@ -1,3 +1,4 @@
 export * from './listener';
-export * from './provider';
+export * from './bloc-provider';
 export * from './error-boundary';
+export * from './repository-provider';
