@@ -25,5 +25,3 @@ export class PostNotFoundException extends Error {
     super(`Post: with id ${post} was not found`);
   }
 }
-
-export const restPostClient = new RestPostClient();

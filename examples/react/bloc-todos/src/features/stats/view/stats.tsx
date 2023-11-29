@@ -10,11 +10,17 @@ import {
 import Icon from '@mui/material/Icon';
 import { StatsSubscriptionRequested } from '../bloc/stats.event';
 import Grid from '@mui/material/Unstable_Grid2';
-import { BlocProvider, useBlocValue } from '@jacobtipp/react-bloc';
+import {
+  BlocProvider,
+  useBlocValue,
+  useRepository,
+} from '@jacobtipp/react-bloc';
 import { StatsBloc } from '../bloc/stats.bloc';
-import { todosRepository } from '../../../packages/todos-repository/todos-repository';
+import { TodosRepository } from '../../../packages/todos-repository/todos-repository';
 
 export default function StatsPage() {
+  const todosRepository = useRepository(TodosRepository);
+
   return (
     <BlocProvider
       bloc={StatsBloc}

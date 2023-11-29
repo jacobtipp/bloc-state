@@ -1,20 +1,39 @@
 import { AppBar, createTheme, ThemeProvider, Toolbar } from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
 import { Route, Routes } from 'react-router-dom';
-import { lazy, PropsWithChildren, Suspense } from 'react';
+import { lazy, Suspense } from 'react';
 import CircularLoader from '../../common/components/circular-loader';
 import './app.css';
-import {
-  HydratedLocalStorage,
-  HydratedStorage,
-} from '@jacobtipp/hydrated-bloc';
+import { TodosRepository } from '../../../packages/todos-repository/todos-repository';
+import { RepositoryProvider } from '@jacobtipp/react-bloc';
 
 const HomePage = lazy(() => import('../../home/view/home'));
 const StatsPage = lazy(() => import('../../stats/view/stats'));
+const EditTodoPage = lazy(() => import('../../edit-todos/view/edit-todos'));
 const TodosOverviewPage = lazy(
   () => import('../../todos-overview/view/todos-overview')
 );
-const EditTodoPage = lazy(() => import('../../edit-todos/view/edit-todos'));
+
+type AppProps = {
+  todosRepository: TodosRepository;
+};
+
+export default function App({ todosRepository }: AppProps) {
+  return (
+    <RepositoryProvider
+      repository={TodosRepository}
+      create={() => todosRepository}
+    >
+      <AppView />
+    </RepositoryProvider>
+  );
+}
+
+const AppBarPlaceHolder = () => (
+  <AppBar position="fixed" sx={{ zIndex: -1 }}>
+    <Toolbar />
+  </AppBar>
+);
 
 const darkTheme = createTheme({
   palette: {
@@ -22,20 +41,10 @@ const darkTheme = createTheme({
   },
 });
 
-HydratedStorage.storage = new HydratedLocalStorage();
-
-function GlobalProviders({ children }: PropsWithChildren) {
+function AppView() {
   return (
     <ThemeProvider theme={darkTheme}>
       <CssBaseline />
-      {children}
-    </ThemeProvider>
-  );
-}
-
-export default function App() {
-  return (
-    <GlobalProviders>
       <Suspense fallback={<CircularLoader />}>
         <Routes>
           <Route path="/" element={<HomePage />}>
@@ -50,12 +59,6 @@ export default function App() {
         </Routes>
         <AppBarPlaceHolder />
       </Suspense>
-    </GlobalProviders>
+    </ThemeProvider>
   );
 }
-
-const AppBarPlaceHolder = () => (
-  <AppBar position="fixed" sx={{ zIndex: -1 }}>
-    <Toolbar />
-  </AppBar>
-);

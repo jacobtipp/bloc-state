@@ -77,5 +77,3 @@ export class LocalStorageTodosClient implements TodosClient {
 }
 
 export class TodoNotFoundException extends Error {}
-
-export const localStorageTodosClient = new LocalStorageTodosClient();

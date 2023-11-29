@@ -7,15 +7,17 @@ import {
   useBlocInstance,
   useBlocListener,
   useBlocValue,
+  useRepository,
 } from '@jacobtipp/react-bloc';
-import { postRepository } from '../../../packages/post-repository/post-repository';
 import { HomeBloc } from '../../home/bloc/home.cubit';
 import { PostBloc } from '../bloc/posts.bloc';
 import { PostSubscribed, PostFetched } from '../bloc/posts.events';
+import { PostRepository } from '../../../packages/post-repository/post-repository';
 
 export function PostPage() {
   const state = useBlocValue(HomeBloc);
   const { id, transformer } = state.data;
+  const postRepository = useRepository(PostRepository);
 
   return (
     <BlocProvider

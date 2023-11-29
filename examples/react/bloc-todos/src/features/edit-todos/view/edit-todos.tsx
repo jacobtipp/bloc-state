@@ -18,14 +18,20 @@ import {
   EditTodoTitleChanged,
 } from '../bloc/edit-todo.event';
 import Icon from '@mui/material/Icon';
-import { BlocProvider, useBloc, useBlocListener } from '@jacobtipp/react-bloc';
+import {
+  BlocProvider,
+  useBloc,
+  useBlocListener,
+  useRepository,
+} from '@jacobtipp/react-bloc';
 import { createSelector } from 'reselect';
 import { EditTodoBloc } from '../bloc/edit-todo.bloc';
 import { EditTodoState } from '../bloc/edit-todo.state';
-import { todosRepository } from '../../../packages/todos-repository/todos-repository';
+import { TodosRepository } from '../../../packages/todos-repository/todos-repository';
 
 export default function EditTodoPage() {
   const { todoId } = useParams();
+  const todosRepository = useRepository(TodosRepository);
 
   return (
     <BlocProvider
