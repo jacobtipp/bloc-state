@@ -298,6 +298,16 @@ importers:
         version: 7.8.0
     publishDirectory: ../../dist/packages/bloc-devtools
 
+  packages/bloc-query:
+    dependencies:
+      '@jacobtipp/bloc':
+        specifier: workspace:*
+        version: link:../../dist/packages/bloc
+      rxjs:
+        specifier: 7.8.0
+        version: 7.8.0
+    publishDirectory: ../../dist/packages/bloc-query
+
   packages/hydrated-bloc:
     dependencies:
       '@jacobtipp/bloc':

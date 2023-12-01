@@ -29,6 +29,7 @@
       "@jacobtipp/bloc": ["packages/bloc/src/index.ts"],
       "@jacobtipp/bloc-concurrency": ["packages/bloc-concurrency/src/index.ts"],
       "@jacobtipp/bloc-devtools": ["packages/bloc-devtools/src/index.ts"],
+      "@jacobtipp/bloc-query": ["packages/bloc-query/src/index.ts"],
       "@jacobtipp/hydrated-bloc": ["packages/hydrated-bloc/src/index.ts"],
       "@jacobtipp/react-bloc": ["packages/react-bloc/src/index.ts"],
       "@jacobtipp/replay-bloc": ["packages/replay-bloc/src/index.ts"],
