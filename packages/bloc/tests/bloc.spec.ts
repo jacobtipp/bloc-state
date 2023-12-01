@@ -1,4 +1,4 @@
-import { take } from 'rxjs/operators';
+import { take, config } from 'rxjs';
 import { Bloc, Transition, isBlocInstance } from '../src';
 import { CounterBloc } from './helpers/counter/counter.bloc';
 import { CounterCubit } from './helpers/counter/counter.cubit';
@@ -207,7 +207,13 @@ describe('bloc', () => {
     });
 
     it('should be invoked when an error is thrown inside an event handler', (done) => {
-      expect.assertions(1);
+      expect.assertions(2);
+
+      config.onUnhandledError = (err: any) => {
+        expect(err).toBeInstanceOf(Error);
+        done();
+      };
+
       class TestEvent {}
 
       class TestBloc extends Bloc<TestEvent, null> {
@@ -221,7 +227,6 @@ describe('bloc', () => {
         protected override onError(error: Error): void {
           expect(error.message).toBe('eventhandler error');
           bloc.close();
-          done();
         }
       }
 
