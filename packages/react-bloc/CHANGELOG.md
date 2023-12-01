@@ -1,3 +1,10 @@
+## [3.2.1](https://github.com/jacobtipp/bloc-state/compare/react-bloc-v3.2.0...react-bloc-v3.2.1) (2023-12-01)
+
+
+### Bug Fixes
+
+* **bloc:** 🐛 bloc eventHandler no longer swallows errors ([f955fbb](https://github.com/jacobtipp/bloc-state/commit/f955fbb605a8db36dcc7e3e005fff4c1e1972113))
+
 ## [3.2.0](https://github.com/jacobtipp/bloc-state/compare/react-bloc-v3.1.0...react-bloc-v3.2.0) (2023-11-29)
 
 
