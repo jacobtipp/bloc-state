@@ -1,3 +1,10 @@
+## [1.0.3](https://github.com/jacobtipp/bloc-state/compare/bloc-devtools-v1.0.2...bloc-devtools-v1.0.3) (2023-12-01)
+
+
+### Bug Fixes
+
+* **bloc:** 🐛 bloc eventHandler no longer swallows errors ([f955fbb](https://github.com/jacobtipp/bloc-state/commit/f955fbb605a8db36dcc7e3e005fff4c1e1972113))
+
 ## [1.0.2](https://github.com/jacobtipp/bloc-state/compare/bloc-devtools-v1.0.1...bloc-devtools-v1.0.2) (2023-11-26)
 
 
