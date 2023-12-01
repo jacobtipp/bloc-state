@@ -179,7 +179,7 @@ export abstract class Bloc<Event, State> extends BlocBase<State> {
 
         handleEvent()
           .then(() => subscriber.complete())
-          .catch(() => subscriber.complete());
+          .catch((error) => subscriber.error(error));
 
         return () => {
           callableEmitter.close();
