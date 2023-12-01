@@ -1,3 +1,10 @@
+## [3.0.3](https://github.com/jacobtipp/bloc-state/compare/hydrated-bloc-v3.0.2...hydrated-bloc-v3.0.3) (2023-12-01)
+
+
+### Bug Fixes
+
+* **bloc:** 🐛 bloc eventHandler no longer swallows errors ([f955fbb](https://github.com/jacobtipp/bloc-state/commit/f955fbb605a8db36dcc7e3e005fff4c1e1972113))
+
 ## [3.0.2](https://github.com/jacobtipp/bloc-state/compare/hydrated-bloc-v3.0.1...hydrated-bloc-v3.0.2) (2023-11-26)
 
 
