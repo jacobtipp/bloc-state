@@ -2,7 +2,16 @@ name: Release
 
 on:
   push:
-    branches: [main, dev-bloc, dev-react-bloc]
+    branches:
+      [
+        main,
+        dev-bloc,
+        dev-react-bloc,
+        dev-bloc-query,
+        dev-bloc-concurrency,
+        dev-state,
+        dev-bloc-devtools,
+      ]
   workflow_dispatch:
 
 jobs:

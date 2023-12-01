@@ -1,0 +1,140 @@
+{
+  "name": "bloc-query",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/bloc-query/src",
+  "projectType": "library",
+  "tags": [],
+  "implicitDependencies": ["!state"],
+  "targets": {
+    "lint": {
+      "executor": "@nx/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": [
+          "packages/bloc-query/src/**/*.{ts,tsx,js,jsx}",
+          "packages/bloc-query/tests/**/*.{ts,tsx,js,jsx}"
+        ]
+      }
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["tsc --noEmit -p packages/bloc-query/tsconfig.lib.json"]
+      }
+    },
+    "typedoc": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "packages/bloc-query/src",
+        "commands": ["typedoc --out ../../../docs/bloc-query index.ts"]
+      }
+    },
+    "build": {
+      "executor": "@nx/vite:build",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "outputPath": "dist/packages/bloc-query"
+      },
+      "configurations": {
+        "development": {
+          "mode": "development"
+        },
+        "production": {
+          "mode": "production"
+        }
+      },
+      "dependsOn": ["typecheck"]
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "packages/bloc-query/jest.config.ts",
+        "passWithNoTests": true
+      }
+    },
+    "semantic-release": {
+      "executor": "@theunderscorer/nx-semantic-release:semantic-release",
+      "options": {
+        "buildTarget": "bloc-query:build",
+        "outputPath": "dist/packages/bloc-query",
+        "changelog": true,
+        "github": true,
+        "npm": false,
+        "repositoryUrl": "https://github.com/jacobtipp/bloc-state.git",
+        "preset": "conventionalcommits",
+        "presetConfig": {
+          "types": [
+            { "type": "feat", "section": "Features" },
+            { "type": "fix", "section": "Bug Fixes" },
+            {
+              "type": "refactor",
+              "section": "Code Refactoring",
+              "hidden": false
+            },
+            {
+              "type": "docs",
+              "scope": "readme",
+              "section": "Documentation",
+              "hidden": false
+            },
+            {
+              "type": "build",
+              "scope": "deps",
+              "section": "Build System Dependencies",
+              "hidden": false
+            },
+            {
+              "type": "perf",
+              "section": "Performance Improvements",
+              "hidden": false
+            },
+            {
+              "type": "revert",
+              "section": "Revert Changes",
+              "hidden": false
+            }
+          ]
+        },
+        "releaseRules": [
+          { "type": "docs", "scope": "readme", "release": "patch" },
+          { "type": "refactor", "release": "patch" },
+          { "type": "build", "scope": "deps", "release": "patch" },
+          { "type": "revert", "release": "patch" },
+          { "type": "perf", "release": "patch" }
+        ],
+        "branches": [
+          "main",
+          {
+            "name": "dev-bloc-query",
+            "prerelease": true
+          }
+        ],
+        "plugins": [
+          [
+            "@semantic-release/npm",
+            {
+              "npmPublish": false
+            }
+          ],
+          [
+            "@semantic-release/pnpm",
+            {
+              "pkgRoot": "dist/packages/bloc-query",
+              "npmPublish": false
+            }
+          ],
+          [
+            "@semantic-release/pnpm",
+            {
+              "pkgRoot": "packages/bloc-query",
+              "tarballDir": "dist/packages/bloc-query"
+            }
+          ]
+        ],
+        "tagFormat": "bloc-query-v${VERSION}"
+      }
+    }
+  }
+}
