@@ -1,3 +1,10 @@
+## [1.0.0-dev-bloc-query.3](https://github.com/jacobtipp/bloc-state/compare/bloc-query-v1.0.0-dev-bloc-query.2...bloc-query-v1.0.0-dev-bloc-query.3) (2023-12-02)
+
+
+### Code Refactoring
+
+* **bloc-query:** ♻️ queryFn does not require any arguments ([0e6ae34](https://github.com/jacobtipp/bloc-state/commit/0e6ae343e28ebe5ead5292470a660bf79b78f0b2))
+
 ## [1.0.0-dev-bloc-query.2](https://github.com/jacobtipp/bloc-state/compare/bloc-query-v1.0.0-dev-bloc-query.1...bloc-query-v1.0.0-dev-bloc-query.2) (2023-12-02)
 
 
