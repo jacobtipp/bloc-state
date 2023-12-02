@@ -1,6 +1,13 @@
-import { EMPTY, mergeMap, retryWhen, startWith, switchMap, timer } from 'rxjs';
+import {
+  EMPTY,
+  concatMap,
+  mergeMap,
+  retryWhen,
+  startWith,
+  switchMap,
+  timer,
+} from 'rxjs';
 import { Bloc, EventTransformer } from '@jacobtipp/bloc';
-import { restartable } from '@jacobtipp/bloc-concurrency';
 
 export type FetchOptions = {
   maxRetryAttempts?: number;
@@ -130,6 +137,16 @@ type QueryOptions = {
   staleTime?: number;
 };
 
+const restartable =
+  <Event>(): EventTransformer<Event> =>
+  (events$, mapper) =>
+    events$.pipe(switchMap(mapper));
+
+const sequential =
+  <Event>(): EventTransformer<Event> =>
+  (events$, mapper) =>
+    events$.pipe(concatMap(mapper));
+
 export type GetQueryOptions<Data> = {
   initialData?: Data;
   name?: string;
@@ -163,7 +180,7 @@ export class QueryBloc<Data = unknown> extends Bloc<
           this.add(new RevalidateEvent());
         }
       },
-      restartable()
+      sequential()
     );
 
     this.on(
