@@ -151,7 +151,7 @@ export type GetQueryOptions<Data> = {
   initialData?: Data;
   name?: string;
   queryKey: QueryKey;
-  queryFn: (queryKey: QueryKey) => Promise<Data>;
+  queryFn: () => Promise<Data>;
 } & QueryOptions &
   FetchOptions;
 
@@ -205,7 +205,7 @@ export class QueryBloc<Data = unknown> extends Bloc<
     this.on(
       FetchEvent,
       async (_event, emit) => {
-        const data = await options.queryFn(options.queryKey);
+        const data = await options.queryFn();
         emit({
           status: 'isReady',
           lastUpdatedAt: Date.now(),
