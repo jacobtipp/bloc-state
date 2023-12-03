@@ -1,3 +1,10 @@
+## [1.0.0-dev-bloc-query.4](https://github.com/jacobtipp/bloc-state/compare/bloc-query-v1.0.0-dev-bloc-query.3...bloc-query-v1.0.0-dev-bloc-query.4) (2023-12-03)
+
+
+### Features
+
+* **bloc-query:** ✨ add setQueryData method ([66eb948](https://github.com/jacobtipp/bloc-state/commit/66eb948ea98080933f2a075ae5a56c298b98070a))
+
 ## [1.0.0-dev-bloc-query.3](https://github.com/jacobtipp/bloc-state/compare/bloc-query-v1.0.0-dev-bloc-query.2...bloc-query-v1.0.0-dev-bloc-query.3) (2023-12-02)
 
 
