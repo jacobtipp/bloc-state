@@ -145,7 +145,7 @@ export class QueryBloc<Data = unknown> extends Bloc<
   private handledInitialLoad = false;
 
   constructor(state: QueryState<Data>, options: GetQueryOptions<Data>) {
-    super(state, options.name);
+    super(state, options.name ?? options.queryKey);
     this.staleTime = options.staleTime ?? 0;
 
     this.on(SubscriptionEvent, (_event, _emit) => {
