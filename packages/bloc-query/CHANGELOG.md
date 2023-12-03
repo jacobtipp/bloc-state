@@ -1,3 +1,10 @@
+## [1.0.0-dev-bloc-query.5](https://github.com/jacobtipp/bloc-state/compare/bloc-query-v1.0.0-dev-bloc-query.4...bloc-query-v1.0.0-dev-bloc-query.5) (2023-12-03)
+
+
+### Code Refactoring
+
+* **bloc-query:** ♻️ use queryKey if options.name isn't provided to QueryBloc ([581757d](https://github.com/jacobtipp/bloc-state/commit/581757dbef0a6731759c47a263aa5747f294f219))
+
 ## [1.0.0-dev-bloc-query.4](https://github.com/jacobtipp/bloc-state/compare/bloc-query-v1.0.0-dev-bloc-query.3...bloc-query-v1.0.0-dev-bloc-query.4) (2023-12-03)
 
 
