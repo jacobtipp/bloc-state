@@ -1,3 +1,10 @@
+## [1.0.0-dev-bloc-query.6](https://github.com/jacobtipp/bloc-state/compare/bloc-query-v1.0.0-dev-bloc-query.5...bloc-query-v1.0.0-dev-bloc-query.6) (2023-12-03)
+
+
+### Code Refactoring
+
+* **bloc-query:** ♻️ add name property to QueryBloc events ([786ab9f](https://github.com/jacobtipp/bloc-state/commit/786ab9faedad8b3c542aa4721b2ed2744753f6b4))
+
 ## [1.0.0-dev-bloc-query.5](https://github.com/jacobtipp/bloc-state/compare/bloc-query-v1.0.0-dev-bloc-query.4...bloc-query-v1.0.0-dev-bloc-query.5) (2023-12-03)
 
 

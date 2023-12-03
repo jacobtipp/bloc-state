@@ -1,6 +1,6 @@
 {
   "name": "@jacobtipp/bloc-query",
-  "version": "1.0.0-dev-bloc-query.5",
+  "version": "1.0.0-dev-bloc-query.6",
   "main": "./index.js",
   "private": false,
   "sideEffects": false,
