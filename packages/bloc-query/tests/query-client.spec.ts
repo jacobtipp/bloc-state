@@ -11,11 +11,13 @@ describe('QueryClient', () => {
       queryClient.close();
     });
 
-    it('it should handle concurrent subscriptions without triggering multiple revalidations', (done) => {
+    it('it should handle concurrent subscriptions without triggering multiple revalidations with initial data', (done) => {
       const options: GetQueryOptions<number> = {
         initialData: 0,
         queryKey: 'count',
-        queryFn: () => Promise.resolve(getRandomInt(1, 10)),
+        queryFn: () => {
+          return Promise.resolve(getRandomInt(1, 10));
+        },
       };
 
       const states: QueryState<number>[] = [];
@@ -28,6 +30,34 @@ describe('QueryClient', () => {
             const [a, b] = states;
             expect(states.length).toBe(2);
             expect(a.status).toBe('isFetching');
+            expect(b.status).toBe('isReady');
+            done();
+          },
+        });
+      queryClient.getQuery(options);
+      queryClient.getQuery(options);
+      queryClient.getQuery(options);
+      queryClient.getQuery(options);
+    });
+
+    it('it should handle concurrent subscriptions without triggering multiple revalidations without initial data', (done) => {
+      const options: GetQueryOptions<number> = {
+        queryKey: 'count',
+        queryFn: () => {
+          return Promise.resolve(getRandomInt(1, 10));
+        },
+      };
+
+      const states: QueryState<number>[] = [];
+      queryClient
+        .getQuery(options)
+        .pipe(take(2))
+        .subscribe({
+          next: (state) => states.push(state),
+          complete: () => {
+            const [a, b] = states;
+            expect(states.length).toBe(2);
+            expect(a.status).toBe('isLoading');
             expect(b.status).toBe('isReady');
             done();
           },
@@ -251,6 +281,77 @@ describe('QueryClient', () => {
       expect(
         queryClient.getQueryData<number>(options.queryKey)
       ).toBeUndefined();
+    });
+  });
+
+  describe('setQuery', () => {
+    it('it should set a new query value with set callback', (done) => {
+      const options: GetQueryOptions<{ count: number }> = {
+        initialData: { count: 0 },
+        staleTime: 3000,
+        queryKey: 'count',
+        queryFn: () => Promise.resolve({ count: getRandomInt(1, 10) }),
+      };
+
+      const queryClient = new QueryClient();
+
+      const states: QueryState<{ count: number }>[] = [];
+
+      queryClient
+        .getQuery(options)
+        .pipe(take(2))
+        .subscribe({
+          next: (state) => {
+            states.push(state);
+          },
+          complete: () => {
+            const [a, b] = states;
+            expect(a.status).toBe('isInitial');
+            expect(a.data?.count).toBe(0);
+            expect(b.status).toBe('isReady');
+            expect(b.data?.count).toBe(5);
+            done();
+          },
+        });
+
+      queryClient.setQueryData<{ count: number }>(options.queryKey, (old) => ({
+        ...old,
+        count: 5,
+      }));
+    });
+
+    it('it should set a new query value with data', (done) => {
+      const options: GetQueryOptions<{ count: number }> = {
+        initialData: { count: 0 },
+        staleTime: 3000,
+        queryKey: 'count',
+        queryFn: () => Promise.resolve({ count: getRandomInt(1, 10) }),
+      };
+
+      const queryClient = new QueryClient();
+
+      const states: QueryState<{ count: number }>[] = [];
+
+      queryClient
+        .getQuery(options)
+        .pipe(take(2))
+        .subscribe({
+          next: (state) => {
+            states.push(state);
+          },
+          complete: () => {
+            const [a, b] = states;
+            expect(a.status).toBe('isInitial');
+            expect(a.data?.count).toBe(0);
+            expect(b.status).toBe('isReady');
+            expect(b.data?.count).toBe(5);
+            done();
+          },
+        });
+
+      queryClient.setQueryData<{ count: number }>(options.queryKey, {
+        count: 5,
+      });
     });
   });
 

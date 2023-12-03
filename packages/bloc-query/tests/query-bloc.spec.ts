@@ -314,4 +314,50 @@ describe('QueryBloc', () => {
         });
     }, 13000);
   });
+
+  describe('setQueryData', () => {
+    it('should throw an error if using set callback and no data exists', (done) => {
+      const queryFn = () => {
+        return Promise.resolve(1);
+      };
+      const options: GetQueryOptions<number> = {
+        queryFn,
+        queryKey: '0',
+      };
+
+      const bloc = new QueryBloc<number>(
+        {
+          status: 'isLoading',
+          lastUpdatedAt: Date.now(),
+          isInitial: false,
+          isLoading: true,
+          isFetching: true,
+          isError: false,
+          isReady: false,
+        },
+        options
+      );
+
+      const states: QueryState<number>[] = [];
+
+      bloc
+        .getQuery()
+        .pipe(take(2))
+        .subscribe({
+          next: (state) => states.push(state),
+          complete: () => {
+            const [a, b] = states;
+            expect(a.status).toBe('isLoading');
+            expect(b.status).toBe('isReady');
+            done();
+          },
+        });
+
+      try {
+        bloc.setQueryData(() => 5);
+      } catch (e) {
+        expect(e).toBeInstanceOf(Error);
+      }
+    });
+  });
 });

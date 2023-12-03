@@ -1,12 +1,4 @@
-import {
-  EMPTY,
-  concatMap,
-  mergeMap,
-  retryWhen,
-  startWith,
-  switchMap,
-  timer,
-} from 'rxjs';
+import { EMPTY, mergeMap, retryWhen, startWith, switchMap, timer } from 'rxjs';
 import { Bloc, EventTransformer } from '@jacobtipp/bloc';
 
 export type FetchOptions = {
@@ -137,16 +129,6 @@ type QueryOptions = {
   staleTime?: number;
 };
 
-const restartable =
-  <Event>(): EventTransformer<Event> =>
-  (events$, mapper) =>
-    events$.pipe(switchMap(mapper));
-
-const sequential =
-  <Event>(): EventTransformer<Event> =>
-  (events$, mapper) =>
-    events$.pipe(concatMap(mapper));
-
 export type GetQueryOptions<Data> = {
   initialData?: Data;
   name?: string;
@@ -160,47 +142,38 @@ export class QueryBloc<Data = unknown> extends Bloc<
   QueryState<Data>
 > {
   private staleTime: number;
+  private handledInitialLoad = false;
 
   constructor(state: QueryState<Data>, options: GetQueryOptions<Data>) {
     super(state, options.name);
     this.staleTime = options.staleTime ?? 0;
 
-    this.on(
-      SubscriptionEvent,
-      (_event, _emit) => {
-        if (this.state.status === 'isLoading') {
-          // if this query has no data loaded, start initial fetch
-          this.add(new FetchEvent());
-        }
-
-        if (
-          this.state.isReady &&
-          this.state.lastUpdatedAt + this.staleTime <= Date.now()
-        ) {
-          this.add(new RevalidateEvent());
-        }
-      },
-      sequential()
-    );
-
-    this.on(
-      RevalidateEvent,
-      (_event, emit) => {
-        emit({
-          status: 'isFetching',
-          lastUpdatedAt: this.state.lastUpdatedAt,
-          isInitial: false,
-          isLoading: false,
-          isFetching: true,
-          isReady: false,
-          isError: false,
-          data: this.state.data,
-        });
-
+    this.on(SubscriptionEvent, (_event, _emit) => {
+      if (this.state.status === 'isLoading' && !this.handledInitialLoad) {
+        this.handledInitialLoad = true;
+        // if this query has no data loaded, start initial fetch
         this.add(new FetchEvent());
-      },
-      restartable()
-    );
+      }
+
+      if (this.state.isReady && this.isStale) {
+        this.add(new RevalidateEvent());
+      }
+    });
+
+    this.on(RevalidateEvent, (_event, emit) => {
+      emit({
+        status: 'isFetching',
+        lastUpdatedAt: this.state.lastUpdatedAt,
+        isInitial: false,
+        isLoading: false,
+        isFetching: true,
+        isReady: false,
+        isError: false,
+        data: this.state.data,
+      });
+
+      this.add(new FetchEvent());
+    });
 
     this.on(
       FetchEvent,
@@ -228,14 +201,44 @@ export class QueryBloc<Data = unknown> extends Bloc<
     );
   }
 
-  getQuery() {
+  get isStale() {
+    const now = Date.now();
+    return this.state.lastUpdatedAt + this.staleTime <= now;
+  }
+
+  getQuery = () => {
     if (this.isClosed) {
       throw new Error('Query is closed');
     }
 
     this.add(new SubscriptionEvent());
     return this.state$.pipe(startWith(this.state));
-  }
+  };
+
+  setQueryData = (set: ((old: Data) => Data) | Data) => {
+    let newData: Data;
+    if (typeof set === 'function') {
+      if (this.state.data === undefined) {
+        throw new Error(
+          `QueryKey: ${this.name}, cannot be set with a callback function if data is undefined, use setQueryData with data directly.`
+        );
+      }
+      newData = (set as (old: Data) => Data)(this.state.data);
+    } else {
+      newData = set;
+    }
+
+    this.emit({
+      status: 'isReady',
+      isInitial: false,
+      lastUpdatedAt: Date.now(),
+      isLoading: false,
+      isFetching: false,
+      isReady: true,
+      isError: false,
+      data: newData,
+    });
+  };
 
   revalidateQuery() {
     this.add(new RevalidateEvent());

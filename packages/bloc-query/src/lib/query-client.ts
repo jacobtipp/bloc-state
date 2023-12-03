@@ -84,6 +84,16 @@ export class QueryClient {
     return Array.from(this.queryMap.keys());
   }
 
+  setQueryData = <Data>(
+    queryKey: string,
+    set: ((old: Data) => Data) | Data
+  ) => {
+    const queryBloc = this.queryMap.get(queryKey);
+    if (queryBloc) {
+      queryBloc.setQueryData(set);
+    }
+  };
+
   revalidateQueries(options?: RevalidateQueryOptions) {
     const predicate = options?.predicate;
     const queryKey = options?.queryKey;
