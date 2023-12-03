@@ -54,11 +54,18 @@ const queryFetchTransformer =
 
 abstract class QueryEvent {
   protected _!: void;
+  name = 'QueryEvent';
 }
 
-export class FetchEvent extends QueryEvent {}
-export class RevalidateEvent extends QueryEvent {}
-export class SubscriptionEvent extends QueryEvent {}
+export class FetchEvent extends QueryEvent {
+  override name = 'FetchEvent';
+}
+export class RevalidateEvent extends QueryEvent {
+  override name = 'RevalidateEvent';
+}
+export class SubscriptionEvent extends QueryEvent {
+  override name = 'SubscriptionEvent';
+}
 
 type initial<Data> = {
   isInitial: true;
