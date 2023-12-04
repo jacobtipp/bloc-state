@@ -1,8 +1,7 @@
 import { BlocBase, StateType, ClassType } from '@jacobtipp/bloc';
 import { useRef, useEffect } from 'react';
-import { useBlocInstance } from './useBlocInstance';
 import { defaultListenWhen } from './defaults';
-import { Subscription, filter, map, pairwise, startWith } from 'rxjs';
+import { useBloc } from './useBloc';
 
 export interface BlocListenerProps<
   Bloc extends BlocBase<any>,
@@ -16,27 +15,20 @@ export const useBlocListener = <Bloc extends ClassType<BlocBase<any>>>(
   bloc: Bloc,
   { listener, listenWhen }: BlocListenerProps<InstanceType<Bloc>>
 ) => {
-  const blocInstance = useBlocInstance(bloc);
+  const [state, blocInstance] = useBloc(bloc, {
+    selector: (state) => state,
+  });
+
+  const previous = useRef<StateType<InstanceType<Bloc>> | null>(null);
+
   const when = listenWhen ?? defaultListenWhen;
-  const listenerSubscription = useRef<Subscription | null>(null);
 
-  if (!listenerSubscription.current)
-    listenerSubscription.current = blocInstance.state$
-      .pipe(
-        startWith(blocInstance.state),
-        pairwise(),
-        filter(([previous, current]) => {
-          return when(previous, current);
-        }),
-        map(([_, current]) => listener(blocInstance, current))
-      )
-      .subscribe();
-
-  useEffect(
-    () => () => {
-      listenerSubscription.current?.unsubscribe();
-      listenerSubscription.current = null;
-    },
-    [bloc]
-  );
+  useEffect(() => {
+    const previousState = previous.current;
+    if (previousState && when(previousState, state)) {
+      listener(blocInstance, state);
+    }
+    previous.current = state;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state]);
 };
