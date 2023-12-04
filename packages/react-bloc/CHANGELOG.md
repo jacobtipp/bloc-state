@@ -1,3 +1,10 @@
+## [3.2.2-dev-react-bloc.1](https://github.com/jacobtipp/bloc-state/compare/react-bloc-v3.2.1...react-bloc-v3.2.2-dev-react-bloc.1) (2023-12-04)
+
+
+### Code Refactoring
+
+* **react-bloc:** ♻️ useBlocListener now uses useBloc and useEffect to handle effects ([3a29e19](https://github.com/jacobtipp/bloc-state/commit/3a29e19556b44599d5499888279c624db83413c1))
+
 ## [3.2.1](https://github.com/jacobtipp/bloc-state/compare/react-bloc-v3.2.0...react-bloc-v3.2.1) (2023-12-01)
 
 
