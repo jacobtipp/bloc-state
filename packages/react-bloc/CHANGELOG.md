@@ -1,3 +1,10 @@
+## [3.2.2-dev-react-bloc.3](https://github.com/jacobtipp/bloc-state/compare/react-bloc-v3.2.2-dev-react-bloc.2...react-bloc-v3.2.2-dev-react-bloc.3) (2023-12-05)
+
+
+### Revert Changes
+
+* **react-bloc:** ♻️ useBlocListener uses useLayoutEffect instead of useEffect ([f8fe5d9](https://github.com/jacobtipp/bloc-state/commit/f8fe5d90a77fe35cb190e26808c22ff12c0805cf))
+
 ## [3.2.2-dev-react-bloc.2](https://github.com/jacobtipp/bloc-state/compare/react-bloc-v3.2.2-dev-react-bloc.1...react-bloc-v3.2.2-dev-react-bloc.2) (2023-12-05)
 
 
