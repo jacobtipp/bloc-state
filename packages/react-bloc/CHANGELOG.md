@@ -1,3 +1,15 @@
+## [3.2.3-dev-react-bloc.2](https://github.com/jacobtipp/bloc-state/compare/react-bloc-v3.2.3-dev-react-bloc.1...react-bloc-v3.2.3-dev-react-bloc.2) (2023-12-05)
+
+
+### Revert Changes
+
+* **react-bloc:** ♻️ use bloc.state snapshot directly in useBlocListener ([132b6b4](https://github.com/jacobtipp/bloc-state/commit/132b6b448559b139d14a14aa574046faf6c3ea88))
+
+
+### Code Refactoring
+
+* **react-bloc:** ♻️ queue state emissions for next event loop tick ([1050002](https://github.com/jacobtipp/bloc-state/commit/105000260def563b76baadaaae20b96f391afd6a))
+
 ## [3.2.3-dev-react-bloc.1](https://github.com/jacobtipp/bloc-state/compare/react-bloc-v3.2.2...react-bloc-v3.2.3-dev-react-bloc.1) (2023-12-05)
 
 
