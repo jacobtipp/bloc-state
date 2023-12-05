@@ -25,10 +25,10 @@ export const useBlocListener = <Bloc extends ClassType<BlocBase<any>>>(
 
   useEffect(() => {
     const previousState = previous.current;
-    if (previousState && when(previousState, blocInstance.state)) {
-      listener(blocInstance, blocInstance.state);
+    if (previousState && when(previousState, state)) {
+      listener(blocInstance, state);
     }
-    previous.current = blocInstance.state;
+    previous.current = state;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state]);
 };
