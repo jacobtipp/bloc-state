@@ -1,3 +1,10 @@
+## [3.2.3-dev-react-bloc.1](https://github.com/jacobtipp/bloc-state/compare/react-bloc-v3.2.2...react-bloc-v3.2.3-dev-react-bloc.1) (2023-12-05)
+
+
+### Code Refactoring
+
+* **react-bloc:** ♻️ use bloc.state snapshot directly in useBlocListener ([2f302bc](https://github.com/jacobtipp/bloc-state/commit/2f302bc3a065b8f19e0dbfad23cd85bf4b53e421))
+
 ## [3.2.2](https://github.com/jacobtipp/bloc-state/compare/react-bloc-v3.2.1...react-bloc-v3.2.2) (2023-12-05)
 
 
