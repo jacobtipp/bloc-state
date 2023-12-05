@@ -1,5 +1,5 @@
 import { BlocBase, StateType, ClassType } from '@jacobtipp/bloc';
-import { useRef, useLayoutEffect } from 'react';
+import { useRef, useEffect } from 'react';
 import { defaultListenWhen } from './defaults';
 import { useBloc } from './useBloc';
 
@@ -23,7 +23,7 @@ export const useBlocListener = <Bloc extends ClassType<BlocBase<any>>>(
 
   const when = listenWhen ?? defaultListenWhen;
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     const previousState = previous.current;
     if (previousState && when(previousState, state)) {
       listener(blocInstance, state);
