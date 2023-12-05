@@ -118,7 +118,8 @@ export const useBlocSelector = <
         map((state) => selector(state)),
         distinctUntilChanged()
       )
-      .subscribe(notify);
+      // queue state emissions for next tick to prevent tearing
+      .subscribe(() => setTimeout(() => notify(), 0));
     return () => {
       subscription.unsubscribe();
     };
