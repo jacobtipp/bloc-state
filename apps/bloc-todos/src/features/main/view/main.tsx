@@ -10,11 +10,13 @@ import {
   HydratedLocalStorage,
 } from '@jacobtipp/hydrated-bloc';
 import { StrictMode } from 'react';
+import { QueryClient } from '@jacobtipp/bloc-query';
 
 Bloc.observer = new AppBlocObserver();
 HydratedStorage.storage = new HydratedLocalStorage();
 
-const localStorageTodosClient = new LocalStorageTodosClient();
+const queryClient = new QueryClient();
+const localStorageTodosClient = new LocalStorageTodosClient(queryClient);
 
 const todosRepository = new TodosRepository(localStorageTodosClient);
 

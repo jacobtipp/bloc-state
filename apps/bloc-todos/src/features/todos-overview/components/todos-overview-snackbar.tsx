@@ -48,6 +48,7 @@ export function TodosOverViewSnackbar() {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         const deletedTodo = state.data.lastDeletedTodo!;
         setSnackbarMessage(`Todo "${deletedTodo.title}" deleted.`);
+        openSnackbar(false); // close any snackbars that may be open
         openSnackbar(true); // open snackbar
       }}
     >
