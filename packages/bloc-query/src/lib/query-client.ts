@@ -1,39 +1,56 @@
-import { Observable } from 'rxjs';
+import { Observable, filter, firstValueFrom, map } from 'rxjs';
 
 import { GetQueryOptions, QueryBloc, QueryKey, QueryState } from './query-bloc';
-
-//import { GetQueryOptions, QueryKey } from "./query-bloc";
 
 export type RevalidateQueryOptions = {
   queryKey?: QueryKey;
   predicate?: (queryKey: QueryKey) => boolean;
 };
 
+export type GetQueryData<Data> = string | Observable<QueryState<Data>>;
+
 export class QueryClient {
   private queryMap: Map<string, QueryBloc<any>> = new Map();
 
-  getQuery<Data>(options: GetQueryOptions<Data>): Observable<QueryState<Data>> {
+  getQuery = <Data = unknown>(
+    options: GetQueryOptions<Data>
+  ): Observable<QueryState<Data>> => {
     if (!this.queryMap.has(options.queryKey)) {
       return this.createQuery<Data>(options).getQuery();
     } else {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       return this.queryMap.get(options.queryKey)!.getQuery();
     }
-  }
+  };
 
-  getQueryData<Data = unknown>(queryKey: string) {
-    const data = this.queryMap.get(queryKey)?.state.data;
-    return data ? (data as Data) : undefined;
-  }
+  getQueryData = async <Data = unknown>(keyOrQuery: GetQueryData<Data>) => {
+    const query =
+      typeof keyOrQuery === 'string'
+        ? this.queryMap.get(keyOrQuery)?.getQuery()
+        : keyOrQuery;
 
-  close() {
+    if (query) {
+      return firstValueFrom(
+        query.pipe(
+          filter((state) => state.isReady),
+          map((state) => state.data)
+        )
+      ) as Data;
+    }
+
+    throw new QueryNotFoundException(
+      `QueryNotFoundException: query ${keyOrQuery} does not exist in the QueryClient.`
+    );
+  };
+
+  clear = () => {
     this.queryMap.forEach((query) => {
       query.close();
     });
     this.queryMap.clear();
-  }
+  };
 
-  removeQuery(key: QueryKey): boolean {
+  removeQuery = (key: QueryKey): boolean => {
     if (this.queryMap.has(key)) {
       const bloc = this.queryMap.get(key);
       bloc?.close();
@@ -41,7 +58,7 @@ export class QueryClient {
     }
 
     return false;
-  }
+  };
 
   private createQuery<Data>(options: GetQueryOptions<Data>): QueryBloc<Data> {
     if (options.initialData !== undefined) {
@@ -80,9 +97,9 @@ export class QueryClient {
     }
   }
 
-  getQueryKeys() {
+  getQueryKeys = () => {
     return Array.from(this.queryMap.keys());
-  }
+  };
 
   setQueryData = <Data>(
     queryKey: string,
@@ -94,7 +111,7 @@ export class QueryClient {
     }
   };
 
-  revalidateQueries(options?: RevalidateQueryOptions) {
+  revalidateQueries = (options?: RevalidateQueryOptions) => {
     const predicate = options?.predicate;
     const queryKey = options?.queryKey;
     this.getQueryKeys().forEach((key) => {
@@ -106,5 +123,21 @@ export class QueryClient {
         this.queryMap.get(key)?.revalidateQuery();
       }
     });
+  };
+}
+
+/**
+ * Represents an error that occurs when there is an issue with the state of the application.
+ */
+export class QueryNotFoundException extends Error {
+  /**
+   * Creates an instance of StateError.
+   *
+   * @param message The error message.
+   */
+  constructor(message: string) {
+    super(message);
+
+    Object.setPrototypeOf(this, QueryNotFoundException.prototype);
   }
 }
