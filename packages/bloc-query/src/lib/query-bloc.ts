@@ -66,6 +66,12 @@ export class RevalidateEvent extends QueryEvent {
 export class SubscriptionEvent extends QueryEvent {
   override name = 'SubscriptionEvent';
 }
+export class SetQueryDataEvent<Data = unknown> extends QueryEvent {
+  override name = 'SetQueryDataEvent';
+  constructor(public set: ((old: Data) => Data) | Data) {
+    super();
+  }
+}
 
 type initial<Data> = {
   isInitial: true;
@@ -182,6 +188,33 @@ export class QueryBloc<Data = unknown> extends Bloc<
       this.add(new FetchEvent());
     });
 
+    this.on(SetQueryDataEvent, (event, emit) => {
+      let newData: Data;
+      const setEvent = event as SetQueryDataEvent<Data>;
+      const set = setEvent.set;
+      if (typeof set === 'function') {
+        if (this.state.data === undefined) {
+          throw new Error(
+            `QueryKey: ${this.name}, cannot be set with a callback function if data is undefined, use setQueryData with data directly.`
+          );
+        }
+        newData = (set as (old: Data) => Data)(this.state.data);
+      } else {
+        newData = set;
+      }
+
+      emit({
+        status: 'isReady',
+        isInitial: false,
+        lastUpdatedAt: Date.now(),
+        isLoading: false,
+        isFetching: false,
+        isReady: true,
+        isError: false,
+        data: newData,
+      });
+    });
+
     this.on(
       FetchEvent,
       async (_event, emit) => {
@@ -223,28 +256,7 @@ export class QueryBloc<Data = unknown> extends Bloc<
   };
 
   setQueryData = (set: ((old: Data) => Data) | Data) => {
-    let newData: Data;
-    if (typeof set === 'function') {
-      if (this.state.data === undefined) {
-        throw new Error(
-          `QueryKey: ${this.name}, cannot be set with a callback function if data is undefined, use setQueryData with data directly.`
-        );
-      }
-      newData = (set as (old: Data) => Data)(this.state.data);
-    } else {
-      newData = set;
-    }
-
-    this.emit({
-      status: 'isReady',
-      isInitial: false,
-      lastUpdatedAt: Date.now(),
-      isLoading: false,
-      isFetching: false,
-      isReady: true,
-      isError: false,
-      data: newData,
-    });
+    this.add(new SetQueryDataEvent(set));
   };
 
   revalidateQuery() {
