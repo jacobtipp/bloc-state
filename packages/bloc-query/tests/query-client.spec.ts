@@ -1,4 +1,9 @@
-import { GetQueryOptions, QueryClient, QueryState } from '../src/lib';
+import {
+  GetQueryOptions,
+  QueryClient,
+  QueryNotFoundException,
+  QueryState,
+} from '../src/lib';
 import { take } from 'rxjs';
 import { delay } from './helpers/delay';
 import { getRandomInt } from './helpers/random';
@@ -8,7 +13,7 @@ describe('QueryClient', () => {
 
   describe('getQuery', () => {
     afterEach(() => {
-      queryClient.close();
+      queryClient.clear();
     });
 
     it('it should handle concurrent subscriptions without triggering multiple revalidations with initial data', (done) => {
@@ -198,11 +203,13 @@ describe('QueryClient', () => {
     it('it should revalidate all queries in a queryClient if queryKey is provided', async () => {
       const options1: GetQueryOptions<number> = {
         queryKey: 'user',
+        staleTime: 10000,
         queryFn: () => Promise.resolve(getRandomInt(1, 9999999)),
       };
 
       const options2: GetQueryOptions<number> = {
         queryKey: 'id',
+        staleTime: 10000,
         queryFn: () => Promise.resolve(getRandomInt(1, 9999999)),
       };
 
@@ -214,16 +221,20 @@ describe('QueryClient', () => {
       await delay(1000);
       expect(queryClient.getQueryKeys().length).toBe(2);
 
-      const data1 = queryClient.getQueryData<number>(options1.queryKey);
-      const data2 = queryClient.getQueryData<number>(options2.queryKey);
+      const data1 = await queryClient.getQueryData<number>(options1.queryKey);
+      const data2 = await queryClient.getQueryData<number>(options2.queryKey);
 
       queryClient.revalidateQueries({
         queryKey: options1.queryKey,
       });
 
       await delay(1000);
-      const newData1 = queryClient.getQueryData<number>(options1.queryKey);
-      const newData2 = queryClient.getQueryData<number>(options2.queryKey);
+      const newData1 = await queryClient.getQueryData<number>(
+        options1.queryKey
+      );
+      const newData2 = await queryClient.getQueryData<number>(
+        options2.queryKey
+      );
 
       expect(data1).not.toBe(newData1);
       expect(data2).toBe(newData2);
@@ -265,12 +276,12 @@ describe('QueryClient', () => {
   });
 
   describe('getQueryData', () => {
-    it('it should return defined if no queryData is available', () => {
+    it('it should return data from async query functions', async () => {
       const options: GetQueryOptions<number> = {
         queryKey: 'count',
         queryFn: async () => {
           await delay(1000);
-          return Promise.resolve(getRandomInt(1, 10));
+          return Promise.resolve(1);
         },
       };
 
@@ -278,9 +289,51 @@ describe('QueryClient', () => {
 
       queryClient.getQuery(options);
 
-      expect(
+      expect(await queryClient.getQueryData<number>(options.queryKey)).toBe(1);
+
+      queryClient.clear();
+    });
+
+    it('it should throw a QueryNotFoundException if a query does not exist', async () => {
+      const options: GetQueryOptions<number> = {
+        queryKey: 'count',
+        queryFn: async () => {
+          await delay(1000);
+          return Promise.resolve(1);
+        },
+      };
+
+      const queryClient = new QueryClient();
+
+      await expect(
         queryClient.getQueryData<number>(options.queryKey)
-      ).toBeUndefined();
+      ).rejects.toThrow(QueryNotFoundException);
+    });
+
+    it('it should accept a query as an argument', async () => {
+      const queryClient = new QueryClient();
+
+      const one: GetQueryOptions<number> = {
+        queryKey: 'one',
+        queryFn: async () => {
+          await delay(1000);
+          return Promise.resolve(1);
+        },
+      };
+
+      const queryOne = queryClient.getQuery(one);
+
+      const two: GetQueryOptions<number> = {
+        queryKey: 'two',
+        queryFn: async () => {
+          const one = await queryClient.getQueryData<number>(queryOne);
+          return Promise.resolve(one + 1);
+        },
+      };
+
+      queryClient.getQuery(two);
+
+      expect(await queryClient.getQueryData<number>('two')).toBe(2);
     });
   });
 
