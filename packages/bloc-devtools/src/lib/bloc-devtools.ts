@@ -171,7 +171,7 @@ export class DevtoolsObserver implements BlocObserver {
   }
 
   onChange(bloc: BlocBase<any>, change: Change<any>): void {
-    if (bloc instanceof Bloc) {
+    if ((bloc as Bloc<any, any>).isBlocInstance) {
       return;
     }
 
