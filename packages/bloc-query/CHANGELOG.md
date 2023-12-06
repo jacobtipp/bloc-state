@@ -1,3 +1,19 @@
+## [2.0.0-dev-bloc-query.1](https://github.com/jacobtipp/bloc-state/compare/bloc-query-v1.0.0...bloc-query-v2.0.0-dev-bloc-query.1) (2023-12-06)
+
+
+### ⚠ BREAKING CHANGES
+
+* **bloc-query:** getQueryData now returns a Promise
+
+### Features
+
+* **bloc-query:** 💥 ✨ getQueryData accepts a query as an argument ([efe88c8](https://github.com/jacobtipp/bloc-state/commit/efe88c8b28158bd59f6c85f600ce8ee1bc7ea04b))
+
+
+### Code Refactoring
+
+* **bloc-query:** ♻️ setQueryData internally adds a SetQueryEvent for tracing ([b5297c8](https://github.com/jacobtipp/bloc-state/commit/b5297c8d12980b41d8acc563702173c8f3c46b1f))
+
 ## 1.0.0 (2023-12-05)
 
 
