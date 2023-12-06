@@ -1,3 +1,10 @@
+## [1.0.4](https://github.com/jacobtipp/bloc-state/compare/bloc-devtools-v1.0.3...bloc-devtools-v1.0.4) (2023-12-06)
+
+
+### Code Refactoring
+
+* **bloc-devtools:** ♻️ check bloc.isBlocInstance property in onChange ([5121c39](https://github.com/jacobtipp/bloc-state/commit/5121c3939aeb723d4fe10b699586b7d52c47e372))
+
 ## [1.0.3](https://github.com/jacobtipp/bloc-state/compare/bloc-devtools-v1.0.2...bloc-devtools-v1.0.3) (2023-12-01)
 
 
