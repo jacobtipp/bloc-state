@@ -105,7 +105,7 @@ export class TodosOverviewBlocBase extends Bloc<
         emit(this.state.loading());
       }
 
-      if (query.status === 'isReady') {
+      if (query.isReady) {
         emit(
           this.state.ready((data) => {
             data.todos = query.data;

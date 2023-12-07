@@ -12,9 +12,9 @@ export class LocalStorageTodosClient implements TodosClient {
     });
   };
 
-  _getTodo = async (id: string) => {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const todos = this.queryClient.getQueryData<Todo[]>('todos')!;
+  private _getTodo = async (id: string) => {
+    const todos = await this.queryClient.getQueryData<Todo[]>(this.getTodos());
+
     const todo = todos.find((todo) => todo.id === id);
 
     if (!todo) {
@@ -26,13 +26,13 @@ export class LocalStorageTodosClient implements TodosClient {
 
   getTodos = () => {
     return this.queryClient.getQuery<Todo[]>({
-      initialData: [],
       queryKey: 'todos',
       queryFn: this._getTodos,
+      staleTime: Infinity
     });
   };
 
-  _getTodos = async () => {
+  private _getTodos = async () => {
     const todos = localStorage.getItem('todos');
 
     if (todos != null) {
@@ -43,8 +43,7 @@ export class LocalStorageTodosClient implements TodosClient {
   };
 
   saveTodo = async (todo: Todo) => {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const todos = [...this.queryClient.getQueryData<Todo[]>('todos')!];
+    const todos = [...(await this.queryClient.getQueryData<Todo[]>('todos'))];
 
     const id = todo.id;
     const todoIndex = todos.findIndex((todo) => todo.id === id);
@@ -58,8 +57,7 @@ export class LocalStorageTodosClient implements TodosClient {
   };
 
   deleteTodo = async (id: string) => {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const todos = [...this.queryClient.getQueryData<Todo[]>('todos')!];
+    const todos = [...(await this.queryClient.getQueryData<Todo[]>('todos'))];
     const todoIndex = todos.findIndex((todo) => todo.id === id);
     console.log(todos);
     if (todoIndex === -1) {
@@ -72,8 +70,7 @@ export class LocalStorageTodosClient implements TodosClient {
   };
 
   clearCompleted = async () => {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const todos = [...this.queryClient.getQueryData<Todo[]>('todos')!];
+    const todos = [...(await this.queryClient.getQueryData<Todo[]>('todos'))];
     const completedTodosAmount = todos.filter(
       (todo) => todo.isCompleted
     ).length;
@@ -85,8 +82,7 @@ export class LocalStorageTodosClient implements TodosClient {
   };
 
   completeAll = async (isCompleted: boolean) => {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const todos = [...this.queryClient.getQueryData<Todo[]>('todos')!];
+    const todos = [...(await this.queryClient.getQueryData<Todo[]>('todos'))];
     const changedTodosAmount = todos.filter(
       (todo) => todo.isCompleted !== isCompleted
     ).length;

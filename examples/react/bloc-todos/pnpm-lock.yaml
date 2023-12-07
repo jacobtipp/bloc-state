@@ -17,11 +17,11 @@ importers:
         specifier: ^3.0.3
         version: 3.0.3(@jacobtipp/bloc@3.0.2)(rxjs@7.8.0)
       '@jacobtipp/bloc-devtools':
-        specifier: ^1.0.3
-        version: 1.0.3(@jacobtipp/bloc@3.0.2)(rxjs@7.8.0)
+        specifier: ^1.0.4
+        version: 1.0.4(@jacobtipp/bloc@3.0.2)(rxjs@7.8.0)
       '@jacobtipp/bloc-query':
-        specifier: 1.0.0
-        version: 1.0.0(@jacobtipp/bloc@3.0.2)(rxjs@7.8.0)
+        specifier: 2.0.0
+        version: 2.0.0(@jacobtipp/bloc@3.0.2)(rxjs@7.8.0)
       '@jacobtipp/hydrated-bloc':
         specifier: ^3.0.3
         version: 3.0.3(@jacobtipp/bloc@3.0.2)(rxjs@7.8.0)
@@ -528,8 +528,8 @@ packages:
       rxjs: 7.8.0
     dev: false
 
-  /@jacobtipp/bloc-devtools@1.0.3(@jacobtipp/bloc@3.0.2)(rxjs@7.8.0):
-    resolution: {integrity: sha512-zMRu3Fwm6m+VairMA8/Ct/ujSO92dZ1sTUIVRhXlmK54CbFOk8pI509psWYhBYGqxzBZJSEL9jn50P/0aqC4og==}
+  /@jacobtipp/bloc-devtools@1.0.4(@jacobtipp/bloc@3.0.2)(rxjs@7.8.0):
+    resolution: {integrity: sha512-8ZgdznW/GSlD0+FtbU4bJJqo7/aLlMVWep2TPM+oSEowOSBHoxNBUG99rLrhnZdeM56dJ1XcTBfUOO9Q4n9vjw==}
     peerDependencies:
       '@jacobtipp/bloc': 3.0.2
       rxjs: 7.8.0
@@ -538,8 +538,8 @@ packages:
       rxjs: 7.8.0
     dev: false
 
-  /@jacobtipp/bloc-query@1.0.0(@jacobtipp/bloc@3.0.2)(rxjs@7.8.0):
-    resolution: {integrity: sha512-eRzL4pX4rslP/Hro4nzS4hPxRKwFve5qVtXhJ2NicySqnTPFBE+ZlCyEaZYxBitFl3KfDt2UVZ+PI8+cxDclaw==}
+  /@jacobtipp/bloc-query@2.0.0(@jacobtipp/bloc@3.0.2)(rxjs@7.8.0):
+    resolution: {integrity: sha512-PW/puMffuevkm52SD/xRjhOIfw3kW7N9owhDF/W7IcMgVCX8JzSprmSQlSO0Fm+zTK0YhU1223s0gKNIhX7+5w==}
     peerDependencies:
       '@jacobtipp/bloc': 3.0.2
       rxjs: 7.8.0
