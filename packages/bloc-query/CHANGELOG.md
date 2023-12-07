@@ -7,22 +7,11 @@
 
 ### Features
 
-* **bloc-query:** ✨ add setQueryData method ([16dfc7c](https://github.com/jacobtipp/bloc-state/commit/16dfc7c30d8097d29eea48ed71df6070104eede3))
-* **bloc-query:** ✨ initial release for @jacobtipp/bloc-query package ([3145ced](https://github.com/jacobtipp/bloc-state/commit/3145cedad2e40bbf7e7afd8013974c88de2a5f57))
 * **bloc-query:** 💥 ✨ getQueryData accepts a query as an argument ([b376d3e](https://github.com/jacobtipp/bloc-state/commit/b376d3e754b97177a8dab236b1b1ea2b3a6b67f1))
-
-
-### Bug Fixes
-
-* **bloc-query:** 🐛 use sequential transformer with onSubscription handler ([e75408b](https://github.com/jacobtipp/bloc-state/commit/e75408bcebc19de7b8bc9b264a869de4b7581faa))
-
 
 ### Code Refactoring
 
-* **bloc-query:** ♻️ add name property to QueryBloc events ([2c8be22](https://github.com/jacobtipp/bloc-state/commit/2c8be2257d5b19d5984943be11abe263601cd973))
-* **bloc-query:** ♻️ queryFn does not require any arguments ([7fc933c](https://github.com/jacobtipp/bloc-state/commit/7fc933c5c95d2a3f2edb3f7aaeb22e5063ddc6aa))
 * **bloc-query:** ♻️ setQueryData internally adds a SetQueryEvent for tracing ([ed75cf1](https://github.com/jacobtipp/bloc-state/commit/ed75cf103abd7f636f17f75a2075e42d8e880e82))
-* **bloc-query:** ♻️ use queryKey if options.name isn't provided to QueryBloc ([47a8c75](https://github.com/jacobtipp/bloc-state/commit/47a8c753597f52f8e2be601ba3067b9d31ed0186))
 
 ## [2.0.0-dev-bloc-query.1](https://github.com/jacobtipp/bloc-state/compare/bloc-query-v1.0.0...bloc-query-v2.0.0-dev-bloc-query.1) (2023-12-06)
 
