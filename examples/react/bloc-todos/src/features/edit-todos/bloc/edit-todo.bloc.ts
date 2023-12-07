@@ -26,8 +26,6 @@ export class EditTodoBloc extends Bloc<EditTodoEvent, EditTodoState> {
   }
 
   async onSubmitted(_event: EditTodoSubmitted, emit: Emitter<EditTodoState>) {
-    emit(this.state.loading());
-
     try {
       const { title, description, id, isCompleted } = this.state.data;
       await this.todosRepository.saveTodo(
