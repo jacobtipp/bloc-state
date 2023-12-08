@@ -2,11 +2,11 @@ import {
   GetQueryOptions,
   QueryClient,
   QueryNotFoundException,
-  QueryState,
 } from '../src/lib';
-import { take } from 'rxjs';
+import { filter, take } from 'rxjs';
 import { delay } from './helpers/delay';
 import { getRandomInt } from './helpers/random';
+import { QueryState } from '../src/lib/query-state';
 
 describe('QueryClient', () => {
   const queryClient = new QueryClient();
@@ -422,6 +422,47 @@ describe('QueryClient', () => {
 
       expect(queryClient.removeQuery(options.queryKey)).toBe(true);
       expect(queryClient.removeQuery(options.queryKey)).toBe(false);
+    });
+  });
+
+  describe('cancelQuery', () => {
+    it('it should remove a query', async () => {
+      let count = 0;
+      const queryClient = new QueryClient();
+
+      const states: number[] = [];
+
+      const getCount = () => {
+        return queryClient.getQuery<number>({
+          queryKey: 'count',
+          queryFn: async () => {
+            await delay(1000);
+            return count++;
+          },
+        });
+      };
+
+      getCount()
+        .pipe(filter((state) => state.isReady))
+        .subscribe({
+          next: (next) => {
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            states.push(next.data!);
+          },
+        });
+
+      await delay(1001);
+
+      getCount();
+
+      await delay(1001);
+
+      getCount();
+      queryClient.cancelQuery('count');
+
+      await delay(2000);
+
+      expect(states.length).toBe(2);
     });
   });
 });

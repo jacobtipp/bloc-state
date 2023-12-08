@@ -1,6 +1,9 @@
 //import { getRandomInt } from './helpers/random';
-import { take } from 'rxjs';
-import { GetQueryOptions, QueryBloc, QueryState } from '../src/lib';
+import { take, config } from 'rxjs';
+import { GetQueryOptions, QueryBloc } from '../src/lib';
+import { delay } from './helpers/delay';
+import { FetchEvent } from '../src/lib/query-event';
+import { QueryState } from '../src/lib/query-state';
 
 describe('QueryBloc', () => {
   it('should not allow new subscriptions if the query is closed', (done) => {
@@ -315,8 +318,53 @@ describe('QueryBloc', () => {
     }, 13000);
   });
 
+  describe('abortSignal', () => {
+    it('should abort a signal after a fetch event', async () => {
+      const queryFn = () => {
+        return Promise.resolve(1);
+      };
+      const options: GetQueryOptions<number> = {
+        queryFn,
+        queryKey: 'test',
+      };
+
+      const bloc = new QueryBloc<number>(
+        {
+          status: 'isLoading',
+          lastUpdatedAt: Date.now(),
+          isInitial: false,
+          isLoading: true,
+          isFetching: true,
+          isError: false,
+          isReady: false,
+        },
+        options
+      );
+
+      bloc.getQuery();
+
+      const abortController = new AbortController();
+      const signal = abortController.signal;
+
+      expect(signal.aborted).toBe(false);
+
+      bloc.add(new FetchEvent(abortController));
+      bloc.add(new FetchEvent(new AbortController()));
+
+      await delay(1000);
+      expect(signal.aborted).toBe(true);
+    });
+  });
+
   describe('setQueryData', () => {
     it('should throw an error if using set callback and no data exists', (done) => {
+      expect.assertions(3);
+      config.onUnhandledError = (e) => {
+        console.log(e);
+        expect(e).toBeInstanceOf(Error);
+        done();
+      };
+
       const queryFn = () => {
         return Promise.resolve(1);
       };
@@ -349,15 +397,10 @@ describe('QueryBloc', () => {
             const [a, b] = states;
             expect(a.status).toBe('isLoading');
             expect(b.status).toBe('isReady');
-            done();
           },
         });
 
-      try {
-        bloc.setQueryData(() => 5);
-      } catch (e) {
-        expect(e).toBeInstanceOf(Error);
-      }
+      bloc.setQueryData(() => 5);
     });
   });
 });

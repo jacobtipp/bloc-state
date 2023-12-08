@@ -1,7 +1,7 @@
 import { Observable, filter, firstValueFrom, map } from 'rxjs';
 
-import { GetQueryOptions, QueryBloc, QueryKey, QueryState } from './query-bloc';
-
+import { GetQueryOptions, QueryBloc, QueryKey } from './query-bloc';
+import { QueryState } from './query-state';
 export type RevalidateQueryOptions = {
   queryKey?: QueryKey;
   predicate?: (queryKey: QueryKey) => boolean;
@@ -123,6 +123,10 @@ export class QueryClient {
         this.queryMap.get(key)?.revalidateQuery();
       }
     });
+  };
+
+  cancelQuery = (queryKey: string) => {
+    this.queryMap.get(queryKey)?.cancelQuery();
   };
 }
 

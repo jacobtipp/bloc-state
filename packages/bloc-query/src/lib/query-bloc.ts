@@ -1,140 +1,14 @@
-import { EMPTY, mergeMap, retryWhen, startWith, switchMap, timer } from 'rxjs';
-import { Bloc, EventTransformer } from '@jacobtipp/bloc';
-
-export type FetchOptions = {
-  maxRetryAttempts?: number;
-  scalingDuration?: number;
-  retryDuration?: number;
-};
-
-const queryFetchTransformer =
-  <Data>(
-    options: FetchOptions,
-    bloc: Bloc<FetchEvent, QueryState<Data>>
-  ): EventTransformer<FetchEvent> =>
-  (events$, mapper) => {
-    return events$.pipe(
-      switchMap((event) =>
-        mapper(event).pipe(
-          retryWhen((errors) => {
-            return errors.pipe(
-              mergeMap((error, i) => {
-                const retryAttempt = i + 1;
-                const maxRetryAttempts = options.maxRetryAttempts ?? 1;
-                const retryDuration = options.retryDuration ?? 1000;
-                const scalingDuration = options.scalingDuration ?? 1000;
-
-                if (retryAttempt > maxRetryAttempts && !bloc.isClosed) {
-                  bloc.__unsafeEmit__({
-                    status: 'isError',
-                    lastUpdatedAt: bloc.state.lastUpdatedAt,
-                    isInitial: false,
-                    isLoading: false,
-                    isFetching: false,
-                    isReady: false,
-                    isError: true,
-                    data: bloc.state.data,
-                    error,
-                  });
-                  return EMPTY;
-                }
-
-                const duration = options.retryDuration
-                  ? retryDuration
-                  : retryAttempt * scalingDuration;
-
-                return timer(duration);
-              })
-            );
-          })
-        )
-      )
-    );
-  };
-
-abstract class QueryEvent {
-  protected _!: void;
-  name = 'QueryEvent';
-}
-
-export class FetchEvent extends QueryEvent {
-  override name = 'FetchEvent';
-}
-export class RevalidateEvent extends QueryEvent {
-  override name = 'RevalidateEvent';
-}
-export class SubscriptionEvent extends QueryEvent {
-  override name = 'SubscriptionEvent';
-}
-export class SetQueryDataEvent<Data = unknown> extends QueryEvent {
-  override name = 'SetQueryDataEvent';
-  constructor(public set: ((old: Data) => Data) | Data) {
-    super();
-  }
-}
-
-type initial<Data> = {
-  isInitial: true;
-  lastUpdatedAt: number;
-  isLoading: false;
-  isFetching: false;
-  isReady: true;
-  isError: false;
-  status: 'isInitial';
-  data: Data;
-};
-
-type loading<Data> = {
-  isInitial: false;
-  lastUpdatedAt: number;
-  isLoading: true;
-  isFetching: true;
-  isReady: false;
-  isError: false;
-  status: 'isLoading';
-  data?: Data;
-};
-
-type fetching<Data> = {
-  isInitial: false;
-  lastUpdatedAt: number;
-  isLoading: false;
-  isFetching: true;
-  isReady: false;
-  isError: false;
-  status: 'isFetching';
-  data?: Data;
-};
-
-type ready<Data> = {
-  isInitial: false;
-  lastUpdatedAt: number;
-  isLoading: false;
-  isFetching: false;
-  isReady: true;
-  isError: false;
-  status: 'isReady';
-  data: Data;
-};
-
-type failed<Data> = {
-  isInitial: false;
-  lastUpdatedAt: number;
-  isLoading: false;
-  isFetching: false;
-  isReady: false;
-  isError: true;
-  status: 'isError';
-  data?: Data;
-  error: Error;
-};
-
-export type QueryState<Data> =
-  | initial<Data>
-  | loading<Data>
-  | fetching<Data>
-  | ready<Data>
-  | failed<Data>;
+import { Bloc } from '@jacobtipp/bloc';
+import { startWith } from 'rxjs';
+import {
+  FetchEvent,
+  QueryEvent,
+  SubscriptionEvent,
+  RevalidateEvent,
+  SetQueryDataEvent,
+} from './query-event';
+import { FetchOptions, queryFetchTransformer } from './query-fetch-transformer';
+import { QueryState } from './query-state';
 
 export type QueryKey = string;
 
@@ -142,11 +16,15 @@ type QueryOptions = {
   staleTime?: number;
 };
 
+export type QueryFnOptions = {
+  signal: AbortSignal;
+};
+
 export type GetQueryOptions<Data> = {
   initialData?: Data;
   name?: string;
   queryKey: QueryKey;
-  queryFn: () => Promise<Data>;
+  queryFn: (options: QueryFnOptions) => Promise<Data>;
 } & QueryOptions &
   FetchOptions;
 
@@ -164,8 +42,7 @@ export class QueryBloc<Data = unknown> extends Bloc<
     this.on(SubscriptionEvent, (_event, _emit) => {
       if (this.state.status === 'isLoading' && !this.handledInitialLoad) {
         this.handledInitialLoad = true;
-        // if this query has no data loaded, start initial fetch
-        this.add(new FetchEvent());
+        this.add(new FetchEvent(new AbortController()));
       }
 
       if (this.state.isReady && this.isStale) {
@@ -185,7 +62,7 @@ export class QueryBloc<Data = unknown> extends Bloc<
         data: this.state.data,
       });
 
-      this.add(new FetchEvent());
+      this.add(new FetchEvent(new AbortController()));
     });
 
     this.on(SetQueryDataEvent, (event, emit) => {
@@ -195,7 +72,7 @@ export class QueryBloc<Data = unknown> extends Bloc<
       if (typeof set === 'function') {
         if (this.state.data === undefined) {
           throw new Error(
-            `QueryKey: ${this.name}, cannot be set with a callback function if data is undefined, use setQueryData with data directly.`
+            `QueryKey: ${this.name}, cannot be set with a callback function if previous data is undefined, invoke setQueryData with data directly.`
           );
         }
         newData = (set as (old: Data) => Data)(this.state.data);
@@ -217,8 +94,11 @@ export class QueryBloc<Data = unknown> extends Bloc<
 
     this.on(
       FetchEvent,
-      async (_event, emit) => {
-        const data = await options.queryFn();
+      async (event, emit) => {
+        if (event.cancel) return;
+        const data = await options.queryFn({
+          signal: event.abortController.signal,
+        });
         emit({
           status: 'isReady',
           lastUpdatedAt: Date.now(),
@@ -259,7 +139,11 @@ export class QueryBloc<Data = unknown> extends Bloc<
     this.add(new SetQueryDataEvent(set));
   };
 
-  revalidateQuery() {
+  cancelQuery = () => {
+    this.add(new FetchEvent(new AbortController(), true));
+  };
+
+  revalidateQuery = () => {
     this.add(new RevalidateEvent());
-  }
+  };
 }
