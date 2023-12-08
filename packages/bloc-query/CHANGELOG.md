@@ -1,3 +1,10 @@
+## [2.1.0](https://github.com/jacobtipp/bloc-state/compare/bloc-query-v2.0.0...bloc-query-v2.1.0) (2023-12-08)
+
+
+### Features
+
+* **bloc-query:** ✨ add cancelQuery with AbortSignal cancellation ([5761e2b](https://github.com/jacobtipp/bloc-state/commit/5761e2b51dacfea8f305d9d0160d776958f5d684))
+
 ## [2.0.0](https://github.com/jacobtipp/bloc-state/compare/bloc-query-v1.0.0...bloc-query-v2.0.0) (2023-12-06)
 
 
