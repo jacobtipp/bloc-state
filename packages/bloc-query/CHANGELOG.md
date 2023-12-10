@@ -1,3 +1,10 @@
+## [2.1.1](https://github.com/jacobtipp/bloc-state/compare/bloc-query-v2.1.0...bloc-query-v2.1.1) (2023-12-10)
+
+
+### Bug Fixes
+
+* **bloc-query:** 🐛 export all content from lib files ([42dc1c5](https://github.com/jacobtipp/bloc-state/commit/42dc1c5dbc6ba7e6bd244072aa12d27addc71c07))
+
 ## [2.1.0](https://github.com/jacobtipp/bloc-state/compare/bloc-query-v2.0.0...bloc-query-v2.1.0) (2023-12-08)
 
 
