@@ -24,6 +24,7 @@
     "@react-spring/web": "^9.6.1",
     "@swc/helpers": "~0.5.0",
     "antd": "^5.1.6",
+    "axios": "^1.6.2",
     "class-transformer": "^0.5.1",
     "core-js": "^3.6.5",
     "html-react-parser": "^3.0.8",
