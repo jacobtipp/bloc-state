@@ -1,3 +1,10 @@
+## [3.2.4](https://github.com/jacobtipp/bloc-state/compare/react-bloc-v3.2.3...react-bloc-v3.2.4) (2023-12-11)
+
+
+### Revert Changes
+
+* **react-bloc:** ♻️ useBlocListener now uses useBloc and useEffect to handle effects ([303a819](https://github.com/jacobtipp/bloc-state/commit/303a81912a2349cf8ce9ddfe7ec3fec061852778))
+
 ## [3.2.3](https://github.com/jacobtipp/bloc-state/compare/react-bloc-v3.2.2...react-bloc-v3.2.3) (2023-12-05)
 
 
