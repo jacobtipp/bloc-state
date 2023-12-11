@@ -9,7 +9,5 @@ export const HomePage = () => (
 );
 
 export const HomeView = () => {
-  return (
-    <PostPage />
-  );
+  return <PostPage />;
 };

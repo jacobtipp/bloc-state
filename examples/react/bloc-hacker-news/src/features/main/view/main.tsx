@@ -3,14 +3,20 @@ import { StrictMode } from 'react';
 import { AppBlocObserver } from './app-bloc-observer';
 import App from '../../app/view/app';
 import { Bloc } from '@jacobtipp/bloc';
-import { RestPostClient } from '../../../packages/post-client/rest-post-client';
 import { PostRepository } from '../../../packages/post-repository/post-repository';
+import { createApiClient } from '../../../packages/api-client/api-client';
+import { PostApiClient } from '../../../packages/post-client/post-api-client';
+import { QueryClient } from '@jacobtipp/bloc-query';
 
 Bloc.observer = new AppBlocObserver();
 
-const restPostClient = new RestPostClient();
+const apiClient = createApiClient();
 
-const postRepository = new PostRepository(restPostClient);
+const queryClient = new QueryClient();
+
+const postApiClient = new PostApiClient(apiClient);
+
+const postRepository = new PostRepository(postApiClient, queryClient);
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <StrictMode>

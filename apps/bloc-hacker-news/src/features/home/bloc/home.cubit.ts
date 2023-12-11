@@ -5,7 +5,5 @@ export class HomeBloc extends Cubit<number> {
     super(9001);
   }
 
-  setHomeState = (set: (state: number) => number) =>
-    this.emit(set(this.state));
-
+  incrementId = () => this.emit(this.state + 1);
 }

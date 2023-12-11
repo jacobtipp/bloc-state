@@ -1,21 +1,47 @@
-import { Observable, mergeMap, of, takeUntil, timer } from 'rxjs';
-import { fromFetch } from 'rxjs/fetch';
+import axios from 'axios';
 
-export abstract class ApiClient {
-  protected fetch<S>(path: string, config?: RequestInit): Observable<S> {
-    return fromFetch(`${this.baseUrl}${path}`, {
-      ...config,
-    }).pipe(
-      mergeMap((response) => {
-        if (response.ok) {
-          return response.json();
-        } else {
-          return of({ error: true, message: `Error ${response.status}` });
+export const createApiClient = () => {
+  const HN_BASE_API = 'https://hacker-news.firebaseio.com/v0';
+
+  const client = axios.create({
+    baseURL: HN_BASE_API,
+  });
+
+  client.interceptors.request.use((request) => {
+    const { method, url } = request;
+
+    console.log(`[${method?.toUpperCase()}] ${url} | Request`);
+
+    return request;
+  });
+
+  client.interceptors.response.use(
+    (response) => {
+      const { method, url } = response.config;
+      const { status } = response;
+
+      console.log(`[${method?.toUpperCase()}] ${url} | Response ${status}`);
+
+      return response;
+    },
+    (error) => {
+      if (axios.isAxiosError(error)) {
+        const { message, status, response, config } = error;
+        if (config && response) {
+          const { data } = response;
+          const { method, url } = config;
+
+          console.error(
+            `[${method?.toUpperCase()}] ${url} | Error ${status} ${
+              data?.message ?? ''
+            } | ${message}`
+          );
         }
-      }),
-      takeUntil(timer(10e3)) // wait 10 seconds for response or else close the stream, ending the request
-    );
-  }
+      }
 
-  constructor(private baseUrl: string) {}
-}
+      Promise.reject(error);
+    }
+  );
+
+  return client;
+};

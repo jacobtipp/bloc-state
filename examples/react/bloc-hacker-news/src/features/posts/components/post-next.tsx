@@ -1,22 +1,10 @@
 import { useBlocInstance } from '@jacobtipp/react-bloc';
 import { HomeBloc } from '../../home/bloc/home.cubit';
 
-type PostNextProps = {
-  id: number;
-};
-
-export function PostNext({ id }: PostNextProps) {
-  const { setHomeState } = useBlocInstance(HomeBloc);
+export function PostNext() {
+  const { incrementId } = useBlocInstance(HomeBloc);
   return (
-    <button
-      onClick={() =>
-        setHomeState((state) =>
-          state.ready((data) => {
-            data.id = id + 1;
-          })
-        )
-      }
-    >
+    <button onClick={incrementId}>
       <div>→</div>
     </button>
   );

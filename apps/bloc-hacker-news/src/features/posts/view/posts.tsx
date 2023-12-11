@@ -18,16 +18,10 @@ export function PostPage() {
   const id = useBlocValue(HomeBloc);
   const postRepository = useRepository(PostRepository);
 
-
-
   return (
     <BlocProvider
       bloc={PostBloc}
-      create={() =>
-        new PostBloc(postRepository).add(
-          new PostSubscribed(id)
-        )
-      }
+      create={() => new PostBloc(postRepository).add(new PostSubscribed(id))}
     >
       <PostView />
     </BlocProvider>
@@ -35,11 +29,11 @@ export function PostPage() {
 }
 
 export function PostView() {
-  const { add } = useBlocInstance(PostBloc)
+  const { add } = useBlocInstance(PostBloc);
   useBlocListener(HomeBloc, {
     listenWhen: (previous, current) => previous !== current,
-    listener: (_, state) => add(new PostSubscribed(state))
-  })
+    listener: (_, state) => add(new PostSubscribed(state)),
+  });
 
   return (
     <>

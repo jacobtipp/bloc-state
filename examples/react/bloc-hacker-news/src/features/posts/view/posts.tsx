@@ -11,54 +11,39 @@ import {
 } from '@jacobtipp/react-bloc';
 import { HomeBloc } from '../../home/bloc/home.cubit';
 import { PostBloc } from '../bloc/posts.bloc';
-import { PostSubscribed, PostFetched } from '../bloc/posts.events';
+import { PostSubscribed } from '../bloc/posts.events';
 import { PostRepository } from '../../../packages/post-repository/post-repository';
 
 export function PostPage() {
-  const state = useBlocValue(HomeBloc);
-  const { id, transformer } = state.data;
+  const id = useBlocValue(HomeBloc);
   const postRepository = useRepository(PostRepository);
 
   return (
     <BlocProvider
       bloc={PostBloc}
-      create={() =>
-        new PostBloc(postRepository, transformer).add(
-          new PostSubscribed(id, transformer)
-        )
-      }
-      dependencies={[transformer]}
+      create={() => new PostBloc(postRepository).add(new PostSubscribed(id))}
     >
-      <PostView id={id} />
+      <PostView />
     </BlocProvider>
   );
 }
 
-type PostViewProps = {
-  id: number;
-};
-
-export function PostView({ id }: PostViewProps) {
-  const postBloc = useBlocInstance(PostBloc);
-
+export function PostView() {
+  const { add } = useBlocInstance(PostBloc);
   useBlocListener(HomeBloc, {
-    listenWhen(previous, current) {
-      return previous.data.id !== current.data.id;
-    },
-    listener(_bloc, state) {
-      postBloc.add(new PostFetched(state.data.id, state.data.transformer));
-    },
+    listenWhen: (previous, current) => previous !== current,
+    listener: (_, state) => add(new PostSubscribed(state)),
   });
 
   return (
     <>
-      <PostId id={id} />
+      <PostId />
       <div>
         <Suspense fallback={<h2>Loading...</h2>}>
           <PostDetails />
         </Suspense>
       </div>
-      <PostNext id={id} />
+      <PostNext />
     </>
   );
 }

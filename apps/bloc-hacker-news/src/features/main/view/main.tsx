@@ -10,9 +10,9 @@ import { QueryClient } from '@jacobtipp/bloc-query';
 
 Bloc.observer = new AppBlocObserver();
 
-const apiClient = createApiClient()
+const apiClient = createApiClient();
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient();
 
 const postApiClient = new PostApiClient(apiClient);
 

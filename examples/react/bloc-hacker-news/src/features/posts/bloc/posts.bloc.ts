@@ -1,29 +1,12 @@
-import {
-  concurrent,
-  restartable,
-  sequential,
-} from '@jacobtipp/bloc-concurrency';
-import {
-  PostConcurrent,
-  PostEvent,
-  PostFetched,
-  PostRestartable,
-  PostSequential,
-  PostSubscribed,
-} from './posts.events';
+import { PostEvent, PostSubscribed } from './posts.events';
 import { PostState } from './posts.state';
-import { PostTransformer } from '../../common/post-transformer';
 import { Bloc, Emitter } from '@jacobtipp/bloc';
 import { PostRepository } from '../../../packages/post-repository/post-repository';
 
 export class PostBloc extends Bloc<PostEvent, PostState> {
-  constructor(
-    private postRepository: PostRepository,
-    private transformer: PostTransformer
-  ) {
+  constructor(private postRepository: PostRepository) {
     super(
       new PostState({
-        transformer: 'concurrent',
         details: {
           by: '',
           time: 0,
@@ -32,28 +15,26 @@ export class PostBloc extends Bloc<PostEvent, PostState> {
       })
     );
 
-    this.on(PostRestartable, this.getPost, restartable());
-    this.on(PostConcurrent, this.getPost, concurrent());
-    this.on(PostSequential, this.getPost, sequential());
-    this.on(PostFetched, this.onFetched);
     this.on(PostSubscribed, this.onSubscribed);
   }
 
-  private onFetched(
-    event: PostFetched,
+  async onSubscribed(
+    event: PostSubscribed,
     emit: Emitter<PostState>
-  ): void | Promise<void> {
-    emit(this.state.loading());
-    if (this.transformer === 'concurrent') {
-      this.add(new PostConcurrent(event.id));
-    }
+  ): Promise<void> {
+    try {
+      emit(this.state.loading());
 
-    if (this.transformer === 'restartable') {
-      this.add(new PostRestartable(event.id));
-    }
-
-    if (this.transformer === 'sequential') {
-      this.add(new PostSequential(event.id));
+      const post = await this.postRepository.getPost(event.id);
+      emit(
+        this.state.ready((data) => {
+          data.details = post;
+        })
+      );
+    } catch (e) {
+      if (e instanceof Error) {
+        emit(this.state.failed(e));
+      }
     }
   }
 
@@ -61,16 +42,4 @@ export class PostBloc extends Bloc<PostEvent, PostState> {
     const parsed = super.fromJson(json);
     return new PostState(parsed.data, parsed.status);
   }
-
-  private async getPost(event: PostRestartable, emit: Emitter<PostState>) {
-    await emit.forEach(this.postRepository.getPost(event.id), (post) =>
-      this.state.ready((data) => {
-        data.details = post;
-      })
-    );
-  }
-
-  private onSubscribed = (event: PostSubscribed, _emit: Emitter<PostState>) => {
-    this.add(new PostFetched(event.id, event.transformer));
-  };
 }
