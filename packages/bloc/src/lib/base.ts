@@ -17,7 +17,7 @@ export abstract class BlocBase<State = unknown> {
   constructor(state: State, name?: string) {
     this._state = state;
     this._stateSubject$ = new Subject();
-    this.state$ = this._stateSubject$;
+    this.state$ = this._stateSubject$.asObservable();
 
     // Gets the name of the constructor function for this BLoC instance.
     this.name = name ?? this.constructor.name;
