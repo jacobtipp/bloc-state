@@ -30,12 +30,12 @@ export class QueryClient {
         : keyOrQuery;
 
     if (query) {
-      return firstValueFrom(
+      return firstValueFrom<Data>(
         query.pipe(
           filter((state) => state.isReady),
           map((state) => state.data)
         )
-      ) as Data;
+      );
     }
 
     throw new QueryNotFoundException(
