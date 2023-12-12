@@ -138,6 +138,7 @@ class DevtoolConnection {
 
 export class DevtoolsObserver implements BlocObserver {
   private connections: Map<string, DevtoolConnection> = new Map();
+  private isDev = process.env['NODE_ENV'] !== 'production';
 
   constructor(
     private options: DevtoolsOptions = {
@@ -145,7 +146,7 @@ export class DevtoolsObserver implements BlocObserver {
       logTrace: true,
     }
   ) {
-    if (!window.__REDUX_DEVTOOLS_EXTENSION__) {
+    if (this.isDev && !window.__REDUX_DEVTOOLS_EXTENSION__) {
       throw new DevtoolsError(
         'DevtoolsObserver only works with Redux Devtools Extension installed in your web browser'
       );
@@ -161,16 +162,19 @@ export class DevtoolsObserver implements BlocObserver {
   }
 
   onCreate(bloc: BlocBase<any>, initialState: any): void {
+    if (!this.isDev) return;
     this.addBloc(bloc, initialState);
   }
 
   onTransition(bloc: Bloc<any, any>, transition: Transition<any, any>): void {
+    if (!this.isDev) return;
     const connection = this.connections.get(bloc.name);
     const action = transition.event.name ?? transition.event.constructor.name;
     connection?.update(transition.nextState, action);
   }
 
   onChange(bloc: BlocBase<any>, change: Change<any>): void {
+    if (!this.isDev) return;
     if ((bloc as Bloc<any, any>).isBlocInstance) {
       return;
     }
@@ -180,6 +184,7 @@ export class DevtoolsObserver implements BlocObserver {
   }
 
   onClose(bloc: BlocBase<any>): void {
+    if (!this.isDev) return;
     const name = bloc.name;
     const connection = this.connections.get(name);
 
@@ -187,6 +192,7 @@ export class DevtoolsObserver implements BlocObserver {
   }
 
   onDestroy(): void {
+    if (!this.isDev) return;
     this.connections.forEach((connection) => {
       connection.close();
     });
