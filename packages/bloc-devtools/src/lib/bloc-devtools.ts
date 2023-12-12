@@ -139,13 +139,16 @@ class DevtoolConnection {
 export class DevtoolsObserver implements BlocObserver {
   private connections: Map<string, DevtoolConnection> = new Map();
   private isDev = process.env['NODE_ENV'] !== 'production';
+  private options: DevtoolsOptions;
 
-  constructor(
-    private options: DevtoolsOptions = {
+  constructor(options?: DevtoolsOptions) {
+    const defaultOptions: DevtoolsOptions = {
       name: document.title,
-      logTrace: true,
-    }
-  ) {
+      logTrace: false,
+    };
+
+    this.options = { ...defaultOptions, ...options };
+
     if (this.isDev && !window.__REDUX_DEVTOOLS_EXTENSION__) {
       throw new DevtoolsError(
         'DevtoolsObserver only works with Redux Devtools Extension installed in your web browser'
