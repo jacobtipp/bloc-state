@@ -60,6 +60,12 @@
         "reportsDirectory": "../../coverage/apps/bloc-todos"
       }
     },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["tsc --noEmit -p apps/bloc-todos/tsconfig.app.json"]
+      }
+    },
     "lint": {
       "executor": "@nx/linter:eslint",
       "outputs": ["{options.outputFile}"],

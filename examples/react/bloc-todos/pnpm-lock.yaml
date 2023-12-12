@@ -1,5 +1,9 @@
 lockfileVersion: '6.0'
 
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
 importers:
 
   .:
@@ -11,23 +15,23 @@ importers:
         specifier: 11.11.0
         version: 11.11.0(@emotion/react@11.11.1)(@types/react@18.2.38)(react@18.2.0)
       '@jacobtipp/bloc':
-        specifier: ^3.0.2
-        version: 3.0.2(rxjs@7.8.0)
+        specifier: ^3.0.3
+        version: 3.0.3(rxjs@7.8.0)
       '@jacobtipp/bloc-concurrency':
-        specifier: ^3.0.3
-        version: 3.0.3(@jacobtipp/bloc@3.0.2)(rxjs@7.8.0)
+        specifier: ^3.0.4
+        version: 3.0.4(@jacobtipp/bloc@3.0.3)(rxjs@7.8.0)
       '@jacobtipp/bloc-devtools':
-        specifier: ^1.0.4
-        version: 1.0.4(@jacobtipp/bloc@3.0.2)(rxjs@7.8.0)
+        specifier: ^1.0.6
+        version: 1.0.6(@jacobtipp/bloc@3.0.3)(rxjs@7.8.0)
       '@jacobtipp/bloc-query':
-        specifier: 2.0.0
-        version: 2.0.0(@jacobtipp/bloc@3.0.2)(rxjs@7.8.0)
+        specifier: 2.1.2
+        version: 2.1.2(@jacobtipp/bloc@3.0.3)(rxjs@7.8.0)
       '@jacobtipp/hydrated-bloc':
-        specifier: ^3.0.3
-        version: 3.0.3(@jacobtipp/bloc@3.0.2)(rxjs@7.8.0)
+        specifier: ^3.0.4
+        version: 3.0.4(@jacobtipp/bloc@3.0.3)(rxjs@7.8.0)
       '@jacobtipp/react-bloc':
-        specifier: 3.2.3
-        version: 3.2.3(@jacobtipp/bloc@3.0.2)(react-dom@18.2.0)(react@18.2.0)(rxjs@7.8.0)
+        specifier: 3.2.5
+        version: 3.2.5(@jacobtipp/bloc@3.0.3)(react-dom@18.2.0)(react@18.2.0)(rxjs@7.8.0)
       '@jacobtipp/state':
         specifier: ^1.0.7
         version: 1.0.7(immer@9.0.18)
@@ -518,63 +522,63 @@ packages:
     resolution: {integrity: sha512-dvuCeX5fC9dXgJn9t+X5atfmgQAzUOWqS1254Gh0m6i8wKd10ebXkfNKiRK+1GWi/yTvvLDHpoxLr0xxxeslWw==}
     dev: true
 
-  /@jacobtipp/bloc-concurrency@3.0.3(@jacobtipp/bloc@3.0.2)(rxjs@7.8.0):
-    resolution: {integrity: sha512-1o//QEExqDDqEqD47SDxcEUs9j122dJPBVsQ0FeOfbk8qp95sz7VOkUV6ye5VafTJvjiUPvRc4OjN8YuCzgxHg==}
+  /@jacobtipp/bloc-concurrency@3.0.4(@jacobtipp/bloc@3.0.3)(rxjs@7.8.0):
+    resolution: {integrity: sha512-L+8Foh6b4phWu3zWFh5N/aFqL3+oN7djFhKf7wkZageFz/GJG2XI4GWxhLhX6H8zqaY/15YFPd0jWXa6huomFw==}
     peerDependencies:
-      '@jacobtipp/bloc': 3.0.2
+      '@jacobtipp/bloc': 3.0.3
       rxjs: 7.8.0
     dependencies:
-      '@jacobtipp/bloc': 3.0.2(rxjs@7.8.0)
+      '@jacobtipp/bloc': 3.0.3(rxjs@7.8.0)
       rxjs: 7.8.0
     dev: false
 
-  /@jacobtipp/bloc-devtools@1.0.4(@jacobtipp/bloc@3.0.2)(rxjs@7.8.0):
-    resolution: {integrity: sha512-8ZgdznW/GSlD0+FtbU4bJJqo7/aLlMVWep2TPM+oSEowOSBHoxNBUG99rLrhnZdeM56dJ1XcTBfUOO9Q4n9vjw==}
+  /@jacobtipp/bloc-devtools@1.0.6(@jacobtipp/bloc@3.0.3)(rxjs@7.8.0):
+    resolution: {integrity: sha512-RCbSMF4fGWoCZDBZ3gBicInseS4m5BWaaCZMgVS3hzBfxKglwvttnW9VpkWSZ8Dg8uxVXJ4g1sgeWffO7QSKmA==}
     peerDependencies:
-      '@jacobtipp/bloc': 3.0.2
+      '@jacobtipp/bloc': 3.0.3
       rxjs: 7.8.0
     dependencies:
-      '@jacobtipp/bloc': 3.0.2(rxjs@7.8.0)
+      '@jacobtipp/bloc': 3.0.3(rxjs@7.8.0)
       rxjs: 7.8.0
     dev: false
 
-  /@jacobtipp/bloc-query@2.0.0(@jacobtipp/bloc@3.0.2)(rxjs@7.8.0):
-    resolution: {integrity: sha512-PW/puMffuevkm52SD/xRjhOIfw3kW7N9owhDF/W7IcMgVCX8JzSprmSQlSO0Fm+zTK0YhU1223s0gKNIhX7+5w==}
+  /@jacobtipp/bloc-query@2.1.2(@jacobtipp/bloc@3.0.3)(rxjs@7.8.0):
+    resolution: {integrity: sha512-0nrVyZ4kgZRJQ5tbM78AP0jZHkhSNMOrqc/IQeTsYs6ly8+V4MDEsErePuFQ5OoRL7z/YhJHKl5WuJCmI6YtPQ==}
     peerDependencies:
-      '@jacobtipp/bloc': 3.0.2
+      '@jacobtipp/bloc': 3.0.3
       rxjs: 7.8.0
     dependencies:
-      '@jacobtipp/bloc': 3.0.2(rxjs@7.8.0)
+      '@jacobtipp/bloc': 3.0.3(rxjs@7.8.0)
       rxjs: 7.8.0
     dev: false
 
-  /@jacobtipp/bloc@3.0.2(rxjs@7.8.0):
-    resolution: {integrity: sha512-NKecTktWQAXg3AuLh3vuLxw1v5/5NsKkppyu5rTn2ISYp9+C70zmh964GDVqGfmGX0Es4wpryz0pIQn2ktLjpw==}
+  /@jacobtipp/bloc@3.0.3(rxjs@7.8.0):
+    resolution: {integrity: sha512-LbKAEhvx9fPnyPqLflFie+2R8dxlCS290+ppXc+ncNOO+9ih0oyRNu8Wxw7Pi6S52lrBB9WtaVWEBpvcTf4Q9A==}
     peerDependencies:
       rxjs: 7.8.0
     dependencies:
       rxjs: 7.8.0
     dev: false
 
-  /@jacobtipp/hydrated-bloc@3.0.3(@jacobtipp/bloc@3.0.2)(rxjs@7.8.0):
-    resolution: {integrity: sha512-U84G3UtK/Gi9UbuzNnEidyRelWPSYWi3nOY4c6qXFVDecJ7WtMUOX8Kvqf3nX1w/zbRa4LtEX2pxA0XyayAjGg==}
+  /@jacobtipp/hydrated-bloc@3.0.4(@jacobtipp/bloc@3.0.3)(rxjs@7.8.0):
+    resolution: {integrity: sha512-mF+CV5sxbLdUKytAScAnD2yDxF8B7gGXuHRiqPQrQLFXLEgFLPLOr2/IbT7vCpTxKTe3gQRyryr84Ez/hgzx7g==}
     peerDependencies:
-      '@jacobtipp/bloc': 3.0.2
+      '@jacobtipp/bloc': 3.0.3
       rxjs: 7.8.0
     dependencies:
-      '@jacobtipp/bloc': 3.0.2(rxjs@7.8.0)
+      '@jacobtipp/bloc': 3.0.3(rxjs@7.8.0)
       rxjs: 7.8.0
     dev: false
 
-  /@jacobtipp/react-bloc@3.2.3(@jacobtipp/bloc@3.0.2)(react-dom@18.2.0)(react@18.2.0)(rxjs@7.8.0):
-    resolution: {integrity: sha512-A65ZPcC+OmBbNt9TzconaDeycwkyUh4rTYdKKjHsjlf+Rj2i2ynZhFwuc0Ro5WnjCxzob81P0rbrFTYeGsyqPA==}
+  /@jacobtipp/react-bloc@3.2.5(@jacobtipp/bloc@3.0.3)(react-dom@18.2.0)(react@18.2.0)(rxjs@7.8.0):
+    resolution: {integrity: sha512-wjDpBRI4cKt2mWhQyrFUxgmoCtAlqIXsxJpNBGCt9sewZWo1YQg8c3Ic5PxfGIUodeydQZDgaoIysZTQSAqwkQ==}
     peerDependencies:
-      '@jacobtipp/bloc': 3.0.2
+      '@jacobtipp/bloc': 3.0.3
       react: 18.2.0
       react-dom: 18.2.0
       rxjs: 7.8.0
     dependencies:
-      '@jacobtipp/bloc': 3.0.2(rxjs@7.8.0)
+      '@jacobtipp/bloc': 3.0.3(rxjs@7.8.0)
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
       rxjs: 7.8.0

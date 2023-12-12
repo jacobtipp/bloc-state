@@ -100,19 +100,17 @@ export class TodosOverviewBlocBase extends Bloc<
     _event: TodosOverviewSubscriptionRequested,
     emit: Emitter<TodosOverviewState>
   ) {
-    await emit.onEach(this.todosRepository.getTodos(), (query) => {
-      if (query.isFetching) {
-        emit(this.state.loading());
-      }
+    emit(this.state.loading());
 
-      if (query.isReady) {
-        emit(
-          this.state.ready((data) => {
-            data.todos = query.data;
-          })
-        );
-      }
-    });
+    await emit.forEach(
+      this.todosRepository.getTodos(),
+      (todos) => {
+        return this.state.ready((data) => {
+          data.todos = todos;
+        });
+      },
+      (_error) => this.state.failed()
+    );
   }
 
   private async onTodoCompletionToggled(

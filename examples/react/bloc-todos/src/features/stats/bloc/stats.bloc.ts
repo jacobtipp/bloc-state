@@ -16,20 +16,11 @@ export class StatsBloc extends Bloc<StatsEvent, StatsState> {
   ) {
     emit(this.state.loading());
 
-    await emit.onEach(this.todosRepository.getTodos(), (query) => {
-      if (query.isFetching) {
-        emit(this.state.loading());
-      }
-
-      if (query.isReady) {
-        emit(
-          this.state.ready({
-            completedTodos: query.data.filter((todo) => todo.isCompleted)
-              .length,
-            activeTodos: query.data.filter((todo) => !todo.isCompleted).length,
-          })
-        );
-      }
+    await emit.forEach(this.todosRepository.getTodos(), (todos) => {
+      return this.state.ready({
+        completedTodos: todos.filter((todo) => todo.isCompleted).length,
+        activeTodos: todos.filter((todo) => !todo.isCompleted).length,
+      });
     });
   }
 }

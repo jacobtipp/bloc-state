@@ -1,21 +1,23 @@
+import { BehaviorSubject } from 'rxjs';
 import { TodosClient } from './todos-client';
 import { Todo } from './model/todo';
-import { QueryClient } from '@jacobtipp/bloc-query';
 
 export class LocalStorageTodosClient implements TodosClient {
-  constructor(private queryClient: QueryClient) {}
+  private _todos$ = new BehaviorSubject<Todo[]>([]);
 
-  getTodo = (id: string) => {
-    return this.queryClient.getQuery<Todo>({
-      queryKey: `todos/${id}`,
-      queryFn: async () => this._getTodo(id),
-    });
-  };
+  constructor() {
+    this.init();
+  }
 
-  private _getTodo = async (id: string) => {
-    const todos = await this.queryClient.getQueryData<Todo[]>(this.getTodos());
+  init() {
+    const todos = localStorage.getItem('todos');
+    if (todos != null) {
+      this._todos$.next(JSON.parse(todos));
+    }
+  }
 
-    const todo = todos.find((todo) => todo.id === id);
+  getTodo = async (id: string) => {
+    const todo = this._todos$.getValue().find((todo) => todo.id === id);
 
     if (!todo) {
       throw new TodoNotFoundException();
@@ -24,27 +26,10 @@ export class LocalStorageTodosClient implements TodosClient {
     return todo;
   };
 
-  getTodos = () => {
-    return this.queryClient.getQuery<Todo[]>({
-      queryKey: 'todos',
-      queryFn: this._getTodos,
-      staleTime: Infinity,
-    });
-  };
-
-  private _getTodos = async () => {
-    const todos = localStorage.getItem('todos');
-
-    if (todos != null) {
-      return Promise.resolve<Todo[]>(JSON.parse(todos));
-    } else {
-      return Promise.resolve<Todo[]>([]);
-    }
-  };
+  getTodos = () => this._todos$.asObservable();
 
   saveTodo = async (todo: Todo) => {
-    const todos = [...(await this.queryClient.getQueryData<Todo[]>('todos'))];
-
+    const todos = [...this._todos$.getValue()];
     const id = todo.id;
     const todoIndex = todos.findIndex((todo) => todo.id === id);
     if (todoIndex >= 0) {
@@ -52,45 +37,43 @@ export class LocalStorageTodosClient implements TodosClient {
     } else {
       todos.push(todo);
     }
-    this.queryClient.setQueryData<Todo[]>('todos', todos);
+    this._todos$.next(todos);
     return localStorage.setItem('todos', JSON.stringify(todos));
   };
 
   deleteTodo = async (id: string) => {
-    const todos = [...(await this.queryClient.getQueryData<Todo[]>('todos'))];
+    const todos = [...this._todos$.getValue()];
     const todoIndex = todos.findIndex((todo) => todo.id === id);
-    console.log(todos);
     if (todoIndex === -1) {
       throw new TodoNotFoundException();
     } else {
       todos.splice(todoIndex, 1);
-      this.queryClient.setQueryData<Todo[]>('todos', todos);
+      this._todos$.next(todos);
       return localStorage.setItem('todos', JSON.stringify(todos));
     }
   };
 
-  clearCompleted = async () => {
-    const todos = [...(await this.queryClient.getQueryData<Todo[]>('todos'))];
+  async clearCompleted() {
+    const todos = [...this._todos$.getValue()];
     const completedTodosAmount = todos.filter(
       (todo) => todo.isCompleted
     ).length;
-
     const newTodos = todos.filter((todo) => !todo.isCompleted);
-    this.queryClient.setQueryData<Todo[]>('todos', newTodos);
+    this._todos$.next(newTodos);
     localStorage.setItem('todos', JSON.stringify(newTodos));
     return completedTodosAmount;
-  };
+  }
 
-  completeAll = async (isCompleted: boolean) => {
-    const todos = [...(await this.queryClient.getQueryData<Todo[]>('todos'))];
+  async completeAll(isCompleted: boolean) {
+    const todos = [...this._todos$.getValue()];
     const changedTodosAmount = todos.filter(
       (todo) => todo.isCompleted !== isCompleted
     ).length;
     const newTodos = todos.map((todo) => ({ ...todo, isCompleted }));
-    this.queryClient.setQueryData<Todo[]>('todos', newTodos);
+    this._todos$.next(newTodos);
     localStorage.setItem('todos', JSON.stringify(newTodos));
     return changedTodosAmount;
-  };
+  }
 }
 
 export class TodoNotFoundException extends Error {}

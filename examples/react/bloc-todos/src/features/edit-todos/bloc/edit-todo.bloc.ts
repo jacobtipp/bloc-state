@@ -62,23 +62,20 @@ export class EditTodoBloc extends Bloc<EditTodoEvent, EditTodoState> {
   }
 
   async onSubscribed(event: EditTodoSubscribed, emit: Emitter<EditTodoState>) {
-    await emit.onEach(this.todosRepository.getTodo(event.todoId), (query) => {
-      if (query.isFetching) {
-        emit(this.state.loading());
-      }
+    emit(this.state.loading());
 
-      if (query.isReady) {
-        emit(
-          this.state.ready({
-            ...query.data,
-          })
-        );
+    try {
+      const todo = await this.todosRepository.getTodo(event.todoId);
+      emit(
+        this.state.ready({
+          ...todo,
+        })
+      );
+    } catch (error: any) {
+      if (error instanceof Error) {
+        emit(this.state.failed(error));
       }
-
-      if (query.isError) {
-        emit(this.state.failed(query.error));
-      }
-    });
+    }
   }
 
   override fromJson(json: string): EditTodoState {
