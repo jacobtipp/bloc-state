@@ -1,3 +1,15 @@
+## [1.0.6](https://github.com/jacobtipp/bloc-state/compare/bloc-devtools-v1.0.5...bloc-devtools-v1.0.6) (2023-12-12)
+
+
+### Bug Fixes
+
+* **bloc-devtools:** 🐛 devtools should only work in development ([cf1a22f](https://github.com/jacobtipp/bloc-state/commit/cf1a22f4ead54ce749a7145521d8318aecb2a0b0))
+
+
+### Code Refactoring
+
+* **bloc-devtools:** ♻️ merge default options ([cb5651a](https://github.com/jacobtipp/bloc-state/commit/cb5651a1dc3ae2181ed637fa2f3aa7cc5156598d))
+
 ## [1.0.5](https://github.com/jacobtipp/bloc-state/compare/bloc-devtools-v1.0.4...bloc-devtools-v1.0.5) (2023-12-12)
 
 
