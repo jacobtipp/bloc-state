@@ -33,7 +33,7 @@ jobs:
           fetch-depth: 0
 
       - name: Setup nx shas
-        uses: nrwl/nx-set-shas@v3
+        uses: nrwl/nx-set-shas@v4
 
       - name: Setup Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
