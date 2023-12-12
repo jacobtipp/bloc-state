@@ -1,3 +1,10 @@
+## [3.2.5](https://github.com/jacobtipp/bloc-state/compare/react-bloc-v3.2.4...react-bloc-v3.2.5) (2023-12-12)
+
+
+### Code Refactoring
+
+* **bloc:** ♻️ use asObservable when exposing Bloc.state$ ([54dcd4b](https://github.com/jacobtipp/bloc-state/commit/54dcd4bc9f9d3651a0554e08d9a0e464e8c30f20))
+
 ## [3.2.4](https://github.com/jacobtipp/bloc-state/compare/react-bloc-v3.2.3...react-bloc-v3.2.4) (2023-12-11)
 
 
