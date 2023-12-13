@@ -1,6 +1,6 @@
 //import { getRandomInt } from './helpers/random';
 import { take, config } from 'rxjs';
-import { GetQueryOptions, QueryBloc } from '../src/lib';
+import { GetQueryOptions, QueryBloc, SetQueryDataException } from '../src/lib';
 import { delay } from './helpers/delay';
 import { FetchEvent } from '../src/lib/query-event';
 import { QueryState } from '../src/lib/query-state';
@@ -361,7 +361,7 @@ describe('QueryBloc', () => {
       expect.assertions(3);
       config.onUnhandledError = (e) => {
         console.log(e);
-        expect(e).toBeInstanceOf(Error);
+        expect(e).toBeInstanceOf(SetQueryDataException);
         done();
       };
 

@@ -83,8 +83,9 @@ export class QueryBloc<
       const set = setEvent.set;
       if (typeof set === 'function') {
         if (this.state.data === undefined) {
-          throw new Error(
-            `QueryKey: ${this.name}, cannot be set with a callback function if previous data is undefined, invoke setQueryData with data directly.`
+          throw new SetQueryDataException(
+            'SetQueryData: cannot be set with a callback function if previous data is undefined, invoke setQueryData with data directly ' +
+              'or provide initial data for the query'
           );
         }
         newData = (set as (old: Data) => Data)(this.state.data);
@@ -143,7 +144,7 @@ export class QueryBloc<
     comparer?: (previous: Selected, current: Selected) => boolean
   ): Observable<Selected> => {
     if (this.isClosed) {
-      throw new Error('Query is closed');
+      throw new QueryClosedException('Query is closed');
     }
 
     this.add(new SubscriptionEvent());
@@ -169,4 +170,18 @@ export class QueryBloc<
   revalidateQuery = () => {
     this.add(new RevalidateEvent());
   };
+}
+
+export class SetQueryDataException extends Error {
+  constructor(message: string) {
+    super(message);
+    Object.setPrototypeOf(this, SetQueryDataException.prototype);
+  }
+}
+
+export class QueryClosedException extends Error {
+  constructor(message: string) {
+    super(message);
+    Object.setPrototypeOf(this, QueryClosedException.prototype);
+  }
 }
