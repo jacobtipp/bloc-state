@@ -1,3 +1,15 @@
+## [2.2.0-dev-bloc-query.1](https://github.com/jacobtipp/bloc-state/compare/bloc-query-v2.1.2...bloc-query-v2.2.0-dev-bloc-query.1) (2023-12-13)
+
+
+### Features
+
+* **bloc-query:** ✨ add selector option to getQuery ([5dae7ac](https://github.com/jacobtipp/bloc-state/commit/5dae7ac7b9605d4e64ee74427928711fed4768bc))
+
+
+### Code Refactoring
+
+* **bloc-query:** ♻️ infer Data generic to firstValueFrom inside getQueryData ([a4d5049](https://github.com/jacobtipp/bloc-state/commit/a4d5049a00298616dd6cfb4422c8fdea2dd8d514))
+
 ## [2.1.2](https://github.com/jacobtipp/bloc-state/compare/bloc-query-v2.1.1...bloc-query-v2.1.2) (2023-12-12)
 
 
