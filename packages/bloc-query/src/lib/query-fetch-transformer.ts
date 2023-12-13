@@ -1,7 +1,6 @@
 import { switchMap, Observable, EMPTY, timer, retry } from 'rxjs';
 import { EventTransformer } from '@jacobtipp/bloc';
-import { QueryBloc } from '.';
-import { ErrorEvent, FetchEvent } from './query-event';
+import { QueryBloc, QueryErrorEvent, QueryFetchEvent } from '.';
 
 export type FetchOptions = {
   maxRetryAttempts?: number;
@@ -9,8 +8,8 @@ export type FetchOptions = {
   retryDuration?: number;
 };
 
-const abortControllerMapper = (event: FetchEvent) =>
-  new Observable<FetchEvent>((subscriber) => {
+const abortControllerMapper = (event: QueryFetchEvent) =>
+  new Observable<QueryFetchEvent>((subscriber) => {
     subscriber.next(event);
     return () => {
       event.abortController.abort();
@@ -21,7 +20,7 @@ export const queryFetchTransformer =
   <Data>(
     options: FetchOptions,
     bloc: QueryBloc<Data>
-  ): EventTransformer<FetchEvent> =>
+  ): EventTransformer<QueryFetchEvent> =>
   (events$, mapper) => {
     return events$.pipe(switchMap(abortControllerMapper)).pipe(
       switchMap((event) =>
@@ -34,7 +33,7 @@ export const queryFetchTransformer =
               const scalingDuration = options.scalingDuration ?? 1000;
 
               if (retryAttempt > maxRetryAttempts && !bloc.isClosed) {
-                bloc.add(new ErrorEvent(error));
+                bloc.add(new QueryErrorEvent(error));
                 return EMPTY;
               }
 
