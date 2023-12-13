@@ -1,4 +1,11 @@
-export type initial<Data> = {
+export type QueryStatus =
+  | 'isInitial'
+  | 'isLoading'
+  | 'isFetching'
+  | 'isReady'
+  | 'isError';
+
+export type Initial<Data> = {
   isInitial: true;
   lastUpdatedAt: number;
   isLoading: false;
@@ -9,7 +16,7 @@ export type initial<Data> = {
   data: Data;
 };
 
-export type loading<Data> = {
+export type Loading<Data> = {
   isInitial: false;
   lastUpdatedAt: number;
   isLoading: true;
@@ -20,7 +27,7 @@ export type loading<Data> = {
   data?: Data;
 };
 
-export type fetching<Data> = {
+export type Fetching<Data> = {
   isInitial: false;
   lastUpdatedAt: number;
   isLoading: false;
@@ -31,7 +38,7 @@ export type fetching<Data> = {
   data?: Data;
 };
 
-export type ready<Data> = {
+export type Ready<Data> = {
   isInitial: false;
   lastUpdatedAt: number;
   isLoading: false;
@@ -42,7 +49,7 @@ export type ready<Data> = {
   data: Data;
 };
 
-export type failed<Data> = {
+export type Failed<Data> = {
   isInitial: false;
   lastUpdatedAt: number;
   isLoading: false;
@@ -55,8 +62,8 @@ export type failed<Data> = {
 };
 
 export type QueryState<Data> =
-  | initial<Data>
-  | loading<Data>
-  | fetching<Data>
-  | ready<Data>
-  | failed<Data>;
+  | Initial<Data>
+  | Loading<Data>
+  | Fetching<Data>
+  | Ready<Data>
+  | Failed<Data>;

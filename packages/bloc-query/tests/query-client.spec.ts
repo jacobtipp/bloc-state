@@ -16,6 +16,33 @@ describe('QueryClient', () => {
       queryClient.clear();
     });
 
+    it('it should handle a selector', (done) => {
+      const states: string[] = [];
+      queryClient
+        .getQuery({
+          queryKey: 'person',
+          queryFn: () => {
+            return Promise.resolve({
+              person: {
+                name: 'bob',
+                age: 21,
+              },
+            });
+          },
+          selector: (state) => state.data.person.name,
+        })
+        .pipe(take(1))
+        .subscribe({
+          next: (state) => states.push(state),
+          complete: () => {
+            const [a] = states;
+            expect(states.length).toBe(1);
+            expect(a).toBe('bob');
+            done();
+          },
+        });
+    });
+
     it('it should handle concurrent subscriptions without triggering multiple revalidations with initial data', (done) => {
       const options: GetQueryOptions<number> = {
         initialData: 0,
@@ -408,23 +435,6 @@ describe('QueryClient', () => {
     });
   });
 
-  describe('removeQuery', () => {
-    it('it should remove a query', () => {
-      const options: GetQueryOptions<number> = {
-        initialData: 0,
-        queryKey: 'count',
-        queryFn: () => Promise.resolve(getRandomInt(1, 10)),
-      };
-
-      const queryClient = new QueryClient();
-
-      queryClient.getQuery(options);
-
-      expect(queryClient.removeQuery(options.queryKey)).toBe(true);
-      expect(queryClient.removeQuery(options.queryKey)).toBe(false);
-    });
-  });
-
   describe('cancelQuery', () => {
     it('it should remove a query', async () => {
       let count = 0;
@@ -463,6 +473,23 @@ describe('QueryClient', () => {
       await delay(2000);
 
       expect(states.length).toBe(2);
+    });
+  });
+
+  describe('removeQuery', () => {
+    it('it should remove a query', () => {
+      const options: GetQueryOptions<number> = {
+        initialData: 0,
+        queryKey: 'count',
+        queryFn: () => Promise.resolve(getRandomInt(1, 10)),
+      };
+
+      const queryClient = new QueryClient();
+
+      queryClient.getQuery(options);
+
+      expect(queryClient.removeQuery(options.queryKey)).toBe(true);
+      expect(queryClient.removeQuery(options.queryKey)).toBe(false);
     });
   });
 });
