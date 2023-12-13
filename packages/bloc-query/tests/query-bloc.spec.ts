@@ -1,6 +1,11 @@
 //import { getRandomInt } from './helpers/random';
 import { take, config } from 'rxjs';
-import { GetQueryOptions, QueryBloc, SetQueryDataException } from '../src/lib';
+import {
+  GetQueryOptions,
+  QueryBloc,
+  QueryClosedException,
+  SetQueryDataException,
+} from '../src/lib';
 import { delay } from './helpers/delay';
 import { QueryFetchEvent } from '../src/lib/query-event';
 import { QueryState } from '../src/lib/query-state';
@@ -48,7 +53,7 @@ describe('QueryBloc', () => {
           try {
             bloc.getQuery();
           } catch (e) {
-            expect(e).toBeInstanceOf(Error);
+            expect(e).toBeInstanceOf(QueryClosedException);
           }
           done();
         },
