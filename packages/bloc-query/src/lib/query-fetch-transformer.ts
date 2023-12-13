@@ -1,7 +1,7 @@
 import { switchMap, Observable, EMPTY, timer, retry } from 'rxjs';
 import { EventTransformer } from '@jacobtipp/bloc';
 import { QueryBloc } from '.';
-import { FetchEvent } from './query-event';
+import { ErrorEvent, FetchEvent } from './query-event';
 
 export type FetchOptions = {
   maxRetryAttempts?: number;
@@ -34,17 +34,7 @@ export const queryFetchTransformer =
               const scalingDuration = options.scalingDuration ?? 1000;
 
               if (retryAttempt > maxRetryAttempts && !bloc.isClosed) {
-                bloc.__unsafeEmit__({
-                  status: 'isError',
-                  lastUpdatedAt: bloc.state.lastUpdatedAt,
-                  isInitial: false,
-                  isLoading: false,
-                  isFetching: false,
-                  isReady: false,
-                  isError: true,
-                  data: bloc.state.data,
-                  error,
-                });
+                bloc.add(new ErrorEvent(error));
                 return EMPTY;
               }
 
