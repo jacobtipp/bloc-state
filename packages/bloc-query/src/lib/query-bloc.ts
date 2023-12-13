@@ -1,5 +1,5 @@
 import { Bloc } from '@jacobtipp/bloc';
-import { startWith } from 'rxjs';
+import { Observable, filter, map, startWith } from 'rxjs';
 import {
   FetchEvent,
   QueryEvent,
@@ -8,7 +8,7 @@ import {
   SetQueryDataEvent,
 } from './query-event';
 import { FetchOptions, queryFetchTransformer } from './query-fetch-transformer';
-import { QueryState } from './query-state';
+import { QueryState, QueryStatus, Ready } from './query-state';
 
 export type QueryKey = string;
 
@@ -20,22 +20,27 @@ export type QueryFnOptions = {
   signal: AbortSignal;
 };
 
-export type GetQueryOptions<Data> = {
+export type GetQueryOptions<Data = unknown, Selected = QueryState<Data>> = {
   initialData?: Data;
   name?: string;
+  filterStatus?: QueryStatus;
+  selector?: (state: Ready<Data>) => Selected;
   queryKey: QueryKey;
   queryFn: (options: QueryFnOptions) => Promise<Data>;
 } & QueryOptions &
   FetchOptions;
 
-export class QueryBloc<Data = unknown> extends Bloc<
-  QueryEvent,
-  QueryState<Data>
-> {
+export class QueryBloc<
+  Data = unknown,
+  Selected = QueryState<Data>
+> extends Bloc<QueryEvent, QueryState<Data>> {
   private staleTime: number;
   private handledInitialLoad = false;
 
-  constructor(state: QueryState<Data>, options: GetQueryOptions<Data>) {
+  constructor(
+    state: QueryState<Data>,
+    options: GetQueryOptions<Data, Selected>
+  ) {
     super(state, options.name ?? options.queryKey);
     this.staleTime = options.staleTime ?? 0;
 
@@ -126,13 +131,19 @@ export class QueryBloc<Data = unknown> extends Bloc<
     return this.state.lastUpdatedAt + this.staleTime <= now;
   }
 
-  getQuery = () => {
+  getQuery = <Selected = QueryState<Data>>(
+    selector?: (state: Ready<Data>) => Selected
+  ): Observable<Selected> => {
     if (this.isClosed) {
       throw new Error('Query is closed');
     }
 
     this.add(new SubscriptionEvent());
-    return this.state$.pipe(startWith(this.state));
+    return this.state$.pipe(
+      startWith(this.state),
+      filter((state) => (selector ? state.status === 'isReady' : true)),
+      map((state) => (selector ? selector(state as Ready<Data>) : state))
+    ) as Observable<Selected>;
   };
 
   setQueryData = (set: ((old: Data) => Data) | Data) => {

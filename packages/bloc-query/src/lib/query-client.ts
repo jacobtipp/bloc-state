@@ -12,14 +12,18 @@ export type GetQueryData<Data> = string | Observable<QueryState<Data>>;
 export class QueryClient {
   private queryMap: Map<string, QueryBloc<any>> = new Map();
 
-  getQuery = <Data = unknown>(
-    options: GetQueryOptions<Data>
-  ): Observable<QueryState<Data>> => {
+  getQuery = <Data, Selected = QueryState<Data>>(
+    options: GetQueryOptions<Data, Selected>
+  ): Observable<Selected> => {
     if (!this.queryMap.has(options.queryKey)) {
-      return this.createQuery<Data>(options).getQuery();
+      return this.createQuery<Data, Selected>(options).getQuery<Selected>(
+        options.selector
+      );
     } else {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      return this.queryMap.get(options.queryKey)!.getQuery();
+      return this.queryMap
+        .get(options.queryKey)!
+        .getQuery<Selected>(options.selector);
     }
   };
 
@@ -60,7 +64,9 @@ export class QueryClient {
     return false;
   };
 
-  private createQuery<Data>(options: GetQueryOptions<Data>): QueryBloc<Data> {
+  private createQuery<Data = unknown, Selected = QueryState<Data>>(
+    options: GetQueryOptions<Data, Selected>
+  ): QueryBloc<Data, Selected> {
     if (options.initialData !== undefined) {
       const bloc = new QueryBloc(
         {
