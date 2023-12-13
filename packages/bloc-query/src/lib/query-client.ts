@@ -17,13 +17,14 @@ export class QueryClient {
   ): Observable<Selected> => {
     if (!this.queryMap.has(options.queryKey)) {
       return this.createQuery<Data, Selected>(options).getQuery<Selected>(
-        options.selector
+        options.selector,
+        options.comparator
       );
     } else {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       return this.queryMap
         .get(options.queryKey)!
-        .getQuery<Selected>(options.selector);
+        .getQuery<Selected>(options.selector, options.comparator);
     }
   };
 

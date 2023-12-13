@@ -43,6 +43,95 @@ describe('QueryClient', () => {
         });
     });
 
+    it('it should emit multiple states when no comparator is provided even if nested data has not changed', (done) => {
+      type Person = { name: string; age: number };
+      const states: Person[] = [];
+      queryClient
+        .getQuery({
+          queryKey: 'person',
+          queryFn: () => {
+            return Promise.resolve({
+              person: {
+                name: 'bob',
+                age: 21,
+              },
+            });
+          },
+          selector: (state) => state.data.person,
+        })
+        .pipe(take(2))
+        .subscribe({
+          next: (state) => {
+            states.push(state);
+          },
+          complete: () => {
+            const [a, b] = states;
+            expect(states.length).toBe(2);
+            expect(a).not.toBe(b);
+            done();
+          },
+        });
+
+      setTimeout(
+        () =>
+          queryClient.revalidateQueries({
+            queryKey: 'person',
+          }),
+        1000
+      );
+    });
+
+    it('it should emit only once with a comparator function, if two emissions have the same nested data', (done) => {
+      type Person = { name: string; age: number };
+      const states: Person[] = [];
+      let calls = 0;
+      queryClient
+        .getQuery({
+          queryKey: 'person',
+          queryFn: () => {
+            calls++;
+            return Promise.resolve({
+              person: {
+                name: 'bob',
+                age: 21,
+              },
+            });
+          },
+          selector: (state) => state.data.person,
+          comparator: (previous, current) => {
+            return previous.age === current.age;
+          },
+        })
+        .subscribe({
+          next: (state) => {
+            states.push(state);
+          },
+          complete: () => {
+            expect(states.length).toBe(1);
+            expect(calls).toBe(3);
+            done();
+          },
+        });
+
+      setTimeout(
+        () =>
+          queryClient.revalidateQueries({
+            queryKey: 'person',
+          }),
+        1000
+      );
+
+      setTimeout(
+        () =>
+          queryClient.revalidateQueries({
+            queryKey: 'person',
+          }),
+        2000
+      );
+
+      setTimeout(() => queryClient.removeQuery('person'), 2500);
+    });
+
     it('it should handle concurrent subscriptions without triggering multiple revalidations with initial data', (done) => {
       const options: GetQueryOptions<number> = {
         initialData: 0,
