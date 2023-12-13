@@ -3,8 +3,8 @@ export abstract class QueryEvent {
   name = 'QueryEvent';
 }
 
-export class FetchEvent extends QueryEvent {
-  override name = 'FetchEvent';
+export class QueryFetchEvent extends QueryEvent {
+  override name = 'QueryFetchEvent';
   constructor(
     public readonly abortController: AbortController,
     public readonly cancel = false
@@ -13,23 +13,23 @@ export class FetchEvent extends QueryEvent {
   }
 }
 
-export class RevalidateEvent extends QueryEvent {
-  override name = 'RevalidateEvent';
+export class QueryRevalidateEvent extends QueryEvent {
+  override name = 'QueryRevalidateEvent';
 }
 
-export class SubscriptionEvent extends QueryEvent {
-  override name = 'SubscriptionEvent';
+export class QuerySubscriptionEvent extends QueryEvent {
+  override name = 'QuerySubscriptionEvent';
 }
 
-export class ErrorEvent extends QueryEvent {
-  override name = 'ErrorEvent';
+export class QueryErrorEvent extends QueryEvent {
+  override name = 'QueryErrorEvent';
   constructor(public error: any) {
     super();
   }
 }
 
-export class SetQueryDataEvent<Data = unknown> extends QueryEvent {
-  override name = 'SetQueryDataEvent';
+export class QuerySetQueryDataEvent<Data = unknown> extends QueryEvent {
+  override name = 'QuerySetQueryDataEvent';
   constructor(public readonly set: ((old: Data) => Data) | Data) {
     super();
   }

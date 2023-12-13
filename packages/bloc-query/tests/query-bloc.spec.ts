@@ -2,7 +2,7 @@
 import { take, config } from 'rxjs';
 import { GetQueryOptions, QueryBloc, SetQueryDataException } from '../src/lib';
 import { delay } from './helpers/delay';
-import { FetchEvent } from '../src/lib/query-event';
+import { QueryFetchEvent } from '../src/lib/query-event';
 import { QueryState } from '../src/lib/query-state';
 
 describe('QueryBloc', () => {
@@ -348,8 +348,8 @@ describe('QueryBloc', () => {
 
       expect(signal.aborted).toBe(false);
 
-      bloc.add(new FetchEvent(abortController));
-      bloc.add(new FetchEvent(new AbortController()));
+      bloc.add(new QueryFetchEvent(abortController));
+      bloc.add(new QueryFetchEvent(new AbortController()));
 
       await delay(1000);
       expect(signal.aborted).toBe(true);

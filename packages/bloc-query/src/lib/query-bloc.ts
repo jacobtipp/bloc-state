@@ -8,12 +8,12 @@ import {
   startWith,
 } from 'rxjs';
 import {
-  FetchEvent,
+  QueryFetchEvent,
   QueryEvent,
-  SubscriptionEvent,
-  RevalidateEvent,
-  SetQueryDataEvent,
-  ErrorEvent,
+  QuerySubscriptionEvent,
+  QueryRevalidateEvent,
+  QuerySetQueryDataEvent,
+  QueryErrorEvent,
 } from './query-event';
 import { FetchOptions, queryFetchTransformer } from './query-fetch-transformer';
 import { QueryState, Ready } from './query-state';
@@ -52,18 +52,18 @@ export class QueryBloc<
     super(state, options.name ?? options.queryKey);
     this.staleTime = options.staleTime ?? 0;
 
-    this.on(SubscriptionEvent, (_event, _emit) => {
+    this.on(QuerySubscriptionEvent, (_event, _emit) => {
       if (this.state.status === 'isLoading' && !this.handledInitialLoad) {
         this.handledInitialLoad = true;
-        this.add(new FetchEvent(new AbortController()));
+        this.add(new QueryFetchEvent(new AbortController()));
       }
 
       if (this.state.isReady && this.isStale) {
-        this.add(new RevalidateEvent());
+        this.add(new QueryRevalidateEvent());
       }
     });
 
-    this.on(RevalidateEvent, (_event, emit) => {
+    this.on(QueryRevalidateEvent, (_event, emit) => {
       emit({
         status: 'isFetching',
         lastUpdatedAt: this.state.lastUpdatedAt,
@@ -75,12 +75,12 @@ export class QueryBloc<
         data: this.state.data,
       });
 
-      this.add(new FetchEvent(new AbortController()));
+      this.add(new QueryFetchEvent(new AbortController()));
     });
 
-    this.on(SetQueryDataEvent, (event, emit) => {
+    this.on(QuerySetQueryDataEvent, (event, emit) => {
       let newData: Data;
-      const setEvent = event as SetQueryDataEvent<Data>;
+      const setEvent = event as QuerySetQueryDataEvent<Data>;
       const set = setEvent.set;
       if (typeof set === 'function') {
         if (this.state.data === undefined) {
@@ -106,7 +106,7 @@ export class QueryBloc<
       });
     });
 
-    this.on(ErrorEvent, (event, emit) => {
+    this.on(QueryErrorEvent, (event, emit) => {
       emit({
         status: 'isError',
         lastUpdatedAt: this.state.lastUpdatedAt,
@@ -121,7 +121,7 @@ export class QueryBloc<
     });
 
     this.on(
-      FetchEvent,
+      QueryFetchEvent,
       async (event, emit) => {
         if (event.cancel) return;
         const data = await options.queryFn({
@@ -162,7 +162,7 @@ export class QueryBloc<
       throw new QueryClosedException('Query is closed');
     }
 
-    this.add(new SubscriptionEvent());
+    this.add(new QuerySubscriptionEvent());
 
     return this.state$.pipe(
       startWith(this.state),
@@ -175,15 +175,15 @@ export class QueryBloc<
   };
 
   setQueryData = (set: ((old: Data) => Data) | Data) => {
-    this.add(new SetQueryDataEvent(set));
+    this.add(new QuerySetQueryDataEvent(set));
   };
 
   cancelQuery = () => {
-    this.add(new FetchEvent(new AbortController(), true));
+    this.add(new QueryFetchEvent(new AbortController(), true));
   };
 
   revalidateQuery = () => {
-    this.add(new RevalidateEvent());
+    this.add(new QueryRevalidateEvent());
   };
 }
 
