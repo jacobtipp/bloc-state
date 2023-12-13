@@ -8,7 +8,7 @@ import {
   SetQueryDataEvent,
 } from './query-event';
 import { FetchOptions, queryFetchTransformer } from './query-fetch-transformer';
-import { QueryState, QueryStatus, Ready } from './query-state';
+import { QueryState, Ready } from './query-state';
 
 export type QueryKey = string;
 
@@ -23,7 +23,6 @@ export type QueryFnOptions = {
 export type GetQueryOptions<Data = unknown, Selected = QueryState<Data>> = {
   initialData?: Data;
   name?: string;
-  filterStatus?: QueryStatus;
   selector?: (state: Ready<Data>) => Selected;
   queryKey: QueryKey;
   queryFn: (options: QueryFnOptions) => Promise<Data>;

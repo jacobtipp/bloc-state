@@ -1,10 +1,3 @@
-export type QueryStatus =
-  | 'isInitial'
-  | 'isLoading'
-  | 'isFetching'
-  | 'isReady'
-  | 'isError';
-
 export type Initial<Data> = {
   isInitial: true;
   lastUpdatedAt: number;
