@@ -21,6 +21,13 @@ export class SubscriptionEvent extends QueryEvent {
   override name = 'SubscriptionEvent';
 }
 
+export class ErrorEvent extends QueryEvent {
+  override name = 'ErrorEvent';
+  constructor(public error: any) {
+    super();
+  }
+}
+
 export class SetQueryDataEvent<Data = unknown> extends QueryEvent {
   override name = 'SetQueryDataEvent';
   constructor(public readonly set: ((old: Data) => Data) | Data) {

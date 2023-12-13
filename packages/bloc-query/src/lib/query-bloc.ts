@@ -13,6 +13,7 @@ import {
   SubscriptionEvent,
   RevalidateEvent,
   SetQueryDataEvent,
+  ErrorEvent,
 } from './query-event';
 import { FetchOptions, queryFetchTransformer } from './query-fetch-transformer';
 import { QueryState, Ready } from './query-state';
@@ -102,6 +103,20 @@ export class QueryBloc<
         isReady: true,
         isError: false,
         data: newData,
+      });
+    });
+
+    this.on(ErrorEvent, (event, emit) => {
+      emit({
+        status: 'isError',
+        lastUpdatedAt: this.state.lastUpdatedAt,
+        isInitial: false,
+        isLoading: false,
+        isFetching: false,
+        isReady: false,
+        isError: true,
+        data: this.state.data,
+        error: event.error,
       });
     });
 
