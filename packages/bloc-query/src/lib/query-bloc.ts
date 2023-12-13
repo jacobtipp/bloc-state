@@ -1,5 +1,12 @@
 import { Bloc } from '@jacobtipp/bloc';
-import { Observable, filter, map, startWith } from 'rxjs';
+import {
+  Observable,
+  OperatorFunction,
+  distinctUntilChanged,
+  filter,
+  map,
+  startWith,
+} from 'rxjs';
 import {
   FetchEvent,
   QueryEvent,
@@ -24,6 +31,7 @@ export type GetQueryOptions<Data = unknown, Selected = QueryState<Data>> = {
   initialData?: Data;
   name?: string;
   selector?: (state: Ready<Data>) => Selected;
+  comparator?: (previous: Selected, current: Selected) => boolean;
   queryKey: QueryKey;
   queryFn: (options: QueryFnOptions) => Promise<Data>;
 } & QueryOptions &
@@ -131,18 +139,23 @@ export class QueryBloc<
   }
 
   getQuery = <Selected = QueryState<Data>>(
-    selector?: (state: Ready<Data>) => Selected
+    selector?: (state: Ready<Data>) => Selected,
+    comparer?: (previous: Selected, current: Selected) => boolean
   ): Observable<Selected> => {
     if (this.isClosed) {
       throw new Error('Query is closed');
     }
 
     this.add(new SubscriptionEvent());
+
     return this.state$.pipe(
       startWith(this.state),
       filter((state) => (selector ? state.status === 'isReady' : true)),
-      map((state) => (selector ? selector(state as Ready<Data>) : state))
-    ) as Observable<Selected>;
+      map((state) =>
+        selector ? selector(state as Ready<Data>) : state
+      ) as OperatorFunction<QueryState<Data>, Selected>,
+      distinctUntilChanged(comparer)
+    );
   };
 
   setQueryData = (set: ((old: Data) => Data) | Data) => {
