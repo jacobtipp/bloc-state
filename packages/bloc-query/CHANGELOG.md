@@ -1,3 +1,16 @@
+## [2.2.0-dev-bloc-query.2](https://github.com/jacobtipp/bloc-state/compare/bloc-query-v2.2.0-dev-bloc-query.1...bloc-query-v2.2.0-dev-bloc-query.2) (2023-12-13)
+
+
+### Features
+
+* **bloc-query:** ✨ add comparator function option to getQuery ([9b5f269](https://github.com/jacobtipp/bloc-state/commit/9b5f269cc9d20547126482aae49d9554f31b592b))
+
+
+### Code Refactoring
+
+* **bloc-query:** ♻️ add semantic errors for QueryBloc ([7dd2c84](https://github.com/jacobtipp/bloc-state/commit/7dd2c8419ab74aea42849d7eb395cadbc74ed6da))
+* **bloc-query:** ♻️ remove filter status option ([a177c66](https://github.com/jacobtipp/bloc-state/commit/a177c66b984f28ddaaea229cc9245ce2133a101e))
+
 ## [2.2.0-dev-bloc-query.1](https://github.com/jacobtipp/bloc-state/compare/bloc-query-v2.1.2...bloc-query-v2.2.0-dev-bloc-query.1) (2023-12-13)
 
 
