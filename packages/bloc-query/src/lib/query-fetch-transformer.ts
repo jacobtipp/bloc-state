@@ -1,4 +1,4 @@
-import { switchMap, Observable, retryWhen, mergeMap, EMPTY, timer } from 'rxjs';
+import { switchMap, Observable, EMPTY, timer, retry } from 'rxjs';
 import { EventTransformer } from '@jacobtipp/bloc';
 import { QueryBloc } from '.';
 import { FetchEvent } from './query-event';
@@ -26,36 +26,34 @@ export const queryFetchTransformer =
     return events$.pipe(switchMap(abortControllerMapper)).pipe(
       switchMap((event) =>
         mapper(event).pipe(
-          retryWhen((errors) => {
-            return errors.pipe(
-              mergeMap((error, i) => {
-                const retryAttempt = i + 1;
-                const maxRetryAttempts = options.maxRetryAttempts ?? 1;
-                const retryDuration = options.retryDuration ?? 1000;
-                const scalingDuration = options.scalingDuration ?? 1000;
+          retry({
+            delay: (error, i) => {
+              const retryAttempt = i;
+              const maxRetryAttempts = options.maxRetryAttempts ?? 1;
+              const retryDuration = options.retryDuration ?? 1000;
+              const scalingDuration = options.scalingDuration ?? 1000;
 
-                if (retryAttempt > maxRetryAttempts && !bloc.isClosed) {
-                  bloc.__unsafeEmit__({
-                    status: 'isError',
-                    lastUpdatedAt: bloc.state.lastUpdatedAt,
-                    isInitial: false,
-                    isLoading: false,
-                    isFetching: false,
-                    isReady: false,
-                    isError: true,
-                    data: bloc.state.data,
-                    error,
-                  });
-                  return EMPTY;
-                }
+              if (retryAttempt > maxRetryAttempts && !bloc.isClosed) {
+                bloc.__unsafeEmit__({
+                  status: 'isError',
+                  lastUpdatedAt: bloc.state.lastUpdatedAt,
+                  isInitial: false,
+                  isLoading: false,
+                  isFetching: false,
+                  isReady: false,
+                  isError: true,
+                  data: bloc.state.data,
+                  error,
+                });
+                return EMPTY;
+              }
 
-                const duration = options.retryDuration
-                  ? retryDuration
-                  : retryAttempt * scalingDuration;
+              const duration = options.retryDuration
+                ? retryDuration
+                : retryAttempt * scalingDuration;
 
-                return timer(duration);
-              })
-            );
+              return timer(duration);
+            },
           })
         )
       )
