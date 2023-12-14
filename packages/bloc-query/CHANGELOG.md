@@ -1,3 +1,10 @@
+## [2.2.1-dev-bloc-query.1](https://github.com/jacobtipp/bloc-state/compare/bloc-query-v2.2.0...bloc-query-v2.2.1-dev-bloc-query.1) (2023-12-14)
+
+
+### Bug Fixes
+
+* **bloc-query:** 🐛 getQueryData should reject if a query is in a failed state ([a156941](https://github.com/jacobtipp/bloc-state/commit/a156941943f29b46fb3b3754e866f54d03c5f1e9))
+
 ## [2.2.0](https://github.com/jacobtipp/bloc-state/compare/bloc-query-v2.1.2...bloc-query-v2.2.0) (2023-12-14)
 
 
