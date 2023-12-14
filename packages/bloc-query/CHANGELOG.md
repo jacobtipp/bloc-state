@@ -1,3 +1,22 @@
+## [2.2.0](https://github.com/jacobtipp/bloc-state/compare/bloc-query-v2.1.2...bloc-query-v2.2.0) (2023-12-14)
+
+
+### Features
+
+* **bloc-query:** ✨ add comparator function option to getQuery ([1c9a90b](https://github.com/jacobtipp/bloc-state/commit/1c9a90b8aceae19d78f64d04f756481ebba4ce4b))
+* **bloc-query:** ✨ add retryWhen function option to getQuery ([c85868d](https://github.com/jacobtipp/bloc-state/commit/c85868d6b7bd76b84506e5ba44847d2d6a414c9a))
+* **bloc-query:** ✨ add selector option to getQuery ([f81af29](https://github.com/jacobtipp/bloc-state/commit/f81af293d475e9b340946824c22c7bf9dfa1f418))
+
+
+### Code Refactoring
+
+* **bloc-query:** ♻️ add semantic errors for QueryBloc ([13b4eee](https://github.com/jacobtipp/bloc-state/commit/13b4eee0429d2eb128eab23632f6bccfff5881e6))
+* **bloc-query:** ♻️ infer Data generic to firstValueFrom inside getQueryData ([e579d6d](https://github.com/jacobtipp/bloc-state/commit/e579d6ded8ed47ec95a20ecaa3830d972950c90b))
+* **bloc-query:** ♻️ prefix all query events with Query ([59690d0](https://github.com/jacobtipp/bloc-state/commit/59690d0a4a42234b8949b50fa45eed827b50f719))
+* **bloc-query:** ♻️ query errors are now processed by an ErrorEvent handler ([4ad36ff](https://github.com/jacobtipp/bloc-state/commit/4ad36ff4c4535ee7a1fda177e4d61048eeb6b932))
+* **bloc-query:** ♻️ remove filter status option ([5ae414e](https://github.com/jacobtipp/bloc-state/commit/5ae414ebcc2396b293c110e7ba5b0942aa9899da))
+* **bloc-query:** ♻️ replace deprecated rxjs retryWhen operator with retry operator ([beaa292](https://github.com/jacobtipp/bloc-state/commit/beaa2921dc38bdf9c19b10cc8fec30e5960b571a))
+
 ## [2.2.0-dev-bloc-query.3](https://github.com/jacobtipp/bloc-state/compare/bloc-query-v2.2.0-dev-bloc-query.2...bloc-query-v2.2.0-dev-bloc-query.3) (2023-12-14)
 
 
