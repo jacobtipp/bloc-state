@@ -7,6 +7,7 @@ import {
   SetQueryDataException,
 } from '../src/lib';
 import { delay } from './helpers/delay';
+import { TestApiError } from './helpers/test-error';
 import { QueryFetchEvent } from '../src/lib/query-event';
 import { QueryState } from '../src/lib/query-state';
 
@@ -323,13 +324,6 @@ describe('QueryBloc', () => {
     }, 13000);
 
     it('should handle error retries with custom retryWhen function', (done) => {
-      class TestApiError extends Error {
-        constructor(message: string) {
-          super(message);
-          Object.setPrototypeOf(this, TestApiError.prototype);
-        }
-      }
-
       const queryFn = () => {
         calls++;
         throw new TestApiError('Retry');
