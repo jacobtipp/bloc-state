@@ -321,6 +321,70 @@ describe('QueryBloc', () => {
           },
         });
     }, 13000);
+
+    it('should handle error retries with custom retryWhen function', (done) => {
+      class TestApiError extends Error {
+        constructor(message: string) {
+          super(message);
+          Object.setPrototypeOf(this, TestApiError.prototype);
+        }
+      }
+
+      const queryFn = () => {
+        calls++;
+        throw new TestApiError('Retry');
+      };
+
+      maxRetryAttempts = 3;
+
+      const options: GetQueryOptions<number> = {
+        initialData: 0,
+        queryFn,
+        queryKey: '0',
+        retryWhen: (error, _attempts) => {
+          if (error instanceof TestApiError) {
+            return {
+              maxRetryAttempts,
+              retryDuration: 1000,
+            };
+          }
+
+          return;
+        },
+      };
+      bloc = new QueryBloc<number>(
+        {
+          status: 'isInitial',
+          lastUpdatedAt: Date.now(),
+          isInitial: true,
+          isLoading: false,
+          isFetching: false,
+          isError: false,
+          isReady: true,
+          data: 0,
+        },
+        options
+      );
+
+      const states: QueryState<number>[] = [];
+
+      expect(bloc).toBeDefined();
+      expect(bloc.state.data).toBe(0);
+
+      bloc.getQuery().subscribe({
+        next: (state) => states.push(state),
+        complete: () => {
+          const [a, b] = states;
+          expect(states.length).toBe(2);
+          expect(calls).toBe(maxRetryAttempts + 1);
+          expect(a.status).toBe('isFetching');
+          expect(b.status).toBe('isError');
+          done();
+        },
+      });
+
+      setTimeout(() => bloc.close(), 4000);
+    });
   });
 
   describe('abortSignal', () => {
