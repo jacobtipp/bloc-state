@@ -1,13 +1,15 @@
 import { Observable, filter, firstValueFrom, map } from 'rxjs';
 
 import { GetQueryOptions, QueryBloc, QueryKey } from './query-bloc';
-import { QueryState } from './query-state';
+import { Failed, QueryState, Ready } from './query-state';
 export type RevalidateQueryOptions = {
   queryKey?: QueryKey;
   predicate?: (queryKey: QueryKey) => boolean;
 };
 
 export type GetQueryData<Data> = string | Observable<QueryState<Data>>;
+
+export type ReadyOrFailed<Data> = Ready<Data> | Failed<Data>;
 
 export class QueryClient {
   private queryMap: Map<string, QueryBloc<any>> = new Map();
@@ -37,8 +39,14 @@ export class QueryClient {
     if (query) {
       return firstValueFrom<Data>(
         query.pipe(
-          filter((state) => state.isReady),
-          map((state) => state.data)
+          filter(
+            (state: QueryState<Data>): state is ReadyOrFailed<Data> =>
+              state.isReady || state.isError
+          ),
+          map((state) => {
+            if (state.isError) throw state.error;
+            return state.data;
+          })
         )
       );
     }

@@ -7,6 +7,7 @@ import { filter, take } from 'rxjs';
 import { delay } from './helpers/delay';
 import { getRandomInt } from './helpers/random';
 import { QueryState } from '../src/lib/query-state';
+import { TestApiError } from './helpers/test-error';
 
 describe('QueryClient', () => {
   const queryClient = new QueryClient();
@@ -406,6 +407,28 @@ describe('QueryClient', () => {
       queryClient.getQuery(options);
 
       expect(await queryClient.getQueryData<number>(options.queryKey)).toBe(1);
+
+      queryClient.clear();
+    });
+
+    it('it should reject with an error if an error is thrown', async () => {
+      const options: GetQueryOptions<number> = {
+        queryKey: 'count',
+        queryFn: async () => {
+          await delay(1000);
+          throw new TestApiError('Test Error');
+        },
+      };
+
+      const queryClient = new QueryClient();
+
+      queryClient.getQuery(options);
+
+      try {
+        await queryClient.getQueryData<number>(options.queryKey);
+      } catch (e) {
+        expect(e).toBeInstanceOf(TestApiError);
+      }
 
       queryClient.clear();
     });
