@@ -2,11 +2,18 @@ import { switchMap, Observable, EMPTY, timer, retry } from 'rxjs';
 import { EventTransformer } from '@jacobtipp/bloc';
 import { QueryBloc, QueryErrorEvent, QueryFetchEvent } from '.';
 
-export type FetchOptions = {
+export type RetryOptions = {
   maxRetryAttempts?: number;
   scalingDuration?: number;
   retryDuration?: number;
 };
+
+export type FetchOptions = {
+  retryWhen?: (
+    error: unknown,
+    attemptCount: number
+  ) => RetryOptions | undefined;
+} & RetryOptions;
 
 const abortControllerMapper = (event: QueryFetchEvent) =>
   new Observable<QueryFetchEvent>((subscriber) => {
@@ -28,20 +35,42 @@ export const queryFetchTransformer =
           retry({
             delay: (error, i) => {
               const retryAttempt = i;
-              const maxRetryAttempts = options.maxRetryAttempts ?? 1;
-              const retryDuration = options.retryDuration ?? 1000;
-              const scalingDuration = options.scalingDuration ?? 1000;
+
+              const defaultRetryOptions: Required<RetryOptions> = {
+                maxRetryAttempts: 1,
+                retryDuration: 1000,
+                scalingDuration: 1000,
+              };
+
+              const retryWhenOptions = options.retryWhen
+                ? options.retryWhen(error, retryAttempt)
+                : {};
+
+              const maxRetryAttempts =
+                retryWhenOptions?.maxRetryAttempts ??
+                options.maxRetryAttempts ??
+                defaultRetryOptions.maxRetryAttempts;
+              const scalingDuration =
+                retryWhenOptions?.scalingDuration ??
+                options.scalingDuration ??
+                defaultRetryOptions.scalingDuration;
+              const retryDuration =
+                retryWhenOptions?.retryDuration ??
+                options.retryDuration ??
+                defaultRetryOptions.retryDuration;
 
               if (retryAttempt > maxRetryAttempts && !bloc.isClosed) {
                 bloc.add(new QueryErrorEvent(error));
                 return EMPTY;
               }
+              const useRetryDuration =
+                retryWhenOptions?.retryDuration ?? options.retryDuration;
 
-              const duration = options.retryDuration
-                ? retryDuration
-                : retryAttempt * scalingDuration;
-
-              return timer(duration);
+              return timer(
+                useRetryDuration
+                  ? retryDuration
+                  : retryAttempt * scalingDuration
+              );
             },
           })
         )

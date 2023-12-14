@@ -143,6 +143,7 @@ export class QueryBloc<
           maxRetryAttempts: options.maxRetryAttempts,
           retryDuration: options.retryDuration,
           scalingDuration: options.scalingDuration,
+          retryWhen: options.retryWhen,
         },
         this
       )
