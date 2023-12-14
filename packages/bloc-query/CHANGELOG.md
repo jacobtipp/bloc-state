@@ -1,3 +1,17 @@
+## [2.2.0-dev-bloc-query.3](https://github.com/jacobtipp/bloc-state/compare/bloc-query-v2.2.0-dev-bloc-query.2...bloc-query-v2.2.0-dev-bloc-query.3) (2023-12-14)
+
+
+### Features
+
+* **bloc-query:** ✨ add retryWhen function option to getQuery ([5746ccb](https://github.com/jacobtipp/bloc-state/commit/5746ccbdd465c2a6cf86a376ff16d479e6792981))
+
+
+### Code Refactoring
+
+* **bloc-query:** ♻️ prefix all query events with Query ([7941edf](https://github.com/jacobtipp/bloc-state/commit/7941edfbf4f25226f85b2cc28da624da6236afc9))
+* **bloc-query:** ♻️ query errors are now processed by an ErrorEvent handler ([411da18](https://github.com/jacobtipp/bloc-state/commit/411da187db056ce619e19fc7c65c677d3b544692))
+* **bloc-query:** ♻️ replace deprecated rxjs retryWhen operator with retry operator ([549ed20](https://github.com/jacobtipp/bloc-state/commit/549ed209e0b9dfcbf0031cb0c13f8db15ca4cc63))
+
 ## [2.2.0-dev-bloc-query.2](https://github.com/jacobtipp/bloc-state/compare/bloc-query-v2.2.0-dev-bloc-query.1...bloc-query-v2.2.0-dev-bloc-query.2) (2023-12-13)
 
 
