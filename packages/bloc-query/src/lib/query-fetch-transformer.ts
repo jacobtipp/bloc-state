@@ -2,28 +2,13 @@ import { switchMap, Observable, EMPTY, timer, retry } from 'rxjs';
 import { EventTransformer } from '@jacobtipp/bloc';
 import { QueryBloc, QueryErrorEvent, QueryFetchEvent } from '.';
 
-/**
- * Represents options for configuring retry behavior during fetch operations.
- * @typedef {Object} RetryOptions
- * @property {number} [maxRetryAttempts] - The maximum number of retry attempts.
- * @property {number} [scalingDuration] - The duration (in milliseconds) used for scaling retry attempts.
- * @property {number} [retryDuration] - The duration (in milliseconds) for each retry attempt.
- */
 export type RetryOptions = {
   maxRetryAttempts?: number;
   scalingDuration?: number;
   retryDuration?: number;
 };
 
-/**
- * Represents options for configuring fetch behavior, including retry options.
- * @typedef {Object} FetchOptions
- * @property {(error: unknown, attemptCount: number) => RetryOptions | undefined} [retryWhen] - A function to determine retry options based on the error and attempt count.
- * @property {number} [maxRetryAttempts] - The maximum number of retry attempts.
- * @property {number} [scalingDuration] - The duration (in milliseconds) used for scaling retry attempts.
- * @property {number} [retryDuration] - The duration (in milliseconds) for each retry attempt.
- */
-export type FetchOptions = {
+export type FetchTransformerOptions = {
   retryWhen?: (
     error: unknown,
     attemptCount: number
@@ -52,7 +37,7 @@ const abortControllerMapper = (event: QueryFetchEvent) =>
  */
 export const queryFetchTransformer =
   <Data>(
-    options: FetchOptions,
+    options: FetchTransformerOptions,
     bloc: QueryBloc<Data>
   ): EventTransformer<QueryFetchEvent> =>
   (events$, mapper) => {

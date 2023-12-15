@@ -1,31 +1,20 @@
 import { Observable, filter, firstValueFrom, map } from 'rxjs';
 
-import { GetQueryOptions, QueryBloc, QueryKey } from './query-bloc';
+import {
+  QueryBloc,
+  QueryKey,
+  QueryBlocOptions,
+  GetQueryOptions,
+} from './query-bloc';
 import { Failed, QueryState, Ready } from './query-state';
 
-/**
- * Represents options for revalidating queries.
- * @typedef {Object} RevalidateQueryOptions
- * @property {QueryKey} [queryKey] - The key of the query to revalidate.
- * @property {(queryKey: QueryKey) => boolean} [predicate] - A predicate function to determine which queries to revalidate.
- */
 export type RevalidateQueryOptions = {
   queryKey?: QueryKey;
   predicate?: (queryKey: QueryKey) => boolean;
 };
 
-/**
- * Represents the type of data returned by a query.
- * @template Data - The type of the data returned by the query.
- * @typedef {string | Observable<QueryState<Data>>} GetQueryData
- */
 export type GetQueryData<Data> = string | Observable<QueryState<Data>>;
 
-/**
- * Represents the union type of `Ready` and `Failed` query states.
- * @template Data - The type of the data returned by the query.
- * @typedef {Ready<Data> | Failed<Data>} ReadyOrFailed
- */
 export type ReadyOrFailed<Data> = Ready<Data> | Failed<Data>;
 
 /**
@@ -50,7 +39,7 @@ export class QueryClient {
     options: GetQueryOptions<Data, Selected>
   ): Observable<Selected> => {
     if (!this.queryMap.has(options.queryKey)) {
-      return this.createQuery<Data, Selected>(options).getQuery<Selected>(
+      return this.createQuery<Data>(options).getQuery<Selected>(
         options.selector,
         options.comparator
       );
@@ -69,7 +58,9 @@ export class QueryClient {
    * @returns {Promise<Data>} - A promise that resolves to the query data.
    * @throws {QueryNotFoundException} - If the query does not exist in the QueryClient.
    */
-  getQueryData = async <Data = unknown>(keyOrQuery: GetQueryData<Data>) => {
+  getQueryData = async <Data = unknown>(
+    keyOrQuery: GetQueryData<Data>
+  ): Promise<Data> => {
     const query =
       typeof keyOrQuery === 'string'
         ? this.queryMap.get(keyOrQuery)?.getQuery()
@@ -120,9 +111,9 @@ export class QueryClient {
     return false;
   };
 
-  private createQuery<Data = unknown, Selected = QueryState<Data>>(
-    options: GetQueryOptions<Data, Selected>
-  ): QueryBloc<Data, Selected> {
+  private createQuery<Data = unknown>(
+    options: QueryBlocOptions<Data>
+  ): QueryBloc<Data> {
     if (options.initialData !== undefined) {
       const bloc = new QueryBloc(
         {
@@ -163,7 +154,7 @@ export class QueryClient {
    * Gets an array of all query keys registered in the QueryClient.
    * @returns {Array<QueryKey>} - An array of query keys.
    */
-  getQueryKeys = () => {
+  getQueryKeys = (): Array<QueryKey> => {
     return Array.from(this.queryMap.keys());
   };
 
