@@ -1,3 +1,15 @@
+## [2.2.1](https://github.com/jacobtipp/bloc-state/compare/bloc-query-v2.2.0...bloc-query-v2.2.1) (2023-12-15)
+
+
+### Bug Fixes
+
+* **bloc-query:** 🐛 getQueryData should reject if a query is in a failed state ([a22e948](https://github.com/jacobtipp/bloc-state/commit/a22e94887578ab9f01c07214d454c011a07af526))
+
+
+### Code Refactoring
+
+* **bloc-query:** ♻️ add private QueryBloc event handler methods ([de85940](https://github.com/jacobtipp/bloc-state/commit/de85940805e666848559867f125379a40f601fc6))
+
 ## [2.2.1-dev-bloc-query.2](https://github.com/jacobtipp/bloc-state/compare/bloc-query-v2.2.1-dev-bloc-query.1...bloc-query-v2.2.1-dev-bloc-query.2) (2023-12-15)
 
 
