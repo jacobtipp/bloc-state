@@ -67,7 +67,8 @@ export class QueryBloc<Data = unknown> extends Bloc<
     state: QueryState<Data>,
     private options: QueryBlocOptions<Data>
   ) {
-    super(state, options.name ?? options.queryKey);
+    const name = `QueryBloc - ${options.name ?? options.queryKey}`;
+    super(state, name);
     this.staleTime = options.staleTime ?? 0;
 
     this.on(QuerySubscriptionEvent, this.onQuerySubscription);
