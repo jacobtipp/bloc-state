@@ -1,3 +1,10 @@
+## [2.2.1-dev-bloc-query.2](https://github.com/jacobtipp/bloc-state/compare/bloc-query-v2.2.1-dev-bloc-query.1...bloc-query-v2.2.1-dev-bloc-query.2) (2023-12-15)
+
+
+### Code Refactoring
+
+* **bloc-query:** ♻️ add private QueryBloc event handler methods ([c8047d0](https://github.com/jacobtipp/bloc-state/commit/c8047d0244b36dfac17bdd7ec1128b197656ab5c))
+
 ## [2.2.1-dev-bloc-query.1](https://github.com/jacobtipp/bloc-state/compare/bloc-query-v2.2.0...bloc-query-v2.2.1-dev-bloc-query.1) (2023-12-14)
 
 
