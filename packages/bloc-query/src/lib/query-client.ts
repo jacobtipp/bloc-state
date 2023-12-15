@@ -2,18 +2,50 @@ import { Observable, filter, firstValueFrom, map } from 'rxjs';
 
 import { GetQueryOptions, QueryBloc, QueryKey } from './query-bloc';
 import { Failed, QueryState, Ready } from './query-state';
+
+/**
+ * Represents options for revalidating queries.
+ * @typedef {Object} RevalidateQueryOptions
+ * @property {QueryKey} [queryKey] - The key of the query to revalidate.
+ * @property {(queryKey: QueryKey) => boolean} [predicate] - A predicate function to determine which queries to revalidate.
+ */
 export type RevalidateQueryOptions = {
   queryKey?: QueryKey;
   predicate?: (queryKey: QueryKey) => boolean;
 };
 
+/**
+ * Represents the type of data returned by a query.
+ * @template Data - The type of the data returned by the query.
+ * @typedef {string | Observable<QueryState<Data>>} GetQueryData
+ */
 export type GetQueryData<Data> = string | Observable<QueryState<Data>>;
 
+/**
+ * Represents the union type of `Ready` and `Failed` query states.
+ * @template Data - The type of the data returned by the query.
+ * @typedef {Ready<Data> | Failed<Data>} ReadyOrFailed
+ */
 export type ReadyOrFailed<Data> = Ready<Data> | Failed<Data>;
 
+/**
+ * Represents a client for managing and interacting with queries.
+ */
 export class QueryClient {
+  /**
+   * The map containing the registered queries.
+   * @type {Map<string, QueryBloc<any>>}
+   * @private
+   */
   private queryMap: Map<string, QueryBloc<any>> = new Map();
 
+  /**
+   * Gets the observable for a query or creates a new query if it doesn't exist.
+   * @template Data - The type of the data returned by the query.
+   * @template Selected - The type of the selected data.
+   * @param {GetQueryOptions<Data, Selected>} options - The options for the query.
+   * @returns {Observable<Selected>} - An observable for the selected data.
+   */
   getQuery = <Data, Selected = QueryState<Data>>(
     options: GetQueryOptions<Data, Selected>
   ): Observable<Selected> => {
@@ -30,6 +62,13 @@ export class QueryClient {
     }
   };
 
+  /**
+   * Gets the data for a query.
+   * @template Data - The type of the data returned by the query.
+   * @param {string | Observable<QueryState<Data>>} keyOrQuery - The key or observable of the query.
+   * @returns {Promise<Data>} - A promise that resolves to the query data.
+   * @throws {QueryNotFoundException} - If the query does not exist in the QueryClient.
+   */
   getQueryData = async <Data = unknown>(keyOrQuery: GetQueryData<Data>) => {
     const query =
       typeof keyOrQuery === 'string'
@@ -56,6 +95,9 @@ export class QueryClient {
     );
   };
 
+  /**
+   * Clears all registered queries and closes them.
+   */
   clear = () => {
     this.queryMap.forEach((query) => {
       query.close();
@@ -63,6 +105,11 @@ export class QueryClient {
     this.queryMap.clear();
   };
 
+  /**
+   * Removes a query from the QueryClient.
+   * @param {QueryKey} key - The key of the query to be removed.
+   * @returns {boolean} - Returns true if the query was successfully removed, false otherwise.
+   */
   removeQuery = (key: QueryKey): boolean => {
     if (this.queryMap.has(key)) {
       const bloc = this.queryMap.get(key);
@@ -112,10 +159,20 @@ export class QueryClient {
     }
   }
 
+  /**
+   * Gets an array of all query keys registered in the QueryClient.
+   * @returns {Array<QueryKey>} - An array of query keys.
+   */
   getQueryKeys = () => {
     return Array.from(this.queryMap.keys());
   };
 
+  /**
+   * Sets new data for a query.
+   * @template Data - The type of the data returned by the query.
+   * @param {string} queryKey - The key of the query to update.
+   * @param {((old: Data) => Data) | Data} set - The new data or a function to update the old data.
+   */
   setQueryData = <Data>(
     queryKey: string,
     set: ((old: Data) => Data) | Data
@@ -126,6 +183,10 @@ export class QueryClient {
     }
   };
 
+  /**
+   * Revalidates all or selected queries.
+   * @param {RevalidateQueryOptions} [options] - Options for revalidating queries.
+   */
   revalidateQueries = (options?: RevalidateQueryOptions) => {
     const predicate = options?.predicate;
     const queryKey = options?.queryKey;
@@ -140,12 +201,24 @@ export class QueryClient {
     });
   };
 
+  /**
+   * Cancels an ongoing fetch operation for a query.
+   * @param {string} queryKey - The key of the query to cancel.
+   */
   cancelQuery = (queryKey: string) => {
     this.queryMap.get(queryKey)?.cancelQuery();
   };
 }
 
+/**
+ * Represents an exception thrown when a query is not found in the QueryClient.
+ * @extends {Error}
+ */
 export class QueryNotFoundException extends Error {
+  /**
+   * Creates a new QueryNotFoundException instance.
+   * @param {string} message - The error message.
+   */
   constructor(message: string) {
     super(message);
     Object.setPrototypeOf(this, QueryNotFoundException.prototype);

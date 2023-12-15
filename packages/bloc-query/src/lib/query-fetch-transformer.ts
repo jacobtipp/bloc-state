@@ -2,12 +2,27 @@ import { switchMap, Observable, EMPTY, timer, retry } from 'rxjs';
 import { EventTransformer } from '@jacobtipp/bloc';
 import { QueryBloc, QueryErrorEvent, QueryFetchEvent } from '.';
 
+/**
+ * Represents options for configuring retry behavior during fetch operations.
+ * @typedef {Object} RetryOptions
+ * @property {number} [maxRetryAttempts] - The maximum number of retry attempts.
+ * @property {number} [scalingDuration] - The duration (in milliseconds) used for scaling retry attempts.
+ * @property {number} [retryDuration] - The duration (in milliseconds) for each retry attempt.
+ */
 export type RetryOptions = {
   maxRetryAttempts?: number;
   scalingDuration?: number;
   retryDuration?: number;
 };
 
+/**
+ * Represents options for configuring fetch behavior, including retry options.
+ * @typedef {Object} FetchOptions
+ * @property {(error: unknown, attemptCount: number) => RetryOptions | undefined} [retryWhen] - A function to determine retry options based on the error and attempt count.
+ * @property {number} [maxRetryAttempts] - The maximum number of retry attempts.
+ * @property {number} [scalingDuration] - The duration (in milliseconds) used for scaling retry attempts.
+ * @property {number} [retryDuration] - The duration (in milliseconds) for each retry attempt.
+ */
 export type FetchOptions = {
   retryWhen?: (
     error: unknown,
@@ -15,6 +30,11 @@ export type FetchOptions = {
   ) => RetryOptions | undefined;
 } & RetryOptions;
 
+/**
+ * A function that maps a `QueryFetchEvent` to an observable stream, handling aborting the fetch operation.
+ * @param {QueryFetchEvent} event - The query fetch event.
+ * @returns {Observable<QueryFetchEvent>} - An observable stream of the query fetch event.
+ */
 const abortControllerMapper = (event: QueryFetchEvent) =>
   new Observable<QueryFetchEvent>((subscriber) => {
     subscriber.next(event);
@@ -23,6 +43,13 @@ const abortControllerMapper = (event: QueryFetchEvent) =>
     };
   });
 
+/**
+ * A function that transforms a `QueryFetchEvent` stream, handling retries and aborting fetch operations.
+ * @template Data - The type of data returned by the query.
+ * @param {FetchOptions} options - Options for configuring fetch behavior, including retry options.
+ * @param {QueryBloc<Data>} bloc - The query bloc associated with the fetch operation.
+ * @returns {EventTransformer<QueryFetchEvent>} - A function that transforms the `QueryFetchEvent` stream.
+ */
 export const queryFetchTransformer =
   <Data>(
     options: FetchOptions,
