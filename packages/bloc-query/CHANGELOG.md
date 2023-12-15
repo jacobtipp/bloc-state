@@ -1,3 +1,10 @@
+## [2.2.2](https://github.com/jacobtipp/bloc-state/compare/bloc-query-v2.2.1...bloc-query-v2.2.2) (2023-12-15)
+
+
+### Code Refactoring
+
+* **bloc-query:** ♻️ customize name property for QueryBloc to match queryKey or name ([509ca7b](https://github.com/jacobtipp/bloc-state/commit/509ca7b02f20b96c5147bd52a1e5f5e0e2221b85))
+
 ## [2.2.1](https://github.com/jacobtipp/bloc-state/compare/bloc-query-v2.2.0...bloc-query-v2.2.1) (2023-12-15)
 
 
