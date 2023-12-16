@@ -246,6 +246,7 @@ export class QueryBloc<Data = unknown> extends Bloc<
    * Revalidates the query, triggering a new fetch operation.
    */
   revalidateQuery = () => {
+    this.cancelQuery();
     this.add(new QueryRevalidateEvent());
   };
 }
