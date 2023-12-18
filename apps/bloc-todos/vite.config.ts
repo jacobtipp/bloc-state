@@ -4,6 +4,9 @@ import react from '@vitejs/plugin-react';
 import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
 
 export default defineConfig({
+  define: {
+    'process.env.NODE_ENV': JSON.stringify(process.env['NODE_ENV']),
+  },
   cacheDir: '../../node_modules/.vite/bloc-todos',
 
   server: {
