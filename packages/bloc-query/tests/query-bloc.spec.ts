@@ -4,12 +4,13 @@ import {
   GetQueryOptions,
   QueryBloc,
   QueryClosedException,
+  QueryFnOptions,
   SetQueryDataException,
 } from '../src/lib';
 import { delay } from './helpers/delay';
 import { TestApiError } from './helpers/test-error';
-import { QueryFetchEvent } from '../src/lib/query-event';
-import { QueryState } from '../src/lib/query-state';
+import { QueryFetchEvent, QueryRevalidateEvent } from '../src/lib/query-event';
+import { Initial, Loading, QueryState } from '../src/lib/query-state';
 
 describe('QueryBloc', () => {
   it('should not allow new subscriptions if the query is closed', (done) => {
@@ -381,28 +382,119 @@ describe('QueryBloc', () => {
     });
   });
 
+  describe('cancelQuery', () => {
+    it('should revert state if the query is being cancelled', async () => {
+      const queryFn = async () => {
+        await delay(2000);
+        return 1;
+      };
+
+      const options: GetQueryOptions<number> = {
+        queryFn,
+        queryKey: 'test',
+        staleTime: Infinity,
+      };
+
+      const initialState: Initial<number> = {
+        status: 'isInitial',
+        lastUpdatedAt: Date.now(),
+        isInitial: true,
+        isLoading: false,
+        isFetching: false,
+        isError: false,
+        isReady: true,
+        data: 0,
+      };
+
+      const bloc = new QueryBloc<number>(initialState, options);
+
+      bloc.getQuery();
+
+      expect(bloc.state.isInitial).toBe(true);
+
+      bloc.add(new QueryRevalidateEvent());
+
+      await delay(1000);
+
+      expect(bloc.state.isFetching).toBe(true);
+
+      bloc.cancelQuery();
+
+      await delay(2000);
+
+      expect(bloc.state).toBe(initialState);
+    });
+
+    it('should revert state if the signal causes an error to be thrown', async () => {
+      const queryFn = async ({ signal }: QueryFnOptions) => {
+        await delay(2000);
+        if (signal.aborted) {
+          throw new TestApiError('Signal Aborted');
+        }
+        return 1;
+      };
+
+      const options: GetQueryOptions<number> = {
+        queryFn,
+        queryKey: 'test',
+        staleTime: Infinity,
+      };
+
+      const initialState: Initial<number> = {
+        status: 'isInitial',
+        lastUpdatedAt: Date.now(),
+        isInitial: true,
+        isLoading: false,
+        isFetching: false,
+        isError: false,
+        isReady: true,
+        data: 0,
+      };
+
+      const bloc = new QueryBloc<number>(initialState, options);
+
+      bloc.getQuery();
+
+      expect(bloc.state.isInitial).toBe(true);
+
+      bloc.add(new QueryRevalidateEvent());
+
+      await delay(1000);
+
+      expect(bloc.state.isFetching).toBe(true);
+
+      bloc.cancelQuery();
+
+      await delay(2000);
+
+      expect(bloc.state).toBe(initialState);
+
+      bloc.close();
+    });
+  });
+
   describe('abortSignal', () => {
     it('should abort a signal after a fetch event', async () => {
       const queryFn = () => {
         return Promise.resolve(1);
       };
+
       const options: GetQueryOptions<number> = {
         queryFn,
         queryKey: 'test',
       };
 
-      const bloc = new QueryBloc<number>(
-        {
-          status: 'isLoading',
-          lastUpdatedAt: Date.now(),
-          isInitial: false,
-          isLoading: true,
-          isFetching: true,
-          isError: false,
-          isReady: false,
-        },
-        options
-      );
+      const loadingState: Loading<number> = {
+        status: 'isLoading',
+        lastUpdatedAt: Date.now(),
+        isInitial: false,
+        isLoading: true,
+        isFetching: true,
+        isError: false,
+        isReady: false,
+      };
+
+      const bloc = new QueryBloc<number>(loadingState, options);
 
       bloc.getQuery();
 
@@ -412,10 +504,12 @@ describe('QueryBloc', () => {
       expect(signal.aborted).toBe(false);
 
       bloc.add(new QueryFetchEvent(abortController));
-      bloc.add(new QueryFetchEvent(new AbortController()));
+      bloc.cancelQuery();
 
       await delay(1000);
       expect(signal.aborted).toBe(true);
+
+      bloc.close();
     });
   });
 
@@ -425,6 +519,7 @@ describe('QueryBloc', () => {
       config.onUnhandledError = (e) => {
         console.log(e);
         expect(e).toBeInstanceOf(SetQueryDataException);
+        bloc.close();
         done();
       };
 
