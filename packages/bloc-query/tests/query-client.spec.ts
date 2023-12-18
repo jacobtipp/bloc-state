@@ -548,7 +548,7 @@ describe('QueryClient', () => {
   });
 
   describe('cancelQuery', () => {
-    it('it should remove a query', async () => {
+    it('it should cancel a query and revert to previous state', async () => {
       let count = 0;
       const queryClient = new QueryClient();
 
@@ -584,7 +584,10 @@ describe('QueryClient', () => {
 
       await delay(2000);
 
-      expect(states.length).toBe(2);
+      const [_, b, c] = states;
+      expect(states.length).toBe(3);
+
+      expect(b).toBe(c);
     });
   });
 

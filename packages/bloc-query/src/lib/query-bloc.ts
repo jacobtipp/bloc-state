@@ -57,6 +57,8 @@ export class QueryBloc<Data = unknown> extends Bloc<
 > {
   private staleTime: number;
   private handledInitialLoad = false;
+  private revertedState: QueryState<Data>;
+  private isCancelling = false;
 
   /**
    * Creates a new QueryBloc instance.
@@ -69,6 +71,7 @@ export class QueryBloc<Data = unknown> extends Bloc<
   ) {
     const name = `QueryBloc - ${options.name ?? options.queryKey}`;
     super(state, name);
+    this.revertedState = state;
     this.staleTime = options.staleTime ?? 0;
 
     this.on(QuerySubscriptionEvent, this.onQuerySubscription);
@@ -95,19 +98,36 @@ export class QueryBloc<Data = unknown> extends Bloc<
     emit: Emitter<QueryState<Data>>
   ) {
     if (event.cancel) return;
-    const data = await this.options.queryFn({
-      signal: event.abortController.signal,
-    });
-    emit({
-      status: 'isReady',
-      lastUpdatedAt: Date.now(),
-      isInitial: false,
-      isLoading: false,
-      isFetching: false,
-      isReady: true,
-      isError: false,
-      data: data,
-    });
+
+    const signal = event.abortController.signal;
+
+    try {
+      const data = await this.options.queryFn({
+        signal,
+      });
+      if (this.isCancelling) {
+        this.emit(this.revertedState);
+        this.isCancelling = false;
+        return;
+      }
+      emit({
+        status: 'isReady',
+        lastUpdatedAt: Date.now(),
+        isInitial: false,
+        isLoading: false,
+        isFetching: false,
+        isReady: true,
+        isError: false,
+        data: data,
+      });
+    } catch (e: unknown) {
+      if (this.isCancelling) {
+        this.emit(this.revertedState);
+        this.isCancelling = false;
+      } else {
+        throw e;
+      }
+    }
   }
 
   private onQueryError(
@@ -162,6 +182,7 @@ export class QueryBloc<Data = unknown> extends Bloc<
     _event: QueryRevalidateEvent,
     emit: Emitter<QueryState<Data>>
   ) {
+    this.revertedState = this.state;
     emit({
       status: 'isFetching',
       lastUpdatedAt: this.state.lastUpdatedAt,
@@ -182,6 +203,7 @@ export class QueryBloc<Data = unknown> extends Bloc<
   ) {
     if (this.state.status === 'isLoading' && !this.handledInitialLoad) {
       this.handledInitialLoad = true;
+      this.revertedState = this.state;
       this.add(new QueryFetchEvent(new AbortController()));
     }
 
@@ -239,6 +261,8 @@ export class QueryBloc<Data = unknown> extends Bloc<
    * Cancels the query, aborting the ongoing fetch operation.
    */
   cancelQuery = () => {
+    if (!this.state.isFetching || this.isCancelling) return;
+    this.isCancelling = true;
     this.add(new QueryFetchEvent(new AbortController(), true));
   };
 
