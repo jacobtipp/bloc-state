@@ -1,5 +1,5 @@
 //import { getRandomInt } from './helpers/random';
-import { take, config } from 'rxjs';
+import { take } from 'rxjs';
 import {
   GetQueryOptions,
   QueryBloc,
@@ -516,12 +516,6 @@ describe('QueryBloc', () => {
   describe('setQueryData', () => {
     it('should throw an error if using set callback and no data exists', (done) => {
       expect.assertions(3);
-      config.onUnhandledError = (e) => {
-        console.log(e);
-        expect(e).toBeInstanceOf(SetQueryDataException);
-        bloc.close();
-        done();
-      };
 
       const queryFn = () => {
         return Promise.resolve(1);
@@ -546,6 +540,12 @@ describe('QueryBloc', () => {
 
       const states: QueryState<number>[] = [];
 
+      try {
+        bloc.setQueryData(() => 5);
+      } catch (e) {
+        expect(e).toBeInstanceOf(SetQueryDataException);
+      }
+
       bloc
         .getQuery()
         .pipe(take(2))
@@ -555,10 +555,10 @@ describe('QueryBloc', () => {
             const [a, b] = states;
             expect(a.status).toBe('isLoading');
             expect(b.status).toBe('isReady');
+            bloc.close();
+            done();
           },
         });
-
-      bloc.setQueryData(() => 5);
     });
   });
 });

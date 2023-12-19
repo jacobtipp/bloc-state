@@ -12,7 +12,6 @@ import {
   QueryEvent,
   QuerySubscriptionEvent,
   QueryRevalidateEvent,
-  QuerySetQueryDataEvent,
   QueryErrorEvent,
 } from './query-event';
 import {
@@ -76,7 +75,6 @@ export class QueryBloc<Data = unknown> extends Bloc<
 
     this.on(QuerySubscriptionEvent, this.onQuerySubscription);
     this.on(QueryRevalidateEvent, this.onQueryRevalidate);
-    this.on(QuerySetQueryDataEvent, this.onQuerySetQueryData);
     this.on(QueryErrorEvent, this.onQueryError);
     this.on(
       QueryFetchEvent,
@@ -144,37 +142,6 @@ export class QueryBloc<Data = unknown> extends Bloc<
       isError: true,
       data: this.state.data,
       error: event.error,
-    });
-  }
-
-  private onQuerySetQueryData(
-    event: QuerySetQueryDataEvent<unknown>,
-    emit: Emitter<QueryState<Data>>
-  ) {
-    let newData: Data;
-    const setEvent = event as QuerySetQueryDataEvent<Data>;
-    const set = setEvent.set;
-    if (typeof set === 'function') {
-      if (this.state.data === undefined) {
-        throw new SetQueryDataException(
-          'SetQueryData: cannot be set with a callback function if previous data is undefined, invoke setQueryData with data directly ' +
-            'or provide initial data for the query'
-        );
-      }
-      newData = (set as (old: Data) => Data)(this.state.data);
-    } else {
-      newData = set;
-    }
-
-    emit({
-      status: 'isReady',
-      isInitial: false,
-      lastUpdatedAt: Date.now(),
-      isLoading: false,
-      isFetching: false,
-      isReady: true,
-      isError: false,
-      data: newData,
     });
   }
 
@@ -254,7 +221,29 @@ export class QueryBloc<Data = unknown> extends Bloc<
    * @param {((old: Data) => Data) | Data} set - The new data or a function to update the old data.
    */
   setQueryData = (set: ((old: Data) => Data) | Data) => {
-    this.add(new QuerySetQueryDataEvent(set));
+    let newData: Data;
+    if (typeof set === 'function') {
+      if (this.state.data === undefined) {
+        throw new SetQueryDataException(
+          'SetQueryData: cannot be set with a callback function if previous data is undefined, invoke setQueryData with data directly ' +
+            'or provide initial data for the query'
+        );
+      }
+      newData = (set as (old: Data) => Data)(this.state.data);
+    } else {
+      newData = set;
+    }
+
+    this.emit({
+      status: 'isReady',
+      isInitial: false,
+      lastUpdatedAt: Date.now(),
+      isLoading: false,
+      isFetching: false,
+      isReady: true,
+      isError: false,
+      data: newData,
+    });
   };
 
   /**
