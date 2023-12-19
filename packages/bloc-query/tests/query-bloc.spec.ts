@@ -9,7 +9,7 @@ import {
 } from '../src/lib';
 import { delay } from './helpers/delay';
 import { TestApiError } from './helpers/test-error';
-import { QueryFetchEvent, QueryRevalidateEvent } from '../src/lib/query-event';
+import { QueryFetchEvent } from '../src/lib/query-event';
 import { Initial, Loading, QueryState } from '../src/lib/query-state';
 
 describe('QueryBloc', () => {
@@ -412,7 +412,7 @@ describe('QueryBloc', () => {
 
       expect(bloc.state.isInitial).toBe(true);
 
-      bloc.add(new QueryRevalidateEvent());
+      bloc.revalidateQuery();
 
       await delay(1000);
 
@@ -457,7 +457,7 @@ describe('QueryBloc', () => {
 
       expect(bloc.state.isInitial).toBe(true);
 
-      bloc.add(new QueryRevalidateEvent());
+      bloc.revalidateQuery();
 
       await delay(1000);
 
