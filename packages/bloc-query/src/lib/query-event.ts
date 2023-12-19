@@ -27,10 +27,3 @@ export class QueryErrorEvent extends QueryEvent {
     super();
   }
 }
-
-export class QuerySetQueryDataEvent<Data = unknown> extends QueryEvent {
-  override name = 'QuerySetQueryDataEvent';
-  constructor(public readonly set: ((old: Data) => Data) | Data) {
-    super();
-  }
-}
