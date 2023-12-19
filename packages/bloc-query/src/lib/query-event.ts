@@ -13,6 +13,10 @@ export class QueryFetchEvent extends QueryEvent {
   }
 }
 
+export class QueryCancelEvent extends QueryEvent {
+  override name = 'QueryCancelEvent';
+}
+
 export class QueryRevalidateEvent extends QueryEvent {
   override name = 'QueryRevalidateEvent';
 }
