@@ -17,6 +17,10 @@ export class QueryCancelEvent extends QueryEvent {
   override name = 'QueryCancelEvent';
 }
 
+export class SetQueryDataEvent extends QueryEvent {
+  override name = 'SetQueryDataEvent';
+}
+
 export class QueryRevalidateEvent extends QueryEvent {
   override name = 'QueryRevalidateEvent';
 }
