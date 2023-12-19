@@ -12,6 +12,7 @@ import {
   QueryEvent,
   QuerySubscriptionEvent,
   QueryRevalidateEvent,
+  QueryCancelEvent,
 } from './query-event';
 import {
   FetchTransformerOptions,
@@ -205,7 +206,17 @@ export class QueryBloc<Data = unknown> extends Bloc<
   cancelQuery = () => {
     if (!this.state.isFetching) return;
     this.add(new QueryFetchEvent(new AbortController(), true));
+
+    const cancelEvent = new QueryCancelEvent();
+    Bloc.observer.onEvent(this, cancelEvent);
+
+    const previous = this.state;
     this.emit(this.revertedState);
+
+    Bloc.observer.onTransition(
+      this,
+      new Transition(previous, cancelEvent, this.state)
+    );
   };
 
   /**
