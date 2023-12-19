@@ -13,6 +13,7 @@ import {
   QuerySubscriptionEvent,
   QueryRevalidateEvent,
   QueryCancelEvent,
+  SetQueryDataEvent,
 } from './query-event';
 import {
   FetchTransformerOptions,
@@ -188,7 +189,11 @@ export class QueryBloc<Data = unknown> extends Bloc<
       newData = set;
     }
 
-    this.emit({
+    const setQueryDataEvent = new SetQueryDataEvent();
+    Bloc.observer.onEvent(this, setQueryDataEvent);
+
+    const previous = this.state;
+    const stateToEmit: Ready<Data> = {
       status: 'isReady',
       isInitial: false,
       lastUpdatedAt: Date.now(),
@@ -197,7 +202,14 @@ export class QueryBloc<Data = unknown> extends Bloc<
       isReady: true,
       isError: false,
       data: newData,
-    });
+    };
+
+    this.emit(stateToEmit);
+
+    Bloc.observer.onTransition(
+      this,
+      new Transition(previous, setQueryDataEvent, stateToEmit)
+    );
   };
 
   /**
