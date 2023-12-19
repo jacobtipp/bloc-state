@@ -1,4 +1,4 @@
-import { Bloc, Emitter } from '@jacobtipp/bloc';
+import { Bloc, Emitter, Transition } from '@jacobtipp/bloc';
 import {
   Observable,
   OperatorFunction,
@@ -12,13 +12,12 @@ import {
   QueryEvent,
   QuerySubscriptionEvent,
   QueryRevalidateEvent,
-  QueryErrorEvent,
 } from './query-event';
 import {
   FetchTransformerOptions,
   queryFetchTransformer,
 } from './query-fetch-transformer';
-import { QueryState, Ready } from './query-state';
+import { Fetching, QueryState, Ready } from './query-state';
 
 export type QueryKey = string;
 
@@ -73,8 +72,6 @@ export class QueryBloc<Data = unknown> extends Bloc<
     this.staleTime = options.staleTime ?? 0;
 
     this.on(QuerySubscriptionEvent, this.onQuerySubscription);
-    this.on(QueryRevalidateEvent, this.onQueryRevalidate);
-    this.on(QueryErrorEvent, this.onQueryError);
     this.on(
       QueryFetchEvent,
       this.onQueryFetch,
@@ -120,42 +117,6 @@ export class QueryBloc<Data = unknown> extends Bloc<
     }
   }
 
-  private onQueryError(
-    event: QueryErrorEvent,
-    emit: Emitter<QueryState<Data>>
-  ) {
-    emit({
-      status: 'isError',
-      lastUpdatedAt: this.state.lastUpdatedAt,
-      isInitial: false,
-      isLoading: false,
-      isFetching: false,
-      isReady: false,
-      isError: true,
-      data: this.state.data,
-      error: event.error,
-    });
-  }
-
-  private onQueryRevalidate(
-    _event: QueryRevalidateEvent,
-    emit: Emitter<QueryState<Data>>
-  ) {
-    this.revertedState = this.state;
-    emit({
-      status: 'isFetching',
-      lastUpdatedAt: this.state.lastUpdatedAt,
-      isInitial: false,
-      isLoading: false,
-      isFetching: true,
-      isReady: false,
-      isError: false,
-      data: this.state.data,
-    });
-
-    this.add(new QueryFetchEvent(new AbortController()));
-  }
-
   private onQuerySubscription(
     _event: QuerySubscriptionEvent,
     _emit: Emitter<QueryState<Data>>
@@ -167,7 +128,7 @@ export class QueryBloc<Data = unknown> extends Bloc<
     }
 
     if (this.state.isReady && this.isStale) {
-      this.add(new QueryRevalidateEvent());
+      this.revalidateQuery();
     }
   }
 
@@ -252,7 +213,30 @@ export class QueryBloc<Data = unknown> extends Bloc<
    */
   revalidateQuery = () => {
     this.cancelQuery();
-    this.add(new QueryRevalidateEvent());
+    this.revertedState = this.state;
+
+    const revalidateEvent = new QueryRevalidateEvent();
+    Bloc.observer.onEvent(this, revalidateEvent);
+
+    const stateToEmit: Fetching<Data> = {
+      status: 'isFetching',
+      lastUpdatedAt: this.state.lastUpdatedAt,
+      isInitial: false,
+      isLoading: false,
+      isFetching: true,
+      isReady: false,
+      isError: false,
+      data: this.state.data,
+    };
+
+    this.emit(stateToEmit);
+
+    Bloc.observer.onTransition(
+      this,
+      new Transition(this.revertedState, revalidateEvent, stateToEmit)
+    );
+
+    this.add(new QueryFetchEvent(new AbortController()));
   };
 }
 
