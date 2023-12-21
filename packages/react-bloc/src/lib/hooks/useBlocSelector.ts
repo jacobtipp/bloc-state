@@ -14,12 +14,13 @@ import {
   defaultSuspendWhen,
   defaultErrorWhen,
   defaultListenWhen,
+  defaultSelector,
 } from './defaults';
 
 const { useSyncExternalStoreWithSelector } = useSyncExternalStoreExports;
 
 export type UseBlocSelectorConfig<Bloc extends BlocBase<any>, SelectedState> = {
-  selector: (state: StateType<Bloc>) => SelectedState;
+  selector?: (state: StateType<Bloc>) => SelectedState;
   listenWhen?: (state: StateType<Bloc>) => boolean;
   suspendWhen?: (state: StateType<Bloc>) => boolean;
   errorWhen?: (state: StateType<Bloc>) => boolean;
@@ -44,8 +45,8 @@ const useSuspenseOrError = <
 >(
   bloc: InstanceType<Bloc>,
   config: {
-    suspendWhen?: (state: State) => boolean;
-    errorWhen?: (state: State) => boolean;
+    suspendWhen: (state: State) => boolean;
+    errorWhen: (state: State) => boolean;
   }
 ) => {
   const suspenseHandler = useRef<Handler | null>(null);
@@ -53,7 +54,7 @@ const useSuspenseOrError = <
   const suspsenseSubscription = useRef<Subscription | null>(null);
 
   if (!suspsenseSubscription.current) {
-    const suspendWhen = config.suspendWhen ?? defaultSuspendWhen;
+    const suspendWhen = config.suspendWhen;
     suspsenseSubscription.current = (bloc.state$ as Observable<State>)
       .pipe(startWith(bloc.state as State))
       .subscribe((state) => {
@@ -68,7 +69,7 @@ const useSuspenseOrError = <
   }
 
   useMemo(() => {
-    const errorWhen = config.errorWhen ?? defaultErrorWhen;
+    const errorWhen = config.errorWhen;
     if (errorWhen(bloc.state as State)) {
       throw new BlocRenderError(bloc.state);
     }
@@ -94,15 +95,21 @@ export const useBlocSelector = <
   State extends StateType<InstanceType<Bloc>> = StateType<InstanceType<Bloc>>
 >(
   bloc: Bloc,
-  config: UseBlocSelectorConfig<InstanceType<Bloc>, SelectedState>
+  config?: UseBlocSelectorConfig<InstanceType<Bloc>, SelectedState>
 ): SelectedState => {
   const blocInstance = useBlocInstance(bloc);
-  const selector = config.selector;
-  const listenWhen = config.listenWhen ?? defaultListenWhen;
+  const selector =
+    config?.selector ??
+    (defaultSelector as (
+      state: StateType<InstanceType<Bloc>>
+    ) => StateType<InstanceType<Bloc>>);
+  const listenWhen = config?.listenWhen ?? defaultListenWhen;
+  const suspendWhen = config?.suspendWhen ?? defaultSuspendWhen;
+  const errorWhen = config?.errorWhen ?? defaultErrorWhen;
 
   useSuspenseOrError(blocInstance, {
-    suspendWhen: config.suspendWhen,
-    errorWhen: config.errorWhen,
+    suspendWhen,
+    errorWhen,
   });
 
   const subscriptionCallback = useCallback((notify: () => void) => {
