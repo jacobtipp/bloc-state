@@ -217,6 +217,11 @@ export class QueryBloc<Data = unknown> extends Bloc<
    */
   cancelQuery = () => {
     if (!this.state.isFetching) return;
+
+    if (this.state.isLoading && this.handledInitialLoad) {
+      this.handledInitialLoad = false;
+    }
+
     this.add(new QueryFetchEvent(new AbortController(), true));
 
     const cancelEvent = new QueryCancelEvent();
