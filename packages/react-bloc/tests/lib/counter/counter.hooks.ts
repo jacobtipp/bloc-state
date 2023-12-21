@@ -3,7 +3,6 @@ import { CounterBloc } from './counter.cubit';
 
 export const useCounter = () => {
   const [count, counterBloc] = useBloc(CounterBloc, {
-    selector: (state) => state,
     errorWhen(state) {
       return state === 0;
     },
