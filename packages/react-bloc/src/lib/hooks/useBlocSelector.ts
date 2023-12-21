@@ -1,12 +1,6 @@
 import { BlocBase, StateType, ClassType } from '@jacobtipp/bloc';
-import {
-  useCallback,
-  useSyncExternalStore,
-  useDebugValue,
-  useEffect,
-  useMemo,
-  useRef,
-} from 'react';
+import { useCallback, useDebugValue, useEffect, useMemo, useRef } from 'react';
+import useSyncExternalStoreExports from 'use-sync-external-store/shim/with-selector';
 import { useBlocInstance } from './useBlocInstance';
 import {
   Observable,
@@ -21,6 +15,8 @@ import {
   defaultErrorWhen,
   defaultListenWhen,
 } from './defaults';
+
+const { useSyncExternalStoreWithSelector } = useSyncExternalStoreExports;
 
 export type UseBlocSelectorConfig<Bloc extends BlocBase<any>, SelectedState> = {
   selector: (state: StateType<Bloc>) => SelectedState;
@@ -126,9 +122,11 @@ export const useBlocSelector = <
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const selected = useSyncExternalStore<SelectedState>(
+  const selected = useSyncExternalStoreWithSelector(
     subscriptionCallback,
-    () => selector(blocInstance.state)
+    () => blocInstance.state,
+    null,
+    selector
   );
 
   useDebugValue(selected);
