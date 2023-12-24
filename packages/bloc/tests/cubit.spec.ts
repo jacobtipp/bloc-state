@@ -110,6 +110,23 @@ describe('Cubit', () => {
 
       expect(a.message).toBe('onchange error');
     });
+
+    it('should be invoked when an error is called by addError', (done) => {
+      class ErroCubit extends Cubit<number> {
+        trigger() {
+          this.addError(new Error('Triggered'));
+        }
+
+        override onError(e: Error) {
+          expect(e.message).toBe('Triggered');
+          this.close();
+          done();
+        }
+      }
+
+      const cubit = new ErroCubit(0);
+      cubit.trigger();
+    });
   });
 
   describe('Cubit.emit', () => {
