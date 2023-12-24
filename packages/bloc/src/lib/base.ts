@@ -105,6 +105,15 @@ export abstract class BlocBase<State = unknown> {
   }
 
   /**
+   * Reports an error which triggers onError
+   *
+   * @param error - An error that has been thrown within a Bloc's execution
+   */
+  protected addError(error: Error) {
+    this.onError(error);
+  }
+
+  /**
    * Emits new BLoC state, this should only be used in development (Redux/React Devtools) and testing.
    */
   __unsafeEmit__(newState: State): void {
