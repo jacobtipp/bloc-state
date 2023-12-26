@@ -1,10 +1,12 @@
-export class Post {
-  constructor(
-    public by: string,
-    public time: number,
-    public type: 'comment' | 'story',
-    public text?: string,
-    public title?: string,
-    public url?: string
-  ) {}
-}
+import { string, object, number, picklist, optional, Output } from 'valibot';
+
+export const PostSchema = object({
+  by: string(),
+  time: number(),
+  type: picklist(['comment', 'story']),
+  text: optional(string()),
+  title: optional(string()),
+  url: optional(string()),
+});
+
+export type Post = Output<typeof PostSchema>;
