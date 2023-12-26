@@ -53,11 +53,11 @@
       }
     },
     "test": {
-      "executor": "@nx/vite:test",
-      "outputs": ["{options.reportsDirectory}"],
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
       "options": {
-        "passWithNoTests": true,
-        "reportsDirectory": "../../coverage/apps/bloc-hacker-news"
+        "jestConfig": "apps/bloc-hacker-news/jest.config.ts",
+        "passWithNoTests": true
       }
     },
     "typecheck": {

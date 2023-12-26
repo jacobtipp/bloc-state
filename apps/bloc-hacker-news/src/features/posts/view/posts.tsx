@@ -11,7 +11,7 @@ import {
 } from '@jacobtipp/react-bloc';
 import { HomeBloc } from '../../home/bloc/home.cubit';
 import { PostBloc } from '../bloc/posts.bloc';
-import { PostSubscribed } from '../bloc/posts.events';
+import { PostFetched } from '../bloc/posts.events';
 import { PostRepository } from '../../../packages/post-repository/post-repository';
 
 export function PostPage() {
@@ -21,7 +21,7 @@ export function PostPage() {
   return (
     <BlocProvider
       bloc={PostBloc}
-      create={() => new PostBloc(postRepository).add(new PostSubscribed(id))}
+      create={() => new PostBloc(postRepository).add(new PostFetched(id))}
     >
       <PostView />
     </BlocProvider>
@@ -32,7 +32,7 @@ export function PostView() {
   const { add } = useBlocInstance(PostBloc);
   useBlocListener(HomeBloc, {
     listenWhen: (previous, current) => previous !== current,
-    listener: (_, state) => add(new PostSubscribed(state)),
+    listener: (_, state) => add(new PostFetched(state)),
   });
 
   return (
