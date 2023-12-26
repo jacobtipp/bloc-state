@@ -1,5 +1,5 @@
 import { BlocBase, StateType, ClassType } from '@jacobtipp/bloc';
-import { useRef, useEffect } from 'react';
+import { useRef, useLayoutEffect } from 'react';
 import { useBlocInstance } from './useBlocInstance';
 import { defaultListenWhen } from './defaults';
 import { Subscription, filter, map, pairwise, startWith } from 'rxjs';
@@ -20,7 +20,7 @@ export const useBlocListener = <Bloc extends ClassType<BlocBase<any>>>(
   const when = listenWhen ?? defaultListenWhen;
   const listenerSubscription = useRef<Subscription | null>(null);
 
-  if (!listenerSubscription.current)
+  useLayoutEffect(() => {
     listenerSubscription.current = blocInstance.state$
       .pipe(
         startWith(blocInstance.state),
@@ -32,11 +32,10 @@ export const useBlocListener = <Bloc extends ClassType<BlocBase<any>>>(
       )
       .subscribe();
 
-  useEffect(
-    () => () => {
+    return () => {
       listenerSubscription.current?.unsubscribe();
       listenerSubscription.current = null;
-    },
-    [bloc]
-  );
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 };
