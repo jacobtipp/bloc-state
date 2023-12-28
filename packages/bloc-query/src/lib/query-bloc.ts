@@ -10,10 +10,10 @@ import {
 import {
   QueryFetchEvent,
   QueryEvent,
-  QuerySubscriptionEvent,
   QueryRevalidateEvent,
   QueryCancelEvent,
   SetQueryDataEvent,
+  QuerySubscriptionEvent,
 } from './query-event';
 import {
   FetchTransformerOptions,
@@ -73,7 +73,6 @@ export class QueryBloc<Data = unknown> extends Bloc<
     this.revertedState = state;
     this.staleTime = options.staleTime ?? 0;
 
-    this.on(QuerySubscriptionEvent, this.onQuerySubscription);
     this.on(
       QueryFetchEvent,
       this.onQueryFetch,
@@ -119,21 +118,6 @@ export class QueryBloc<Data = unknown> extends Bloc<
     }
   }
 
-  private onQuerySubscription(
-    _event: QuerySubscriptionEvent,
-    _emit: Emitter<QueryState<Data>>
-  ) {
-    if (this.state.status === 'isLoading' && !this.handledInitialLoad) {
-      this.handledInitialLoad = true;
-      this.revertedState = this.state;
-      this.add(new QueryFetchEvent(new AbortController()));
-    }
-
-    if (this.state.isReady && this.isStale) {
-      this.revalidateQuery();
-    }
-  }
-
   /**
    * Checks if the query data is stale based on the last update time and stale time.
    * @type {boolean}
@@ -159,7 +143,23 @@ export class QueryBloc<Data = unknown> extends Bloc<
       throw new QueryClosedException('Query is closed');
     }
 
-    this.add(new QuerySubscriptionEvent());
+    const subscriptionEvent = new QuerySubscriptionEvent();
+    Bloc.observer.onEvent(this, subscriptionEvent);
+
+    Bloc.observer.onTransition(
+      this,
+      new Transition(this.state, subscriptionEvent, this.state)
+    );
+
+    if (this.state.status === 'isLoading' && !this.handledInitialLoad) {
+      this.handledInitialLoad = true;
+      this.revertedState = this.state;
+      this.add(new QueryFetchEvent(new AbortController()));
+    }
+
+    if (this.state.isReady && this.isStale) {
+      this.revalidateQuery();
+    }
 
     return this.state$.pipe(
       startWith(this.state),
