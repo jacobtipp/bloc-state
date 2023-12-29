@@ -1,6 +1,6 @@
-import { Observable } from 'rxjs';
+import { Observable, Observer, Subject, of, throwError } from 'rxjs';
 import { tap } from 'rxjs/operators';
-import { Cubit, Change } from '../src';
+import { Cubit, Change, NextFunction } from '../src';
 import { StateError } from '../src';
 import { CounterCubit } from './helpers/counter/counter.cubit';
 import { SeededCounterCubit } from './helpers/counter/counter.seeded.cubit';
@@ -202,6 +202,91 @@ describe('Cubit', () => {
       const [_, b] = states;
       expect(states.length).toBe(2);
       expect(b).toBe(1);
+    });
+  });
+
+  describe('Cubit.listenTo', () => {
+    class TestBlocForTesting extends Cubit<number> {
+      public exposeListenTo(
+        observable: Observable<number>,
+        observerOrNext: Partial<Observer<number>> | NextFunction<number>
+      ) {
+        return this.listenTo(observable, observerOrNext);
+      }
+    }
+
+    let testBloc: TestBlocForTesting;
+
+    beforeEach(() => {
+      testBloc = new TestBlocForTesting(0);
+    });
+
+    afterEach(() => {
+      testBloc.close();
+    });
+
+    it('should subscribe to an observable with a next function', () => {
+      expect.assertions(1);
+      const observable = of(42);
+      const nextFn = jest.fn();
+      testBloc.exposeListenTo(observable, nextFn);
+
+      expect(nextFn).toBeCalledWith(42);
+    });
+
+    it('should subscribe to an observable with an observer object', () => {
+      expect.assertions(2);
+      const observable = of(42);
+      const observer: Partial<Observer<number>> = {
+        next: jest.fn(),
+        complete: jest.fn(),
+      };
+      testBloc.exposeListenTo(observable, observer);
+
+      expect(observer.next).toBeCalled();
+      expect(observer.complete).toBeCalled();
+    });
+
+    it('should handle errors from observable in observer', () => {
+      expect.assertions(3);
+      const observable = throwError(new Error('test error'));
+      const observer: Partial<Observer<number>> = {
+        next: jest.fn(),
+        complete: jest.fn(),
+        error: jest.fn(),
+      };
+      testBloc.exposeListenTo(observable, observer);
+
+      expect(observer.next).not.toHaveBeenCalled();
+      expect(observer.complete).not.toHaveBeenCalled();
+      expect(observer.error).toHaveBeenCalled();
+    });
+
+    it('should handle scubscription being closed when bloc closes', () => {
+      const observable = new Subject<number>();
+      const nextFn = jest.fn();
+
+      const subscription = testBloc.exposeListenTo(observable, nextFn);
+
+      expect(subscription.isClosed).toBeFalsy();
+
+      testBloc.close();
+
+      expect(testBloc.isClosed).toBeTruthy();
+      expect(subscription.isClosed).toBeTruthy();
+    });
+
+    it('should handle manual subscription being closed', () => {
+      const observable = new Subject<number>();
+      const nextFn = jest.fn();
+
+      const subscription = testBloc.exposeListenTo(observable, nextFn);
+
+      expect(subscription.isClosed).toBeFalsy();
+
+      subscription.unsubscribe();
+
+      expect(subscription.isClosed).toBeTruthy();
     });
   });
 });
