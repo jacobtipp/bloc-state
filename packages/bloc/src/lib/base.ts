@@ -1,7 +1,9 @@
-import { Observable, Subscription, Subject } from 'rxjs';
+import { Observable, Subscription, Subject, Observer } from 'rxjs';
 import { Bloc } from './bloc';
 import { Change } from './change';
 import { StateError } from './errors';
+
+export type NextFunction<State> = (value: State) => void;
 
 /**
  * Base class for implementing BLoC pattern.
@@ -114,7 +116,57 @@ export abstract class BlocBase<State = unknown> {
   }
 
   /**
-   * Emits new BLoC state, this should only be used in development (Redux/React Devtools) and testing.
+   * Listens to an observable and manages the subscription internally.
+   *
+   * @param {Observable<State>} observable - The observable to subscribe to.
+   * @param {Partial<Observer<State>> | NextFunction<State>} observerOrNext -
+   * An observer object or a function to be used as the next callback.
+   * @returns {{ unsubscribe: () => void, isClosed: boolean }} An object with an unsubscribe method
+   * to stop the subscription and a boolean indicating whether the subscription is closed.
+   *
+   * @template State - The type of the state maintained by the observable.
+   */
+  protected listenTo(
+    observable: Observable<State>,
+    observerOrNext: Partial<Observer<State>> | NextFunction<State>
+  ): { unsubscribe: () => void; isClosed: boolean } {
+    let observer: Partial<Observer<State>>;
+
+    if (typeof observerOrNext === 'function') {
+      observer = { next: observerOrNext };
+    } else {
+      observer = observerOrNext;
+    }
+
+    const boundObserver: Observer<State> = {
+      next: (newState) => {
+        observer.next?.call(this, newState);
+      },
+      error: (error) => {
+        observer.error?.call(this, error);
+      },
+      complete: () => {
+        observer.complete?.call(this);
+      },
+    };
+
+    const subscription = observable.subscribe(boundObserver);
+
+    this.subscriptions.add(subscription);
+
+    return {
+      unsubscribe: () => {
+        subscription.unsubscribe();
+        this.subscriptions.delete(subscription);
+      },
+      get isClosed(): boolean {
+        return subscription.closed;
+      },
+    };
+  }
+
+  /**
+   * Emits new BLoC state, this should only be used internally by other libraries or for testing.
    */
   __unsafeEmit__(newState: State): void {
     return this.emit(newState);
