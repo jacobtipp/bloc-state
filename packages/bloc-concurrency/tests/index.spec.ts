@@ -5,26 +5,23 @@ import { restartable, sequential, concurrent } from '../src';
 import { delay } from './helpers/delay';
 
 describe('transformers', () => {
-  abstract class EventTransformerEvent {}
-  class EventTransformerSequentialEvent extends EventTransformerEvent {}
-  class EventTransformerRestartableEvent extends EventTransformerEvent {
+  abstract class TransformerEvent {}
+  class SequentialEvent extends TransformerEvent {}
+  class RestartableEvent extends TransformerEvent {
     constructor(public num: number = 1) {
       super();
     }
   }
-  class EventTransformerconcurrentEvent extends EventTransformerEvent {}
+  class ConcurrentEvent extends TransformerEvent {}
 
-  class EventTransformerState extends State<number> {}
+  class TransformerState extends State<number> {}
 
-  class EventTransformerBloc extends Bloc<
-    EventTransformerEvent,
-    EventTransformerState
-  > {
+  class EventTransformerBloc extends Bloc<TransformerEvent, TransformerState> {
     constructor() {
-      super(new EventTransformerState(0));
+      super(new TransformerState(0));
 
       this.on(
-        EventTransformerSequentialEvent,
+        SequentialEvent,
         async (_event, emit) => {
           await delay(500);
           emit(this.state.ready(this.state.data + 1));
@@ -33,7 +30,7 @@ describe('transformers', () => {
       );
 
       this.on(
-        EventTransformerRestartableEvent,
+        RestartableEvent,
         async (event, emit) => {
           await delay(500);
           emit(this.state.ready(event.num));
@@ -42,7 +39,7 @@ describe('transformers', () => {
       );
 
       this.on(
-        EventTransformerconcurrentEvent,
+        ConcurrentEvent,
         async (_event, emit) => {
           await delay(500);
           emit(this.state.ready(this.state.data + 1));
@@ -65,7 +62,7 @@ describe('transformers', () => {
   describe('sequential', () => {
     it('should process each event sequentially, additional events added should be queued while processing current event', async () => {
       expect.assertions(4);
-      const states: EventTransformerState[] = [];
+      const states: TransformerState[] = [];
       transformerBloc.state$.pipe(startWith(transformerBloc.state)).subscribe({
         next: (state) => {
           states.push(state);
@@ -73,9 +70,9 @@ describe('transformers', () => {
       });
 
       expect(states.length).toBe(1);
-      transformerBloc.add(new EventTransformerSequentialEvent());
-      transformerBloc.add(new EventTransformerSequentialEvent());
-      transformerBloc.add(new EventTransformerSequentialEvent());
+      transformerBloc.add(new SequentialEvent());
+      transformerBloc.add(new SequentialEvent());
+      transformerBloc.add(new SequentialEvent());
       await delay(600);
       expect(states.length).toBe(2);
       await delay(600);
@@ -88,17 +85,17 @@ describe('transformers', () => {
   describe('restartable', () => {
     it('should process each event until completion or until a new event comes in', async () => {
       expect.assertions(5);
-      const states: EventTransformerState[] = [];
+      const states: TransformerState[] = [];
       transformerBloc.state$.pipe(startWith(transformerBloc.state)).subscribe({
         next: (state) => states.push(state),
       });
 
       expect(states.length).toBe(1);
-      transformerBloc.add(new EventTransformerRestartableEvent());
-      transformerBloc.add(new EventTransformerRestartableEvent());
-      transformerBloc.add(new EventTransformerRestartableEvent());
-      transformerBloc.add(new EventTransformerRestartableEvent());
-      transformerBloc.add(new EventTransformerRestartableEvent(2));
+      transformerBloc.add(new RestartableEvent());
+      transformerBloc.add(new RestartableEvent());
+      transformerBloc.add(new RestartableEvent());
+      transformerBloc.add(new RestartableEvent());
+      transformerBloc.add(new RestartableEvent(2));
       await delay(600);
       const [first, second] = states;
       expect(states.length).toBe(2);
@@ -111,17 +108,17 @@ describe('transformers', () => {
   describe('concurrent', () => {
     it('should process each event until completion or until a new event comes in', async () => {
       expect.assertions(8);
-      const states: EventTransformerState[] = [];
+      const states: TransformerState[] = [];
       transformerBloc.state$.pipe(startWith(transformerBloc.state)).subscribe({
         next: (state) => states.push(state),
       });
 
       expect(states.length).toBe(1);
-      transformerBloc.add(new EventTransformerconcurrentEvent());
-      transformerBloc.add(new EventTransformerconcurrentEvent());
-      transformerBloc.add(new EventTransformerconcurrentEvent());
-      transformerBloc.add(new EventTransformerconcurrentEvent());
-      transformerBloc.add(new EventTransformerconcurrentEvent());
+      transformerBloc.add(new ConcurrentEvent());
+      transformerBloc.add(new ConcurrentEvent());
+      transformerBloc.add(new ConcurrentEvent());
+      transformerBloc.add(new ConcurrentEvent());
+      transformerBloc.add(new ConcurrentEvent());
       await delay(600);
       const [first, second, third, fourth, fifth, sixth] = states;
       expect(states.length).toBe(6);
