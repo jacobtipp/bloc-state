@@ -5,9 +5,9 @@ import {
   IntervalOnEachEvent,
   IntervalState,
   IntervalForEachEvent,
-  IntervalNoEmitOnCloseEvent,
   IntervalOnEachEventWithoutOnError,
   NoOnErrorState,
+  IntervalForEachEventWithoutOnError,
 } from './helpers/interval';
 
 describe('emitter', () => {
@@ -114,22 +114,6 @@ describe('emitter', () => {
       intervalBloc.add(new IntervalForEachEvent());
     });
 
-    it('should not emit after an emitter has been closed', (done) => {
-      expect.assertions(1);
-      const states: number[] = [];
-      intervalBloc.state$.subscribe({
-        next: (state) => {
-          states.push(state.data);
-        },
-        complete: () => {
-          expect(states.length).toBe(3);
-          done();
-        },
-      });
-
-      intervalBloc.add(new IntervalNoEmitOnCloseEvent());
-    });
-
     describe('onError', () => {
       const states: IntervalState[] = [];
       let errorStream$: Observable<number>;
@@ -166,6 +150,33 @@ describe('emitter', () => {
 
         bloc.add(new IntervalForEachEvent());
       });
+    });
+
+    it('should throw an error if the input stream errors and no onError callback is provided', (done) => {
+      expect.assertions(1);
+      const states: IntervalState[] = [];
+      const errorStream$ = new Observable<number>((subscriber) => {
+        subscriber.next(1);
+
+        setTimeout(() => {
+          subscriber.error(new Error('stream error'));
+        }, 0);
+      });
+
+      const bloc = new IntervalBloc(errorStream$);
+
+      bloc.state$.subscribe({
+        next: (state) => {
+          if (state instanceof NoOnErrorState) return bloc.close();
+          states.push(state);
+        },
+        complete: () => {
+          expect(states.length).toBe(1);
+          done();
+        },
+      });
+
+      bloc.add(new IntervalForEachEventWithoutOnError());
     });
   });
 });
