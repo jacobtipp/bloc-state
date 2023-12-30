@@ -2,7 +2,7 @@ import { filter, mergeMap, Observable, Subject } from 'rxjs';
 
 import { BlocBase } from './base';
 import { BlocObserver } from './bloc-observer';
-import { Emitter, BlocEmitterImpl } from './emitter';
+import { Emitter, EmitterImpl } from './emitter';
 import { StateError } from './errors';
 import { Transition } from './transition';
 import { ClassType } from './types';
@@ -61,7 +61,7 @@ export abstract class Bloc<Event, State> extends BlocBase<State> {
   private readonly _eventMap = new WeakMap<ClassType<Event>, 1>();
 
   /** A set of emitters for the state. */
-  private readonly _emitters = new Set<Emitter<State>>();
+  private readonly _emitters = new Set<EmitterImpl<State>>();
 
   /** Indicates whether this is an instance of Bloc. */
   readonly isBlocInstance = true;
@@ -143,14 +143,20 @@ export abstract class Bloc<Event, State> extends BlocBase<State> {
         }
       };
 
-      const emitter = new BlocEmitterImpl(onEmit.bind(this));
+      const emitter = new EmitterImpl(onEmit.bind(this));
 
-      const callableEmitter = (state: State) => emitter.call(state);
+      const callableEmitter = ((state: State) =>
+        emitter.call(state)) as Emitter<State>;
 
-      callableEmitter.close = () => {
-        isClosed = true;
-        emitter.close();
-      };
+      Object.defineProperty<typeof callableEmitter>(
+        callableEmitter,
+        'isClosed',
+        {
+          get: () => {
+            return isClosed;
+          },
+        }
+      );
 
       callableEmitter.onEach = <T>(
         stream$: Observable<T>,
@@ -166,7 +172,7 @@ export abstract class Bloc<Event, State> extends BlocBase<State> {
 
       const handleEvent = async () => {
         try {
-          this._emitters.add(callableEmitter);
+          this._emitters.add(emitter);
           await eventHandler.call(this, event, callableEmitter);
         } catch (err) {
           this.onError(err as Error);
@@ -182,8 +188,9 @@ export abstract class Bloc<Event, State> extends BlocBase<State> {
           .catch((error) => subscriber.error(error));
 
         return () => {
-          callableEmitter.close();
-          this._emitters.delete(callableEmitter);
+          isClosed = true;
+          emitter.close();
+          this._emitters.delete(emitter);
           stateToBeEmittedStream$.complete();
         };
       });

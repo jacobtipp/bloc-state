@@ -9,6 +9,8 @@ export interface BlocEmitter<State> {
   /** Cancels all subscriptions registered with this emitter. */
   close(): void;
 
+  isClosed: boolean;
+
   /** Emits the provided state. */
   call(state: State): void;
 
@@ -48,7 +50,7 @@ export interface BlocEmitter<State> {
  *
  * @template State - The type of the state that is emitted.
  */
-export interface Emitter<State> extends BlocEmitter<State> {
+export interface Emitter<State> extends Omit<BlocEmitter<State>, 'close'> {
   /** Emits the provided state. */
   (state: State): void;
 }
@@ -58,7 +60,9 @@ export interface Emitter<State> extends BlocEmitter<State> {
  *
  * @template State - The type of the state that can be emitted.
  */
-export class BlocEmitterImpl<State> implements BlocEmitter<State> {
+export class EmitterImpl<State>
+  implements Omit<BlocEmitter<State>, 'isClosed'>
+{
   /**
    * Initializes a new instance of `_Emitter`.
    *

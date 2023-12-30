@@ -1,4 +1,4 @@
-import { take, config } from 'rxjs';
+import { take, config, switchMap } from 'rxjs';
 import { Bloc, Transition, isBlocInstance } from '../src';
 import { CounterBloc } from './helpers/counter/counter.bloc';
 import { CounterCubit } from './helpers/counter/counter.cubit';
@@ -99,6 +99,36 @@ describe('bloc', () => {
         },
       });
       testBloc.add(new TestEvent());
+    });
+
+    it('should close the emitter when an event is canceled', (done) => {
+      class CounterIncrement {
+        protected _!: void;
+      }
+      class TestCounterBloc extends Bloc<CounterIncrement, number> {
+        private invokeCount = 0;
+        constructor() {
+          super(0);
+
+          this.on(
+            CounterIncrement,
+            async (_event, emit) => {
+              if (this.invokeCount > 0) return;
+              this.invokeCount++;
+              expect(emit.isClosed).toBeFalsy();
+              this.add(new CounterIncrement());
+              await delay(1000);
+              expect(emit.isClosed).toBeTruthy();
+              done();
+            },
+            (events$, mapper) => events$.pipe(switchMap(mapper))
+          );
+        }
+      }
+
+      const testBloc = new TestCounterBloc();
+
+      testBloc.add(new CounterIncrement());
     });
 
     it('should throw an error if attempting to subscribe to the same event more than once', () => {
