@@ -6,7 +6,7 @@ import { PostBloc } from './posts.bloc';
 import { MockProxy, mock } from 'jest-mock-extended';
 import { PostState } from './posts.state';
 import { Subscription } from 'rxjs';
-import { PostFetched } from './posts.events';
+import { PostCanceled, PostFetched } from './posts.events';
 import { Post } from '../../../packages/post-client/model/post';
 
 const delay = (num: number) =>
@@ -46,7 +46,15 @@ describe('PostBloc', () => {
     expect(instance.state.status).toBe('initial');
   });
 
-  describe('PostFetchedEvent', () => {
+  describe('PostCanceled', () => {
+    it('should cancel a post being fetched', async () => {
+      instance.add(new PostCanceled(9001));
+      await delay(0);
+      expect(postRepository.cancelPost).toBeCalledWith(9001);
+    });
+  });
+
+  describe('PostFetched', () => {
     it('should emit [loading, ready] state when successful', async () => {
       postRepository.getPost.mockResolvedValue(post);
       instance.add(new PostFetched(9001));
@@ -75,15 +83,6 @@ describe('PostBloc', () => {
       expect(a?.status).toBe('loading');
       expect(b?.status).toBe('failed');
       expect(b?.error).toBeInstanceOf(GetPostFailure);
-    });
-
-    it('should cancel the request for the previousId if it exists', async () => {
-      postRepository.getPost.mockResolvedValue(post);
-      instance.add(new PostFetched(9001));
-      instance.add(new PostFetched(9002));
-
-      await delay(1000);
-      expect(postRepository.cancelPost).toBeCalledWith(9001);
     });
   });
 

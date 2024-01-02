@@ -7,8 +7,19 @@ const ArticleComponent = () => {
   return <div>{repo.getArticle.name}</div>;
 };
 
-describe('useBloc', () => {
-  it('should throw an error if a bloc is not wrapped in a Provider', () => {
+describe('useRepository', () => {
+  const consoleError = console.error;
+  beforeAll(() => {
+    console.error = () => {
+      return;
+    };
+  });
+
+  afterAll(() => {
+    console.error = consoleError;
+  });
+
+  it('should throw an error if a Repository is not wrapped in a Provider', () => {
     expect(() => render(<ArticleComponent />)).toThrow();
   });
 });

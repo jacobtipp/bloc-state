@@ -1,5 +1,11 @@
 import { BlocBase, StateType, ClassType } from '@jacobtipp/bloc';
-import { useCallback, useDebugValue, useEffect, useMemo, useRef } from 'react';
+import {
+  useCallback,
+  useDebugValue,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from 'react';
 import useSyncExternalStoreExports from 'use-sync-external-store/shim/with-selector';
 import { useBlocInstance } from './useBlocInstance';
 import {
@@ -7,6 +13,7 @@ import {
   Subscription,
   distinctUntilChanged,
   filter,
+  firstValueFrom,
   map,
   startWith,
 } from 'rxjs';
@@ -26,19 +33,6 @@ export type UseBlocSelectorConfig<Bloc extends BlocBase<any>, SelectedState> = {
   errorWhen?: (state: StateType<Bloc>) => boolean;
 };
 
-interface Handler<T = any> {
-  suspender_: Promise<T>;
-  resolve_: (value?: T) => void;
-}
-
-const createHandler = (): Handler => {
-  const handler: Partial<Handler> = {};
-  handler.suspender_ = new Promise((resolve) => {
-    handler.resolve_ = resolve;
-  });
-  return handler as Handler;
-};
-
 const useSuspenseOrError = <
   Bloc extends ClassType<BlocBase<any>>,
   State extends StateType<InstanceType<Bloc>> = StateType<InstanceType<Bloc>>
@@ -49,44 +43,49 @@ const useSuspenseOrError = <
     errorWhen: (state: State) => boolean;
   }
 ) => {
-  const suspenseHandler = useRef<Handler | null>(null);
+  const suspendWhen = config.suspendWhen;
+
+  const errorWhen = config.errorWhen;
+
+  const [suspend, setSuspend] = useState(() => suspendWhen(bloc.state));
+
+  const promise = useRef<Promise<any> | null>(null);
 
   const suspsenseSubscription = useRef<Subscription | null>(null);
 
-  if (!suspsenseSubscription.current) {
-    const suspendWhen = config.suspendWhen;
+  useLayoutEffect(() => {
     suspsenseSubscription.current = (bloc.state$ as Observable<State>)
       .pipe(startWith(bloc.state as State))
       .subscribe((state) => {
         if (suspendWhen(state)) {
-          suspenseHandler.current?.resolve_();
-          suspenseHandler.current = createHandler();
-        } else if (suspenseHandler.current) {
-          suspenseHandler.current.resolve_();
-          suspenseHandler.current = null;
+          setSuspend(true);
+        } else {
+          promise.current = null;
+          setSuspend(false);
         }
       });
-  }
 
-  useMemo(() => {
-    const errorWhen = config.errorWhen;
-    if (errorWhen(bloc.state as State)) {
-      throw new BlocRenderError(bloc.state);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [bloc.state]);
-
-  if (suspenseHandler.current) throw suspenseHandler.current.suspender_;
-
-  useEffect(() => {
     return () => {
       suspsenseSubscription.current?.unsubscribe();
-      suspenseHandler.current?.resolve_();
-      suspenseHandler.current = null;
       suspsenseSubscription.current = null;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  if (errorWhen(bloc.state as State)) {
+    throw new BlocRenderError(bloc.state);
+  }
+
+  if (suspend && !promise.current) {
+    promise.current = firstValueFrom(
+      bloc.state$.pipe(
+        startWith(bloc.state),
+        filter((state) => !suspendWhen(state))
+      )
+    );
+
+    throw promise.current;
+  }
 };
 
 export const useBlocSelector = <

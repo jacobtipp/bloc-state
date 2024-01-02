@@ -1,11 +1,10 @@
-import { PostEvent, PostFetched } from './posts.events';
+import { PostCanceled, PostEvent, PostFetched } from './posts.events';
 import { PostState } from './posts.state';
 import { Bloc, Emitter } from '@jacobtipp/bloc';
 import { PostRepository } from '../../../packages/post-repository/post-repository';
 import { restartable } from '@jacobtipp/bloc-concurrency';
 
 export class PostBloc extends Bloc<PostEvent, PostState> {
-  private previousId: number | undefined;
   constructor(private postRepository: PostRepository) {
     super(
       new PostState({
@@ -18,19 +17,19 @@ export class PostBloc extends Bloc<PostEvent, PostState> {
     );
 
     this.on(PostFetched, this.onFetched, restartable());
+    this.on(PostCanceled, (event, emit) => this.onCanceled(event, emit));
+  }
+
+  onCanceled(event: PostCanceled, _emit: Emitter<PostState>): void {
+    this.postRepository.cancelPost(event.id);
   }
 
   async onFetched(event: PostFetched, emit: Emitter<PostState>): Promise<void> {
     try {
-      if (this.previousId !== event.id && this.previousId !== undefined) {
-        this.postRepository.cancelPost(this.previousId);
-      }
-
-      this.previousId = event.id;
-
       emit(this.state.loading());
 
       const post = await this.postRepository.getPost(event.id);
+
       emit(
         this.state.ready((data) => {
           data.details = post;

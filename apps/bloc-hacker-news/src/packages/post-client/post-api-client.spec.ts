@@ -90,7 +90,7 @@ describe('PostApiClient', () => {
       }
     });
 
-    it('should throw a PostApiMalformedResponse expception if response data is malformed', async () => {
+    it('should throw a PostApiMalformedResponse exception if response data is malformed', async () => {
       try {
         await createMalformedResponse();
       } catch (e: unknown) {
