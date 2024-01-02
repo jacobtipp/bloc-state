@@ -2,6 +2,17 @@ import { waitFor, fireEvent, render, screen } from '@testing-library/react';
 import { UserBlocErrorProvider } from './user';
 
 describe('BlocErrorBoundary', () => {
+  const consoleError = console.error;
+  beforeAll(() => {
+    console.error = () => {
+      return;
+    };
+  });
+
+  afterAll(() => {
+    console.error = consoleError;
+  });
+
   it('should trigger an Error Boundary when errorWhen callback returns true ', async () => {
     render(<UserBlocErrorProvider />);
 

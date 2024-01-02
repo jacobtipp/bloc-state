@@ -1,9 +1,16 @@
 import { Cubit } from '@jacobtipp/bloc';
 
-export class HomeBloc extends Cubit<number> {
+export class HomeBloc extends Cubit<{
+  previousId?: number;
+  currentId: number;
+}> {
   constructor() {
-    super(9001);
+    super({ currentId: 9001 });
   }
 
-  incrementId = () => this.emit(this.state + 1);
+  incrementId = () =>
+    this.emit({
+      previousId: this.state.currentId,
+      currentId: this.state.currentId + 1,
+    });
 }

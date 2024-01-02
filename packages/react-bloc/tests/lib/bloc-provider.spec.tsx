@@ -3,6 +3,16 @@ import { CounterExampleGroup } from './counter';
 import { CounterWithUserProvider } from './user';
 
 describe('MultiProvider', () => {
+  const consoleError = console.error;
+  beforeAll(() => {
+    console.error = () => {
+      return;
+    };
+  });
+
+  afterAll(() => {
+    console.error = consoleError;
+  });
   it('should support providing multiple instances of the same bloc', async () => {
     const { getAllByTestId, getByText, findByTestId } = render(
       <CounterExampleGroup />

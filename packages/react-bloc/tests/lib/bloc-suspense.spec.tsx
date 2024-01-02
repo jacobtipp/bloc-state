@@ -5,12 +5,13 @@ import { CounterExample } from './counter';
 describe('BlocSuspense', () => {
   const originalConsoleError = console.error;
 
-  beforeEach(() => {
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    console.error = () => {};
+  beforeAll(() => {
+    console.error = () => {
+      return;
+    };
   });
 
-  afterEach(() => {
+  afterAll(() => {
     console.error = originalConsoleError;
   });
 
@@ -42,5 +43,21 @@ describe('BlocSuspense', () => {
     const count2 = await findByTestId('count');
 
     expect(count2.textContent).toBe('10');
+
+    fireEvent.click(increment);
+
+    getByText('loading...');
+
+    fireEvent.click(button);
+
+    const count3 = await findByTestId('count');
+
+    expect(count3.textContent).toBe('11');
+
+    fireEvent.click(increment);
+
+    const count4 = await findByTestId('count');
+
+    expect(count4.textContent).toBe('12');
   }, 6000);
 });
