@@ -26,6 +26,7 @@ export type QueryKey = string;
 export type QueryOptions<Data> = {
   initialData?: Data;
   staleTime?: number;
+  logErrors?: boolean;
   queryKey: QueryKey;
   queryFn: (options: QueryFnOptions) => Promise<Data>;
 };
@@ -56,6 +57,7 @@ export class QueryBloc<Data = unknown> extends Bloc<
   QueryState<Data>
 > {
   private staleTime: number;
+  private logErrors: boolean;
   private handledInitialLoad = false;
   private revertedState: QueryState<Data>;
 
@@ -72,6 +74,7 @@ export class QueryBloc<Data = unknown> extends Bloc<
     super(state, name);
     this.revertedState = state;
     this.staleTime = options.staleTime ?? 0;
+    this.logErrors = options.logErrors ?? false;
 
     this.on(
       QueryFetchEvent,
@@ -86,6 +89,12 @@ export class QueryBloc<Data = unknown> extends Bloc<
         this
       )
     );
+  }
+
+  protected override onError(error: Error): void {
+    if (this.logErrors) {
+      super.onError(error);
+    }
   }
 
   private async onQueryFetch(
