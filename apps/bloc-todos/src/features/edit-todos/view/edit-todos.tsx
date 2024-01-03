@@ -24,9 +24,7 @@ import {
   useBlocListener,
   useRepository,
 } from '@jacobtipp/react-bloc';
-import { createSelector } from 'reselect';
 import { EditTodoBloc } from '../bloc/edit-todo.bloc';
-import { EditTodoState } from '../bloc/edit-todo.state';
 import { TodosRepository } from '../../../packages/todos-repository/todos-repository';
 
 export default function EditTodoPage() {
@@ -51,20 +49,10 @@ export type EditTodoViewProps = {
   isNew: boolean;
 };
 
-const getData = (state: EditTodoState) => state.data;
-const title = createSelector(getData, (data) => data.title);
-const description = createSelector(getData, (data) => data.description);
-const titleAndDescriptionSelector = createSelector(
-  [title, description],
-  (title, description) => {
-    return [title, description];
-  }
-);
-
 export function EditTodoView({ isNew }: EditTodoViewProps) {
   const navigate = useNavigate();
   const [[title, description], { add }] = useBloc(EditTodoBloc, {
-    selector: titleAndDescriptionSelector,
+    selector: (state) => [state.data.title, state.data.description],
   });
 
   useBlocListener(EditTodoBloc, {
@@ -72,7 +60,7 @@ export function EditTodoView({ isNew }: EditTodoViewProps) {
       return current.submitSuccess;
     },
     listener() {
-      navigate('/');
+      navigate(-1);
     },
   });
 

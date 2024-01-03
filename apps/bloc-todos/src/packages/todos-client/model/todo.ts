@@ -1,8 +1,10 @@
-export class Todo {
-  constructor(
-    public title: string,
-    public description: string,
-    public isCompleted = false,
-    public id = crypto.randomUUID() as string
-  ) {}
-}
+import { string, boolean, object, Output } from 'valibot';
+
+export const TodoSchema = object({
+  title: string(),
+  description: string(),
+  isCompleted: boolean(),
+  id: string(),
+});
+
+export type Todo = Output<typeof TodoSchema>;

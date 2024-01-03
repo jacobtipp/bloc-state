@@ -1,5 +1,4 @@
 import { Bloc, Emitter } from '@jacobtipp/bloc';
-import { Todo } from '../../../packages/todos-client/model/todo';
 import {
   EditTodoDescriptionChanged,
   EditTodoEvent,
@@ -28,9 +27,12 @@ export class EditTodoBloc extends Bloc<EditTodoEvent, EditTodoState> {
   async onSubmitted(_event: EditTodoSubmitted, emit: Emitter<EditTodoState>) {
     try {
       const { title, description, id, isCompleted } = this.state.data;
-      await this.todosRepository.saveTodo(
-        new Todo(title, description, isCompleted, id)
-      );
+      await this.todosRepository.saveTodo({
+        id: id ?? crypto.randomUUID(),
+        title,
+        description,
+        isCompleted: isCompleted ?? false,
+      });
       emit(
         this.state.copyWith((draft) => {
           draft.status = 'ready';

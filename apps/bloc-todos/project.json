@@ -53,13 +53,14 @@
       }
     },
     "test": {
-      "executor": "@nx/vite:test",
-      "outputs": ["{options.reportsDirectory}"],
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
       "options": {
-        "passWithNoTests": true,
-        "reportsDirectory": "../../coverage/apps/bloc-todos"
+        "jestConfig": "apps/bloc-todos/jest.config.ts",
+        "passWithNoTests": true
       }
     },
+
     "typecheck": {
       "executor": "nx:run-commands",
       "options": {
