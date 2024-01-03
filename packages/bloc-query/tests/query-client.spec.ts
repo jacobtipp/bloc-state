@@ -44,6 +44,32 @@ describe('QueryClient', () => {
         });
     });
 
+    it('it should return a stream error if QueryState failed', (done) => {
+      const states: string[] = [];
+      queryClient
+        .getQuery({
+          queryKey: 'person',
+          queryFn: () => {
+            throw new Error('Selector Failure');
+            return Promise.resolve({
+              person: {
+                name: 'bob',
+                age: 21,
+              },
+            });
+          },
+          selector: (state) => state.data.person.name,
+        })
+        .pipe(take(1))
+        .subscribe({
+          next: (state) => states.push(state),
+          error: (error: Error) => {
+            expect(error.message).toBe('Selector Failure');
+            done();
+          },
+        });
+    });
+
     it('it should emit multiple states when no comparator is provided even if nested data has not changed', (done) => {
       type Person = { name: string; age: number };
       const states: Person[] = [];

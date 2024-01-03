@@ -163,10 +163,13 @@ export class QueryBloc<Data = unknown> extends Bloc<
 
     return this.state$.pipe(
       startWith(this.state),
-      filter((state) => (selector ? state.status === 'isReady' : true)),
-      map((state) =>
-        selector ? selector(state as Ready<Data>) : state
-      ) as OperatorFunction<QueryState<Data>, Selected>,
+      filter(({ isReady, isError }) => (selector ? isReady || isError : true)),
+      map((state) => {
+        if (state.isError && selector) {
+          throw state.error;
+        }
+        return selector ? selector(state as Ready<Data>) : state;
+      }) as OperatorFunction<QueryState<Data>, Selected>,
       distinctUntilChanged(comparer)
     );
   };
