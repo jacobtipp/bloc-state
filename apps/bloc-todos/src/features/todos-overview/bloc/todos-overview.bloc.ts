@@ -109,7 +109,10 @@ export class TodosOverviewBlocBase extends Bloc<
           data.todos = todos;
         });
       },
-      (_error) => this.state.failed()
+      (error: Error) => {
+        this.addError(error);
+        return this.state.failed(error);
+      }
     );
   }
 

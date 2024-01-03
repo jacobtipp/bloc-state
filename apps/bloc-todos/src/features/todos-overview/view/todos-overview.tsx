@@ -18,15 +18,18 @@ import { TodosOverviewOptionsButton } from '../components/todos-overview-options
 import { TodosOverviewFilterButton } from '../components/todos-overview-filter-button';
 import { TodosOverviewEmptyText } from '../components/todos-overview-empty-text';
 import { Todo } from '../../../packages/todos-client/model/todo';
-import { BlocProvider, useBloc, useRepository } from '@jacobtipp/react-bloc';
-import { createSelector } from 'reselect';
+import {
+  BlocProvider,
+  useBloc,
+  useBlocSelector,
+  useRepository,
+} from '@jacobtipp/react-bloc';
 import { TodosOverviewBloc } from '../bloc/todos-overview.bloc';
 import {
   TodosOverviewSubscriptionRequested,
   TodosOverviewTodoDeleted,
   TodosOverviewTodoCompletionToggled,
 } from '../bloc/todos-overview.event';
-import { TodosOverviewState } from '../bloc/todos-overview.state';
 import { TodosOverviewFilter } from '../model/todos-overview-filter';
 import { TodosRepository } from '../../../packages/todos-repository/todos-repository';
 import { TodosOverViewSnackbar } from '../components/todos-overview-snackbar';
@@ -37,17 +40,6 @@ const todoFilterMap = (todo: Todo, filter: TodosOverviewFilter) =>
     : filter === 'completed'
     ? todo.isCompleted
     : !todo.isCompleted;
-
-// memoized selectors
-const getData = (state: TodosOverviewState) => state.data;
-const filterSelector = createSelector(getData, (data) => data.filter);
-const todosSelector = createSelector(getData, (data) => data.todos);
-const filteredTodosSelector = createSelector(
-  [filterSelector, todosSelector],
-  (filter, todos) => {
-    return todos.filter((todo) => todoFilterMap(todo, filter));
-  }
-);
 
 export default function TodosOverviewPage() {
   const todosRepository = useRepository(TodosRepository);
@@ -68,8 +60,12 @@ export default function TodosOverviewPage() {
 }
 
 export function TodosOverviewView() {
+  const filter = useBlocSelector(TodosOverviewBloc, {
+    selector: (state) => state.data.filter,
+  });
   const [filteredTodos, { add }] = useBloc(TodosOverviewBloc, {
-    selector: filteredTodosSelector,
+    selector: (state) =>
+      state.data.todos.filter((todo) => todoFilterMap(todo, filter)),
   });
 
   const navigate = useNavigate();
