@@ -173,16 +173,6 @@ describe('TodosOverviewBloc', () => {
     });
   });
 
-  /*private async onToggleAllRequested(
-    _event: TodosOverviewToggleAllRequested,
-    _emit: Emitter<TodosOverviewState>
-  ): Promise<void> {
-    const areAllCompleted = this.state.data.todos.every(
-      (todo) => todo.isCompleted
-    );
-    await this.todosRepository.completeAll(!areAllCompleted);
-  }*/
-
   describe('TodosOverviewToggleAllRequested', () => {
     it('should toggle isCompleted for a todo', async () => {
       expect.assertions(1);
