@@ -13,7 +13,6 @@ import {
   QueryRevalidateEvent,
   QueryCancelEvent,
   SetQueryDataEvent,
-  QuerySubscriptionEvent,
 } from './query-event';
 import {
   FetchTransformerOptions,
@@ -151,14 +150,6 @@ export class QueryBloc<Data = unknown> extends Bloc<
     if (this.isClosed) {
       throw new QueryClosedException('Query is closed');
     }
-
-    const subscriptionEvent = new QuerySubscriptionEvent();
-    Bloc.observer.onEvent(this, subscriptionEvent);
-
-    Bloc.observer.onTransition(
-      this,
-      new Transition(this.state, subscriptionEvent, this.state)
-    );
 
     if (this.state.status === 'isLoading' && !this.handledInitialLoad) {
       this.handledInitialLoad = true;

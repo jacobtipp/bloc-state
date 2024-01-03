@@ -25,10 +25,6 @@ export class QueryRevalidateEvent extends QueryEvent {
   override name = 'QueryRevalidateEvent';
 }
 
-export class QuerySubscriptionEvent extends QueryEvent {
-  override name = 'QuerySubscriptionEvent';
-}
-
 export class QueryErrorEvent extends QueryEvent {
   override name = 'QueryErrorEvent';
   constructor(public error: any) {
