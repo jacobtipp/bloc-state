@@ -73,6 +73,7 @@ export const queryFetchTransformer =
 
               if (retryAttempt > maxRetryAttempts && !bloc.isClosed) {
                 const errorEvent = new QueryErrorEvent(error);
+
                 Bloc.observer.onEvent(bloc, errorEvent);
 
                 const stateToEmit: Failed<Data> = {

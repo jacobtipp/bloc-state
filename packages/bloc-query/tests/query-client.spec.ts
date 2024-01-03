@@ -8,6 +8,7 @@ import { delay } from './helpers/delay';
 import { getRandomInt } from './helpers/random';
 import { QueryState } from '../src/lib/query-state';
 import { TestApiError } from './helpers/test-error';
+import { Bloc, BlocBase, BlocObserver } from '@jacobtipp/bloc';
 
 describe('QueryClient', () => {
   const queryClient = new QueryClient();
@@ -44,10 +45,39 @@ describe('QueryClient', () => {
         });
     });
 
+    it('it should log errors to BlocObserver if logErrors option is enabled', (done) => {
+      class TestObserver extends BlocObserver {
+        override onError(_bloc: BlocBase<any>, error: Error): void {
+          expect(error.message).toBe('Selector Failure');
+          done();
+        }
+      }
+
+      Bloc.observer = new TestObserver();
+      queryClient
+        .getQuery({
+          logErrors: true,
+          queryKey: 'person',
+          queryFn: () => {
+            throw new Error('Selector Failure');
+            return Promise.resolve({
+              person: {
+                name: 'bob',
+                age: 21,
+              },
+            });
+          },
+          selector: (state) => state.data.person.name,
+        })
+        .pipe(take(1))
+        .subscribe();
+    });
+
     it('it should return a stream error if QueryState failed', (done) => {
       const states: string[] = [];
       queryClient
         .getQuery({
+          logErrors: true,
           queryKey: 'person',
           queryFn: () => {
             throw new Error('Selector Failure');
