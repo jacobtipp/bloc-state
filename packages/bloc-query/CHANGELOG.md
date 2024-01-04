@@ -1,3 +1,16 @@
+## [2.4.0](https://github.com/jacobtipp/bloc-state/compare/bloc-query-v2.3.0...bloc-query-v2.4.0) (2024-01-04)
+
+
+### Features
+
+* **bloc-query:** ✨ add optional logErrors QueryBloc option ([da18a21](https://github.com/jacobtipp/bloc-state/commit/da18a21a9ed1e27d39e99a278f1c7b9b156b6721))
+
+
+### Code Refactoring
+
+* **bloc-query:** ♻️ queries with selectors throw errors when Failed state is returned ([4021a9c](https://github.com/jacobtipp/bloc-state/commit/4021a9c64625bda180d0f588f12ce6ad59ab6856))
+* **bloc-query:** ♻️ remove QuerySubscriptionEvent ([9f476e0](https://github.com/jacobtipp/bloc-state/commit/9f476e0e4a7b86b5835a17ea85c0a2883f73bc57))
+
 ## [2.3.0](https://github.com/jacobtipp/bloc-state/compare/bloc-query-v2.2.2...bloc-query-v2.3.0) (2024-01-04)
 
 
