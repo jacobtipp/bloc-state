@@ -1,3 +1,29 @@
+## [2.3.0](https://github.com/jacobtipp/bloc-state/compare/bloc-query-v2.2.2...bloc-query-v2.3.0) (2024-01-04)
+
+
+### Features
+
+* **bloc-query:** ✨ cancelQuery sends a QueryCancelEvent to BlocObserver ([1b98465](https://github.com/jacobtipp/bloc-state/commit/1b98465085ade1d6b3387aaad02bbeb79f0ade2b))
+* **bloc-query:** ✨ setQueryData sends a SetQueryDataEvent to BlocObserver ([8607c6d](https://github.com/jacobtipp/bloc-state/commit/8607c6d4fefeebb7d24007ca712122ca0dcba95c))
+* **bloc:** ✨ add addError method to BlocBase ([84e0781](https://github.com/jacobtipp/bloc-state/commit/84e07811b2255b15aa52fb8af4d1672a401c7097))
+* **bloc:** ✨ add isClosed getter property to BlocEmitter ([18fae30](https://github.com/jacobtipp/bloc-state/commit/18fae3060af82913b55553812110f76294654b07))
+* **bloc:** ✨ add listenTo method ([06be27c](https://github.com/jacobtipp/bloc-state/commit/06be27c9fc5a6f0d2436e38e13bf8b1c3cb22368))
+
+
+### Bug Fixes
+
+* **bloc-query:** 🐛 cancel query before revalidating ([79e2ca5](https://github.com/jacobtipp/bloc-state/commit/79e2ca5cc545da6fdace69281cb5d12982b2795b))
+* **bloc-query:** 🐛 cancelQuery should revert state synchronously ([ca97225](https://github.com/jacobtipp/bloc-state/commit/ca97225a7d3a9236ea84dc85d27390206d5016a2))
+* **bloc-query:** 🐛 handledInitialLoad is reset if a query is cancelled before loading ([6f29744](https://github.com/jacobtipp/bloc-state/commit/6f29744f38494caf5d88cd4aff094640e9f0f659))
+
+
+### Code Refactoring
+
+* **bloc-query:** ♻️ QuerySubscriptionEvent should be synchronous ([62ca1e2](https://github.com/jacobtipp/bloc-state/commit/62ca1e2b76d7e9a52a151a3224288536362daf82))
+* **bloc-query:** ♻️ revalidateQuery should be synchronous ([e0ee668](https://github.com/jacobtipp/bloc-state/commit/e0ee668311c45856811c3da7304d70cf4638d48c))
+* **bloc-query:** ♻️ revert to previous state when cancelling a query ([26202fd](https://github.com/jacobtipp/bloc-state/commit/26202fdd71695ffc9ab8d2350a56fcacb1fabc5e))
+* **bloc-query:** ♻️ setQueryData should be synchronous ([ac16434](https://github.com/jacobtipp/bloc-state/commit/ac16434411e960a2980bd80a699721c1209a4889))
+
 ## [2.2.2](https://github.com/jacobtipp/bloc-state/compare/bloc-query-v2.2.1...bloc-query-v2.2.2) (2023-12-15)
 
 
