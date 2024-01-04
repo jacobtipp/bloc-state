@@ -1,3 +1,24 @@
+## [3.3.0](https://github.com/jacobtipp/bloc-state/compare/react-bloc-v3.2.5...react-bloc-v3.3.0) (2024-01-04)
+
+
+### Features
+
+* **bloc:** ✨ add addError method to BlocBase ([84e0781](https://github.com/jacobtipp/bloc-state/commit/84e07811b2255b15aa52fb8af4d1672a401c7097))
+* **bloc:** ✨ add isClosed getter property to BlocEmitter ([18fae30](https://github.com/jacobtipp/bloc-state/commit/18fae3060af82913b55553812110f76294654b07))
+* **bloc:** ✨ add listenTo method ([06be27c](https://github.com/jacobtipp/bloc-state/commit/06be27c9fc5a6f0d2436e38e13bf8b1c3cb22368))
+
+
+### Bug Fixes
+
+* **react-bloc:** 🐛 useSuspenseOrError requries useLayoutEffect to prevent memory leak ([100fd02](https://github.com/jacobtipp/bloc-state/commit/100fd02aa166b151056c949a3eb9a2ae0b925e30))
+
+
+### Code Refactoring
+
+* **react-bloc:** ♻️ subscribe to blocListener stream inside useLayoutEffect ([fee43be](https://github.com/jacobtipp/bloc-state/commit/fee43be94238a92c72d7ee275980d88a60279f99))
+* **react-bloc:** ♻️ switch back to useSyncExternalStoreWithSelector ([43aa713](https://github.com/jacobtipp/bloc-state/commit/43aa713b8a2044913ef70e0989b7ce5d8951260b))
+* **react-bloc:** ♻️ UseBlocSelectorConfig is now optional ([1c1560e](https://github.com/jacobtipp/bloc-state/commit/1c1560e6754a7e7daca87a0f05a73d97dcdf780b))
+
 ## [3.2.5](https://github.com/jacobtipp/bloc-state/compare/react-bloc-v3.2.4...react-bloc-v3.2.5) (2023-12-12)
 
 
