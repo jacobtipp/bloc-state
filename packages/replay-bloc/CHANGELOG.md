@@ -1,3 +1,12 @@
+## [2.1.0](https://github.com/jacobtipp/bloc-state/compare/replay-bloc-v2.0.4...replay-bloc-v2.1.0) (2024-01-04)
+
+
+### Features
+
+* **bloc:** ✨ add addError method to BlocBase ([84e0781](https://github.com/jacobtipp/bloc-state/commit/84e07811b2255b15aa52fb8af4d1672a401c7097))
+* **bloc:** ✨ add isClosed getter property to BlocEmitter ([18fae30](https://github.com/jacobtipp/bloc-state/commit/18fae3060af82913b55553812110f76294654b07))
+* **bloc:** ✨ add listenTo method ([06be27c](https://github.com/jacobtipp/bloc-state/commit/06be27c9fc5a6f0d2436e38e13bf8b1c3cb22368))
+
 ## [2.0.4](https://github.com/jacobtipp/bloc-state/compare/replay-bloc-v2.0.3...replay-bloc-v2.0.4) (2023-12-12)
 
 
