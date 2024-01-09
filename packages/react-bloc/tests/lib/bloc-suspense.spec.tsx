@@ -28,9 +28,9 @@ describe('BlocSuspense', () => {
 
     getByText('loading...');
 
-    const button = await findByTestId('increment-suspense');
+    const suspenseIncrement = await findByTestId('increment-suspense');
 
-    fireEvent.click(button);
+    fireEvent.click(suspenseIncrement);
 
     const count = await findByTestId('count');
 
@@ -48,16 +48,18 @@ describe('BlocSuspense', () => {
 
     getByText('loading...');
 
-    fireEvent.click(button);
+    const suspenseIncrement2 = await findByTestId('increment-suspense');
+
+    fireEvent.click(suspenseIncrement2);
 
     const count3 = await findByTestId('count');
 
-    expect(count3.textContent).toBe('11');
+    expect(count3.textContent).toBe('12');
 
     fireEvent.click(increment);
 
     const count4 = await findByTestId('count');
 
-    expect(count4.textContent).toBe('12');
+    expect(count4.textContent).toBe('13');
   }, 6000);
 });
