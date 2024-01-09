@@ -40,3 +40,9 @@ testem.log
 .DS_Store
 Thumbs.db
 .devcontainer/
+
+# Next.js
+.next
+
+# Nx
+.nx/cache

@@ -51,6 +51,8 @@ const useSuspenseOrError = <
 
   const promise = useRef<Promise<any> | null>(null);
 
+  const suspendedState = useRef<State>(bloc.state);
+
   const suspsenseSubscription = useRef<Subscription | null>(null);
 
   useLayoutEffect(() => {
@@ -58,10 +60,8 @@ const useSuspenseOrError = <
       .pipe(startWith(bloc.state as State))
       .subscribe((state) => {
         if (suspendWhen(state)) {
+          suspendedState.current = state;
           setSuspend(true);
-        } else {
-          promise.current = null;
-          setSuspend(false);
         }
       });
 
@@ -76,13 +76,16 @@ const useSuspenseOrError = <
     throw new BlocRenderError(bloc.state);
   }
 
-  if (suspend && !promise.current) {
+  if (suspend) {
     promise.current = firstValueFrom(
       bloc.state$.pipe(
-        startWith(bloc.state),
+        startWith(suspendedState.current),
         filter((state) => !suspendWhen(state))
       )
-    );
+    ).then(() => {
+      promise.current = null;
+      setSuspend(false);
+    });
 
     throw promise.current;
   }
