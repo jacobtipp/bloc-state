@@ -27,6 +27,42 @@ const UserPage = () => (
 );
 ```
 
+### BlocBuilder
+
+```ts
+const const CounterParent = () => {
+  return (
+    <BlocProvider bloc={CounterBloc} create={() => new CounterBloc(0)}>
+      <Counter />
+    </BlocProvider>
+  );
+};
+
+export const Counter = () => {
+  const counter = useBlocInstance(CounterBloc);
+  return (
+    <>
+      <BlocBuilder
+        bloc={CounterBloc}
+        buildWhen={(previous, current) => (previous + current) % 3 === 0}
+        builder={(count) => {
+          return <div>{count}</div>;
+        }}
+      />
+      <BlocBuilder
+        bloc={CounterBloc}
+        builder={(count) => {
+          return <div>{count}</div>;
+        }}
+      />
+      <button onClick={counter.increment}>
+        increment
+      </button>
+    </>
+  );
+};
+```
+
 ### BlocListener
 
 alternatively you can use a `useBlocListener` hook instead of the `BlocListener` component
