@@ -1,3 +1,15 @@
+## [3.4.0](https://github.com/jacobtipp/bloc-state/compare/react-bloc-v3.3.1...react-bloc-v3.4.0) (2024-01-10)
+
+
+### Features
+
+* **react-bloc:** ✨ add BlocBuilder component ([1a590ce](https://github.com/jacobtipp/bloc-state/commit/1a590ce29d1b92893e34025dd25b9c1600fab30e))
+
+
+### Documentation
+
+* **readme:** 📚️ add BlocBuilder section to @jacobtipp/react-bloc ([f59085d](https://github.com/jacobtipp/bloc-state/commit/f59085db3a8b920e85dc4059ba5d91b2428a4b9c))
+
 ## [3.3.1](https://github.com/jacobtipp/bloc-state/compare/react-bloc-v3.3.0...react-bloc-v3.3.1) (2024-01-10)
 
 
