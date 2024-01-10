@@ -1,3 +1,10 @@
+## [3.3.1](https://github.com/jacobtipp/bloc-state/compare/react-bloc-v3.3.0...react-bloc-v3.3.1) (2024-01-10)
+
+
+### Bug Fixes
+
+* **react-bloc:** 🐛 cache suspense state in useRef before suspending ([f389c04](https://github.com/jacobtipp/bloc-state/commit/f389c04c2899d7d64a2916258aaab05e537c4c7e))
+
 ## [3.3.0](https://github.com/jacobtipp/bloc-state/compare/react-bloc-v3.2.5...react-bloc-v3.3.0) (2024-01-04)
 
 
