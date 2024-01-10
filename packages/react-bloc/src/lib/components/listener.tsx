@@ -7,7 +7,7 @@ export function BlocListener<Bloc extends ClassType<BlocBase<any>>>({
   listenWhen,
   children,
 }: React.PropsWithChildren<
-  BlocListenerProps<InstanceType<Bloc>> & { bloc: Bloc }
+  BlocListenerProps<Bloc> & { bloc: Bloc }
 >): JSX.Element {
   useBlocListener(bloc, {
     listener,

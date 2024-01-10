@@ -1,6 +1,7 @@
 import { FallbackProps } from 'react-error-boundary';
 import {
   BlocBuilder,
+  BlocConsumer,
   BlocErrorBoundary,
   BlocProvider,
   useBlocInstance,
@@ -107,6 +108,16 @@ export const CounterBuilderChild = () => {
         bloc={CounterBloc}
         builder={(count) => {
           return <div data-testid="count-default">{count}</div>;
+        }}
+      />
+      <BlocConsumer
+        bloc={CounterBloc}
+        builder={(count) => {
+          return <div data-testid="count-consumer">{count}</div>;
+        }}
+        listenWhen={(_, current) => current % 2 === 0}
+        listener={() => {
+          window.alert('consumer listener has been called');
         }}
       />
       <button data-testid="increment" onClick={counter.increment}>
