@@ -1,3 +1,10 @@
+## [3.5.0](https://github.com/jacobtipp/bloc-state/compare/react-bloc-v3.4.0...react-bloc-v3.5.0) (2024-01-10)
+
+
+### Features
+
+* **react-bloc:** ✨ add BlocConsumer component ([acfcbfd](https://github.com/jacobtipp/bloc-state/commit/acfcbfdefa24e3c2c73d811b29afb4bd0491be7f))
+
 ## [3.4.0](https://github.com/jacobtipp/bloc-state/compare/react-bloc-v3.3.1...react-bloc-v3.4.0) (2024-01-10)
 
 
