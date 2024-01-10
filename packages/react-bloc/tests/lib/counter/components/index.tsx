@@ -1,5 +1,6 @@
 import { FallbackProps } from 'react-error-boundary';
 import {
+  BlocBuilder,
   BlocErrorBoundary,
   BlocProvider,
   useBlocInstance,
@@ -79,6 +80,38 @@ export const CounterExampleGroup = () => {
     <>
       <CounterExample count={0} />
       <CounterExample count={0} />
+    </>
+  );
+};
+
+export const CounterBuilderParent = () => {
+  return (
+    <BlocProvider bloc={CounterBloc} create={() => new CounterBloc(0)}>
+      <CounterBuilderChild />
+    </BlocProvider>
+  );
+};
+
+export const CounterBuilderChild = () => {
+  const counter = useBlocInstance(CounterBloc);
+  return (
+    <>
+      <BlocBuilder
+        bloc={CounterBloc}
+        buildWhen={(previous, current) => (previous + current) % 3 === 0}
+        builder={(count) => {
+          return <div data-testid="count">{count}</div>;
+        }}
+      />
+      <BlocBuilder
+        bloc={CounterBloc}
+        builder={(count) => {
+          return <div data-testid="count-default">{count}</div>;
+        }}
+      />
+      <button data-testid="increment" onClick={counter.increment}>
+        increment
+      </button>
     </>
   );
 };
