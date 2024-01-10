@@ -5,16 +5,16 @@ import { defaultListenWhen } from './defaults';
 import { Subscription, filter, map, pairwise, startWith } from 'rxjs';
 
 export interface BlocListenerProps<
-  Bloc extends BlocBase<any>,
-  State = StateType<Bloc>
+  Bloc extends ClassType<BlocBase<any>>,
+  State = StateType<InstanceType<Bloc>>
 > {
-  listener: (bloc: Bloc, state: State) => void;
+  listener: (bloc: InstanceType<Bloc>, state: State) => void;
   listenWhen?: (previous: State, current: State) => boolean;
 }
 
 export const useBlocListener = <Bloc extends ClassType<BlocBase<any>>>(
   bloc: Bloc,
-  { listener, listenWhen }: BlocListenerProps<InstanceType<Bloc>>
+  { listener, listenWhen }: BlocListenerProps<Bloc>
 ) => {
   const blocInstance = useBlocInstance(bloc);
   const when = listenWhen ?? defaultListenWhen;
