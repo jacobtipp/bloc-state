@@ -33,9 +33,10 @@ export class ArticleBloc extends Cubit<Article> {
   async getNewArticle() {
     const newId = await this.idRepository.createId();
     const newArticle = await this.articleRepo.getArticle();
-    this.emit({
-      id: newId,
-      body: newArticle.body,
-    });
+    if (!this.isClosed)
+      this.emit({
+        id: newId,
+        body: newArticle.body,
+      });
   }
 }

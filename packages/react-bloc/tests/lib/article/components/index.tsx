@@ -35,6 +35,7 @@ const ArticleBlocProvider = ({ children }: PropsWithChildren) => {
         bloc.getNewArticle();
         return bloc;
       }}
+      dependencies={[articleRepository, idRepository]}
       children={children}
     />
   );

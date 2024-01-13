@@ -9,6 +9,8 @@ export const useRepository = <Repository extends ClassType<any>>(
   if (!context)
     throw new Error(`${repository.name} does not exist in the context map.`);
 
+  const repositoryContext = useContext(context);
+
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  return useContext(context.repositoryContext)! as InstanceType<Repository>;
+  return repositoryContext.instance.current! as InstanceType<Repository>;
 };
