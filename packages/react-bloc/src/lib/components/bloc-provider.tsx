@@ -1,8 +1,5 @@
 import { BlocBase, ClassType } from '@jacobtipp/bloc';
 import {
-  Context,
-  Fragment,
-  FunctionComponentElement,
   PropsWithChildren,
   ReactNode,
   createContext,
@@ -12,10 +9,7 @@ import {
   useState,
 } from 'react';
 
-export type BlocContextMap = WeakMap<
-  ClassType<BlocBase<any>>,
-  { count: number; blocContext: React.Context<BlocBase<any> | undefined> }
->;
+export type BlocContextMap = Map<string, React.Context<BlocBase<any>>>;
 
 export interface BlocCreatorProvider<Bloc extends ClassType<BlocBase<any>>> {
   bloc: Bloc;
@@ -24,78 +18,46 @@ export interface BlocCreatorProvider<Bloc extends ClassType<BlocBase<any>>> {
   dependencies?: any[];
 }
 
-export const contextMap: BlocContextMap = new WeakMap();
-
-const getStateFromProps = <Bloc extends ClassType<BlocBase<any>>>(
-  bloc: Bloc,
-  create: () => InstanceType<Bloc>
-) => {
-  const blocInstance = create();
-
-  const blocContainer = contextMap.get(bloc);
-
-  let context: Context<BlocBase<any> | undefined>;
-  if (blocContainer) {
-    blocContainer.count++;
-    context = blocContainer.blocContext;
-  } else {
-    context = createContext<BlocBase<any> | undefined>(undefined);
-    contextMap.set(bloc, {
-      count: 1,
-      blocContext: context,
-    });
-  }
-
-  return {
-    bloc: blocInstance,
-    context,
-  } as {
-    bloc: InstanceType<Bloc>;
-    context: Context<InstanceType<Bloc> | undefined>;
-  };
-};
+export const blocContextMap: BlocContextMap = new Map();
 
 export const BlocProvider = <Bloc extends ClassType<BlocBase<any>>>({
   bloc,
-  dependencies = [],
   children,
+  dependencies = [],
   create,
-}: BlocCreatorProvider<Bloc>): FunctionComponentElement<{
-  value: InstanceType<Bloc> | undefined;
-}> => {
-  const [state, setState] = useState<{
-    bloc: InstanceType<Bloc>;
-    context: Context<InstanceType<Bloc> | undefined>;
-  } | null>(null);
+}: BlocCreatorProvider<Bloc>) => {
+  const [instance, setInstance] = useState(() => create());
 
-  useEffect(
-    () => {
-      const providerState = getStateFromProps(bloc, create);
-
-      setState(providerState);
-
-      return () => {
-        providerState.bloc.close();
-        const blocContainer = contextMap.get(bloc);
-        if (blocContainer !== undefined && --blocContainer.count <= 0) {
-          contextMap.delete(bloc);
-        }
-      };
-    },
+  const context = useMemo(() => {
+    let context = blocContextMap.get(bloc.name);
+    if (!context) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      context = createContext<BlocBase<any>>(instance);
+      blocContextMap.set(bloc.name, context);
+    }
+    return context;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    dependencies
+  }, []);
+
+  useEffect(() => {
+    if (instance.isClosed) {
+      setInstance(create());
+    }
+    return () => {
+      if (!instance.isClosed) {
+        instance.close();
+      }
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, dependencies);
+
+  return createElement(
+    context.Provider,
+    {
+      value: instance,
+    },
+    children
   );
-
-  if (state) {
-    return createElement(
-      state.context.Provider,
-      { value: state.bloc },
-      children
-    );
-  }
-
-  // eslint-disable-next-line react/jsx-no-useless-fragment
-  return <Fragment></Fragment>;
 };
 
 type BlocProviderReturnType = ReturnType<typeof BlocProvider>;

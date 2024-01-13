@@ -1,6 +1,7 @@
 import { fireEvent, render } from '@testing-library/react';
 import { CounterExampleGroup } from './counter';
 import { CounterWithUserProvider } from './user';
+import { StrictMode } from 'react';
 
 describe('MultiProvider', () => {
   const consoleError = console.error;
@@ -15,7 +16,9 @@ describe('MultiProvider', () => {
   });
   it('should support providing multiple instances of the same bloc', async () => {
     const { getAllByTestId, getByText, findByTestId } = render(
-      <CounterExampleGroup />
+      <StrictMode>
+        <CounterExampleGroup />
+      </StrictMode>
     );
     const [resetA, resetB] = getAllByTestId('reset');
 

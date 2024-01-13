@@ -37,5 +37,5 @@ export const useBlocListener = <Bloc extends ClassType<BlocBase<any>>>(
       listenerSubscription.current = null;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [blocInstance]);
 };

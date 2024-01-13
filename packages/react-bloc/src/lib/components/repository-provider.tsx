@@ -1,20 +1,28 @@
 import { ClassType } from '@jacobtipp/bloc';
 import {
-  Context,
-  Fragment,
-  FunctionComponentElement,
+  MutableRefObject,
   PropsWithChildren,
   ReactNode,
   createContext,
   createElement,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 
+export type Closable = {
+  close?: () => void;
+};
+
+export type RepositoryContext = {
+  initialized: boolean;
+  instance: MutableRefObject<Closable | null>;
+};
+
 export type RepositoryContextMap = WeakMap<
   ClassType<any>,
-  { repositoryContext: React.Context<any | undefined> }
+  React.Context<RepositoryContext>
 >;
 
 export interface RepositoryCreatorProvider<Repository extends ClassType<any>> {
@@ -26,65 +34,57 @@ export interface RepositoryCreatorProvider<Repository extends ClassType<any>> {
 
 export const repositoryContextMap: RepositoryContextMap = new WeakMap();
 
-const getStateFromProps = <Repository extends ClassType<any>>(
-  repository: Repository,
-  create: () => InstanceType<Repository>
-) => {
-  const repositoryInstance = create();
-
-  const context = createContext<InstanceType<Repository> | undefined>(
-    undefined
-  );
-  repositoryContextMap.set(repository, {
-    repositoryContext: context,
-  });
-
-  return {
-    repository: repositoryInstance,
-    context,
-  } as {
-    repository: InstanceType<Repository>;
-    context: Context<InstanceType<Repository> | undefined>;
-  };
-};
-
 export const RepositoryProvider = <Repository extends ClassType<any>>({
   repository,
-  dependencies = [],
   children,
+  dependencies = [],
   create,
-}: RepositoryCreatorProvider<Repository>): FunctionComponentElement<{
-  value: InstanceType<Repository> | undefined;
-}> => {
-  const [state, setState] = useState<{
-    repository: InstanceType<Repository>;
-    context: Context<InstanceType<Repository> | undefined>;
-  } | null>(null);
+}: RepositoryCreatorProvider<Repository>) => {
+  const [initialized, setInitialized] = useState(false);
+  const instanceRef = useRef<Closable | null>(null);
 
-  useEffect(
-    () => {
-      const providerState = getStateFromProps(repository, create);
-
-      setState(providerState);
-
-      return () => {
-        repositoryContextMap.delete(repository);
-      };
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    dependencies
-  );
-
-  if (state) {
-    return createElement(
-      state.context.Provider,
-      { value: state.repository },
-      children
-    );
+  if (instanceRef.current === null) {
+    instanceRef.current = create();
   }
 
-  // eslint-disable-next-line react/jsx-no-useless-fragment
-  return <Fragment></Fragment>;
+  const context = useMemo(() => {
+    let context = repositoryContextMap.get(repository);
+    if (!context) {
+      context = createContext<RepositoryContext>({
+        initialized,
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        instance: instanceRef,
+      });
+      repositoryContextMap.set(repository, context);
+      return context;
+    } else {
+      return context;
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (instanceRef.current === null) {
+      instanceRef.current = create();
+      setInitialized(!initialized);
+    }
+    return () => {
+      instanceRef.current?.close?.();
+      instanceRef.current = null;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, dependencies);
+
+  return createElement(
+    context.Provider,
+    {
+      value: {
+        initialized,
+        instance: instanceRef,
+      },
+    },
+    children
+  );
 };
 
 type RepositoryProviderReturnType = ReturnType<typeof RepositoryProvider>;

@@ -2,6 +2,7 @@ import { BlocBase, StateType, ClassType } from '@jacobtipp/bloc';
 import {
   useCallback,
   useDebugValue,
+  useEffect,
   useLayoutEffect,
   useRef,
   useState,
@@ -26,6 +27,20 @@ import {
 
 const { useSyncExternalStoreWithSelector } = useSyncExternalStoreExports;
 
+export function useIsMounted() {
+  const isMounted = useRef(false);
+
+  useEffect(() => {
+    isMounted.current = true;
+
+    return () => {
+      isMounted.current = false;
+    };
+  }, []);
+
+  return useCallback(() => isMounted.current, []);
+}
+
 export type UseBlocSelectorConfig<Bloc extends BlocBase<any>, SelectedState> = {
   selector?: (state: StateType<Bloc>) => SelectedState;
   listenWhen?: (state: StateType<Bloc>) => boolean;
@@ -43,6 +58,8 @@ const useSuspenseOrError = <
     errorWhen: (state: State) => boolean;
   }
 ) => {
+  const isMounted = useIsMounted();
+
   const suspendWhen = config.suspendWhen;
 
   const errorWhen = config.errorWhen;
@@ -70,7 +87,7 @@ const useSuspenseOrError = <
       suspsenseSubscription.current = null;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [bloc]);
 
   if (errorWhen(bloc.state as State)) {
     throw new BlocRenderError(bloc.state);
@@ -84,7 +101,9 @@ const useSuspenseOrError = <
       )
     ).then(() => {
       promise.current = null;
-      setSuspend(false);
+      if (isMounted()) {
+        setSuspend(false);
+      }
     });
 
     throw promise.current;
@@ -114,22 +133,26 @@ export const useBlocSelector = <
     errorWhen,
   });
 
-  const subscriptionCallback = useCallback((notify: () => void) => {
-    const subscription = (blocInstance.state$ as Observable<State>)
-      .pipe(
-        startWith(blocInstance.state),
-        distinctUntilChanged(),
-        filter((state: State): state is State => listenWhen(state)),
-        map((state) => selector(state)),
-        distinctUntilChanged()
-      )
-      // queue state emissions for next tick to prevent tearing
-      .subscribe(() => setTimeout(() => notify(), 0));
-    return () => {
-      subscription.unsubscribe();
-    };
+  const subscriptionCallback = useCallback(
+    (notify: () => void) => {
+      const subscription = (blocInstance.state$ as Observable<State>)
+        .pipe(
+          startWith(blocInstance.state),
+          distinctUntilChanged(),
+          filter((state: State): state is State => listenWhen(state)),
+          map((state) => selector(state)),
+          distinctUntilChanged()
+        )
+        // queue state emissions for next tick to prevent tearing
+        .subscribe(() => setTimeout(() => notify(), 0));
+      return () => {
+        subscription.unsubscribe();
+      };
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    [blocInstance]
+  );
 
   const selected = useSyncExternalStoreWithSelector(
     subscriptionCallback,
