@@ -5,3 +5,4 @@ export * from './useBlocListener';
 export * from './useBlocSelector';
 export * from './useBlocValue';
 export * from './useRepository';
+export * from './useProvider';
