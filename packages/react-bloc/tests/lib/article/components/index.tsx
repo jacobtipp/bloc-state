@@ -2,19 +2,38 @@ import { PropsWithChildren } from 'react';
 import {
   BlocProvider,
   MultiRepositoryProvider,
+  Provider,
   RepositoryProvider,
   useBlocValue,
+  useProvider,
   useRepository,
 } from '../../../../src';
-import { ArticleBloc, ArticleRepository, IdRepository } from '../';
+import {
+  ArticleBloc,
+  ArticleClient,
+  ArticleRepository,
+  IdRepository,
+} from '../';
 
-const ArticleRepositoryProvider = ({ children }: PropsWithChildren) => (
-  <RepositoryProvider
-    repository={ArticleRepository}
-    create={() => new ArticleRepository()}
+const ArticleClientProvider = ({ children }: PropsWithChildren) => (
+  <Provider
+    classDef={ArticleClient}
+    create={() => new ArticleClient()}
     children={children}
   />
 );
+
+const ArticleRepositoryProvider = ({ children }: PropsWithChildren) => {
+  const articleClient = useProvider(ArticleClient);
+  return (
+    <RepositoryProvider
+      repository={ArticleRepository}
+      create={() => new ArticleRepository(articleClient)}
+      dependencies={[articleClient]}
+      children={children}
+    />
+  );
+};
 
 const IdRepositoryProvider = ({ children }: PropsWithChildren) => (
   <RepositoryProvider
@@ -52,11 +71,13 @@ export const ArticleConsumer = () => {
 };
 
 export const ArticleFeature = () => (
-  <MultiRepositoryProvider
-    providers={[ArticleRepositoryProvider, IdRepositoryProvider]}
-  >
-    <ArticleBlocProvider>
-      <ArticleConsumer />
-    </ArticleBlocProvider>
-  </MultiRepositoryProvider>
+  <ArticleClientProvider>
+    <MultiRepositoryProvider
+      providers={[ArticleRepositoryProvider, IdRepositoryProvider]}
+    >
+      <ArticleBlocProvider>
+        <ArticleConsumer />
+      </ArticleBlocProvider>
+    </MultiRepositoryProvider>
+  </ArticleClientProvider>
 );

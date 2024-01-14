@@ -5,11 +5,18 @@ type Article = {
   body: string;
 };
 
-export class ArticleRepository {
+export class ArticleClient {
   async getArticle() {
     return Promise.resolve({
       body: 'new article',
     });
+  }
+}
+
+export class ArticleRepository {
+  constructor(private readonly articleClient: ArticleClient) {}
+  async getArticle() {
+    return this.articleClient.getArticle();
   }
 }
 
