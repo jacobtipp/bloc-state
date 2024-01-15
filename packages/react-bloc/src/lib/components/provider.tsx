@@ -1,4 +1,4 @@
-import { ClassType } from '@jacobtipp/bloc';
+import { AbstractClassType, ClassType } from '@jacobtipp/bloc';
 import {
   MutableRefObject,
   PropsWithChildren,
@@ -11,9 +11,11 @@ import {
   useState,
 } from 'react';
 
+export type AnyClassType = ClassType<any> | AbstractClassType<any>;
+
 export type Closable = {
   close?: () => void;
-};
+} & InstanceType<AnyClassType>;
 
 export type ProviderContext = {
   initialized: boolean;
@@ -22,7 +24,7 @@ export type ProviderContext = {
 
 export type ProviderContextMap = Map<string, React.Context<ProviderContext>>;
 
-export interface ProviderProps<Class extends ClassType<any>> {
+export interface ProviderProps<Class extends AnyClassType> {
   classDef: Class;
   create: () => InstanceType<Class>;
   children: ReactNode;
@@ -31,7 +33,7 @@ export interface ProviderProps<Class extends ClassType<any>> {
 
 export const providerContextMap: ProviderContextMap = new Map();
 
-export const Provider = <Class extends ClassType<any>>({
+export const Provider = <Class extends AnyClassType>({
   children,
   classDef,
   dependencies = [],
@@ -49,7 +51,6 @@ export const Provider = <Class extends ClassType<any>>({
     if (!context) {
       context = createContext<ProviderContext>({
         initialized,
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         instance: instanceRef,
       });
       providerContextMap.set(classDef.name, context);
