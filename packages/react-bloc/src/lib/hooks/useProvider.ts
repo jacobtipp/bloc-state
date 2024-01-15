@@ -1,8 +1,7 @@
-import { ClassType } from '@jacobtipp/bloc';
 import { useContext } from 'react';
-import { providerContextMap } from '../components/provider';
+import { AnyClassType, providerContextMap } from '../components/provider';
 
-export const useProvider = <Class extends ClassType<any>>(classDef: Class) => {
+export const useProvider = <Class extends AnyClassType>(classDef: Class) => {
   const context = providerContextMap.get(classDef.name);
   if (!context)
     throw new Error(`${classDef.name} does not exist in the context map.`);
