@@ -1,3 +1,22 @@
+## [3.6.0](https://github.com/jacobtipp/bloc-state/compare/react-bloc-v3.5.0...react-bloc-v3.6.0) (2024-01-17)
+
+
+### Features
+
+* **react-bloc:** ✨ add Provider component and useProvider hook ([7984d39](https://github.com/jacobtipp/bloc-state/commit/7984d399813e313a12cdcbab5bb5ca5387a8edf3))
+* **react-bloc:** ✨ Providers now have an onMount and onUnmount callback handler ([fe9e87a](https://github.com/jacobtipp/bloc-state/commit/fe9e87a0aa79805ee79a1b928cad0fd520d07f39))
+
+
+### Bug Fixes
+
+* **react-bloc:** 🐛 useBlocSuspenseOrError should only use a single promise for suspense ([27d7cf6](https://github.com/jacobtipp/bloc-state/commit/27d7cf6789e3f515494c1f5787ff21799b8575c2))
+
+
+### Code Refactoring
+
+* **react-bloc:** ♻️ add concurrent/SSR support for BlocProvider and RepositoryProvider ([78ae8ea](https://github.com/jacobtipp/bloc-state/commit/78ae8ea01e6d2786fe7a1d458fd8aae6757f1aff))
+* **react-bloc:** ♻️ support both Class and Abstract class types in Provider ([67b9b76](https://github.com/jacobtipp/bloc-state/commit/67b9b768149bfbaf4100a5fcd589b12ff290be80))
+
 ## [3.5.0](https://github.com/jacobtipp/bloc-state/compare/react-bloc-v3.4.0...react-bloc-v3.5.0) (2024-01-10)
 
 
