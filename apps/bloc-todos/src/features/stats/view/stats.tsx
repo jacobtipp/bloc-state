@@ -24,9 +24,9 @@ export default function StatsPage() {
   return (
     <BlocProvider
       bloc={StatsBloc}
-      create={() =>
-        new StatsBloc(todosRepository).add(new StatsSubscriptionRequested())
-      }
+      create={() => new StatsBloc(todosRepository)}
+      onMount={(statsBloc) => statsBloc.add(new StatsSubscriptionRequested())}
+      dependencies={[todosRepository]}
     >
       <StatsView />
     </BlocProvider>

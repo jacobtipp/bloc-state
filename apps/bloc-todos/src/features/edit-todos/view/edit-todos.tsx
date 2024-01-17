@@ -34,11 +34,13 @@ export default function EditTodoPage() {
   return (
     <BlocProvider
       bloc={EditTodoBloc}
-      create={() => {
-        const editTodoBloc = new EditTodoBloc(todosRepository);
-        if (todoId) editTodoBloc.add(new EditTodoSubscribed(todoId));
-        return editTodoBloc;
+      create={() => new EditTodoBloc(todosRepository)}
+      onMount={(editTodoBloc) => {
+        if (todoId) {
+          editTodoBloc.add(new EditTodoSubscribed(todoId));
+        }
       }}
+      dependencies={[todosRepository]}
     >
       <EditTodoView isNew={todoId === undefined} />
     </BlocProvider>
@@ -107,7 +109,6 @@ export function EditTodoView({ isNew }: EditTodoViewProps) {
             name="title"
             control={control}
             rules={{
-              required: true,
               minLength: {
                 value: 1,
                 message: 'Title must have at least one character.',
@@ -136,7 +137,6 @@ export function EditTodoView({ isNew }: EditTodoViewProps) {
             name="description"
             control={control}
             rules={{
-              required: true,
               minLength: {
                 value: 1,
                 message: 'Description must have at least one character.',
