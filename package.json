@@ -30,7 +30,6 @@
     "html-react-parser": "^3.0.8",
     "immer": "9.0.17",
     "material-ui-popup-state": "^5.0.4",
-    "nanoid": "^4.0.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-hook-form": "^7.43.0",
@@ -40,6 +39,7 @@
     "rxjs": "7.8.0",
     "tslib": "^2.3.0",
     "use-sync-external-store": "^1.2.0",
+    "uuid": "^9.0.1",
     "valibot": "^0.24.1"
   },
   "devDependencies": {
@@ -73,6 +73,7 @@
     "@types/react": "18.2.14",
     "@types/react-dom": "18.2.6",
     "@types/use-sync-external-store": "^0.0.3",
+    "@types/uuid": "^9.0.7",
     "@typescript-eslint/eslint-plugin": "5.62.0",
     "@typescript-eslint/parser": "5.62.0",
     "@vitejs/plugin-react": "4.0.4",

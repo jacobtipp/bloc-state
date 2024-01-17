@@ -47,11 +47,11 @@ export default function TodosOverviewPage() {
   return (
     <BlocProvider
       bloc={TodosOverviewBloc}
-      create={() =>
-        new TodosOverviewBloc(todosRepository).add(
-          new TodosOverviewSubscriptionRequested()
-        )
+      create={() => new TodosOverviewBloc(todosRepository)}
+      onMount={(todosOverviewBloc) =>
+        todosOverviewBloc.add(new TodosOverviewSubscriptionRequested())
       }
+      dependencies={[todosRepository]}
     >
       <TodosOverViewSnackbar />
       <TodosOverviewView />

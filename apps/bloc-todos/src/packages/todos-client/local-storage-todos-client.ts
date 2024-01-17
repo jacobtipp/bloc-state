@@ -44,11 +44,12 @@ export class TodosParsingFailure extends TodosApiFailure {
  * @param {QueryClient} queryClient - The query client for managing state.
  * @param {Storage} storage - The storage interface for persisting Todos.
  */
-export class LocalStorageTodosClient implements TodosClient {
+export class LocalStorageTodosClient extends TodosClient {
   constructor(
     private readonly queryClient: QueryClient,
-    private readonly storage: Storage
+    private readonly storage: Storage = localStorage
   ) {
+    super();
     // Initialize Todos by retrieving them from storage
     this.getTodos();
   }
@@ -128,7 +129,6 @@ export class LocalStorageTodosClient implements TodosClient {
       return this.storage.setItem('todos', JSON.stringify(todos));
     }
   }
-
   /**
    * Clears completed Todos from storage.
    * @returns {Promise<number>} - The number of completed Todos cleared.
@@ -139,7 +139,7 @@ export class LocalStorageTodosClient implements TodosClient {
       (todo) => todo.isCompleted
     ).length;
     const newTodos = todos.filter((todo) => !todo.isCompleted);
-    this.queryClient.setQueryData<Todo[]>('todos', todos);
+    this.queryClient.setQueryData<Todo[]>('todos', newTodos);
     this.storage.setItem('todos', JSON.stringify(newTodos));
     return completedTodosAmount;
   }

@@ -1,14 +1,11 @@
-import { AppBar, createTheme, ThemeProvider, Toolbar } from '@mui/material';
+import { AppBar, Toolbar } from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
 import { Route, Routes } from 'react-router-dom';
-import { lazy, Suspense, useState } from 'react';
-import { RepositoryProvider } from '@jacobtipp/react-bloc';
-import { QueryClient } from '@jacobtipp/bloc-query';
+import { lazy, Suspense } from 'react';
 import { CircularLoader } from '../../../packages/app-ui/components/circular-loader';
-import { TodosRepository } from '../../../packages/todos-repository/todos-repository';
-import { LocalStorageTodosClient } from '../../../packages/todos-client/local-storage-todos-client';
 
 import './app.css';
+import { Providers } from './providers';
 
 const HomePage = lazy(() => import('../../../features/home/view/home'));
 const StatsPage = lazy(() => import('../../../features/stats/view/stats'));
@@ -20,21 +17,10 @@ const TodosOverviewPage = lazy(
 );
 
 export default function App() {
-  const [queryClient] = useState(() => new QueryClient());
-  const [localStorageTodosClient] = useState(
-    () => new LocalStorageTodosClient(queryClient, localStorage)
-  );
-  const [todosRepository] = useState(
-    () => new TodosRepository(localStorageTodosClient)
-  );
-
   return (
-    <RepositoryProvider
-      repository={TodosRepository}
-      create={() => todosRepository}
-    >
+    <Providers>
       <AppView />
-    </RepositoryProvider>
+    </Providers>
   );
 }
 
@@ -44,15 +30,9 @@ const AppBarPlaceHolder = () => (
   </AppBar>
 );
 
-const darkTheme = createTheme({
-  palette: {
-    mode: 'dark',
-  },
-});
-
 function AppView() {
   return (
-    <ThemeProvider theme={darkTheme}>
+    <>
       <CssBaseline />
       <Suspense fallback={<CircularLoader />}>
         <Routes>
@@ -68,6 +48,6 @@ function AppView() {
         </Routes>
         <AppBarPlaceHolder />
       </Suspense>
-    </ThemeProvider>
+    </>
   );
 }
