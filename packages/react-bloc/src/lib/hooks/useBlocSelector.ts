@@ -68,7 +68,7 @@ const useSuspenseOrError = <
 
   const promise = useRef<Promise<any> | null>(null);
 
-  const suspendedState = useRef<State>(bloc.state);
+  const suspendedState = useRef<State | null>(bloc.state);
 
   const suspsenseSubscription = useRef<Subscription | null>(null);
 
@@ -93,20 +93,26 @@ const useSuspenseOrError = <
     throw new BlocRenderError(bloc.state);
   }
 
-  if (suspend) {
-    promise.current = firstValueFrom(
-      bloc.state$.pipe(
-        startWith(suspendedState.current),
-        filter((state) => !suspendWhen(state))
-      )
-    ).then(() => {
-      promise.current = null;
-      if (isMounted()) {
-        setSuspend(false);
-      }
-    });
+  if (suspend || promise.current) {
+    if (promise.current === null && suspendedState.current !== null) {
+      promise.current = firstValueFrom(
+        bloc.state$.pipe(
+          startWith(suspendedState.current),
+          filter((state) => !suspendWhen(state))
+        )
+      ).then(() => {
+        promise.current = null;
+        suspendedState.current = null;
+        if (isMounted()) {
+          setSuspend(false);
+        }
+      });
+    }
 
-    throw promise.current;
+    /* istanbul ignore next */
+    if (promise.current) {
+      throw promise.current;
+    }
   }
 };
 
