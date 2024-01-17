@@ -1,10 +1,6 @@
 import ReactDOM from 'react-dom/client';
-import { StrictMode } from 'react';
-import { AppBlocObserver } from './app-bloc-observer';
 import App from '../../app/view/app';
-import { Bloc } from '@jacobtipp/bloc';
-
-Bloc.observer = new AppBlocObserver();
+import { StrictMode } from 'react';
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <StrictMode>

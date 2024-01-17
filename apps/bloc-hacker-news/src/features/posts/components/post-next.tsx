@@ -1,10 +1,11 @@
 import { useBlocInstance } from '@jacobtipp/react-bloc';
-import { HomeBloc } from '../../home/bloc/home.cubit';
+import { PostBloc } from '../bloc/posts.bloc';
+import { PostIncrement } from '../bloc/posts.events';
 
 export function PostNext() {
-  const { incrementId } = useBlocInstance(HomeBloc);
+  const { add } = useBlocInstance(PostBloc);
   return (
-    <button onClick={incrementId}>
+    <button onClick={() => add(new PostIncrement())}>
       <div>→</div>
     </button>
   );
