@@ -49,11 +49,8 @@ const ArticleBlocProvider = ({ children }: PropsWithChildren) => {
   return (
     <BlocProvider
       bloc={ArticleBloc}
-      create={() => {
-        const bloc = new ArticleBloc(articleRepository, idRepository);
-        bloc.getNewArticle();
-        return bloc;
-      }}
+      create={() => new ArticleBloc(articleRepository, idRepository)}
+      onMount={({ getNewArticle }) => getNewArticle()}
       dependencies={[articleRepository, idRepository]}
       children={children}
     />

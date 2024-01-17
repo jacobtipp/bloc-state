@@ -5,6 +5,8 @@ import { MultiProvider, Provider } from './provider';
 export interface RepositoryProviderProps<Repository extends ClassType<any>> {
   repository: Repository;
   create: () => InstanceType<Repository>;
+  onMount?: (repository: InstanceType<Repository>) => void;
+  onUnmount?: (repository: InstanceType<Repository>) => void;
   children: ReactNode;
   dependencies?: any[];
 }
@@ -14,10 +16,14 @@ export const RepositoryProvider = <Repository extends ClassType<any>>({
   children,
   dependencies = [],
   create,
+  onMount,
+  onUnmount,
 }: RepositoryProviderProps<Repository>) => {
   return Provider({
     classDef: repository,
     dependencies,
+    onMount,
+    onUnmount,
     create,
     children,
   });

@@ -37,7 +37,7 @@ export class ArticleBloc extends Cubit<Article> {
     });
   }
 
-  async getNewArticle() {
+  getNewArticle = async () => {
     const newId = await this.idRepository.createId();
     const newArticle = await this.articleRepo.getArticle();
     if (!this.isClosed)
@@ -45,5 +45,5 @@ export class ArticleBloc extends Cubit<Article> {
         id: newId,
         body: newArticle.body,
       });
-  }
+  };
 }
