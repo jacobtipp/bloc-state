@@ -35,7 +35,7 @@ export class PostApiClient extends PostClient {
       baseURL: 'https://hacker-news.firebaseio.com/v0/',
     })
   ) {
-    super()
+    super();
   }
 
   getPost(id: number): Promise<Post> {

@@ -10,23 +10,25 @@ import { PropsWithChildren } from 'react';
 import { PostClient } from '../../../packages/post-client/post-client';
 import { PostRepository } from '../../../packages/post-repository/post-repository';
 import { AppBlocObserver } from '../../../packages/app-bloc-observer/app-bloc-observer';
-import { Bloc } from '@jacobtipp/bloc';
+import { Bloc, BlocObserver } from '@jacobtipp/bloc';
 
-export const AppBlocObserverProvider = ({children}: PropsWithChildren) => (
+export const AppBlocObserverProvider = ({ children }: PropsWithChildren) => (
   <Provider
-    classDef={AppBlocObserver}
+    classDef={BlocObserver}
     create={() => new AppBlocObserver()}
-    onMount={(observer) => Bloc.observer = observer}
-    >{children}</Provider>
-)
+    onMount={(observer) => (Bloc.observer = observer)}
+  >
+    {children}
+  </Provider>
+);
 
 const QueryClientProvider = ({ children }: PropsWithChildren) => {
   return (
     <Provider
-     classDef={QueryClient} 
-     create={() => new QueryClient()}
-     onUnmount={(client) => client.clear()}
-     >
+      classDef={QueryClient}
+      create={() => new QueryClient()}
+      onUnmount={(client) => client.clear()}
+    >
       {children}
     </Provider>
   );

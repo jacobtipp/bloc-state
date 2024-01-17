@@ -87,15 +87,18 @@ describe('PostBloc', () => {
 
   describe('fromJson', () => {
     it('should deserialize json string to a PostState instance', () => {
-      const oldState = new PostState({ postId: {
-        currentId: 9001
-      }, details: post }).ready();
+      const oldState = new PostState({
+        postId: {
+          currentId: 9001,
+        },
+        details: post,
+      }).ready();
       const json = JSON.stringify(oldState);
       const state = instance.fromJson(json);
       expect(state).toBeInstanceOf(PostState);
       expect(state.status).toBe('ready');
       expect(state.data.details).toStrictEqual(post);
-      expect(state.data.postId).toStrictEqual({ currentId: 9001});
+      expect(state.data.postId).toStrictEqual({ currentId: 9001 });
     });
   });
 });
