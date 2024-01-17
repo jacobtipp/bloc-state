@@ -27,17 +27,26 @@ export type ProviderContextMap = Map<string, React.Context<ProviderContext>>;
 export interface ProviderProps<Class extends AnyClassType> {
   classDef: Class;
   create: () => InstanceType<Class>;
+  onMount?: (instance: InstanceType<Class>) => void;
+  onUnmount?: (instance: InstanceType<Class>) => void;
   children: ReactNode;
   dependencies?: any[];
 }
 
 export const providerContextMap: ProviderContextMap = new Map();
 
+export type InstanceMap = {
+  lastCreatedTimeStamp: number;
+  instance: Closable;
+};
+
 export const Provider = <Class extends AnyClassType>({
   children,
   classDef,
   dependencies = [],
   create,
+  onMount,
+  onUnmount,
 }: ProviderProps<Class>) => {
   const [initialized, setInitialized] = useState(false);
   const instanceRef = useRef<Closable | null>(null);
@@ -66,8 +75,15 @@ export const Provider = <Class extends AnyClassType>({
       instanceRef.current = create();
       setInitialized(!initialized);
     }
+
+    if (onMount) {
+      onMount(instanceRef.current);
+    }
+
     return () => {
-      instanceRef.current?.close?.();
+      if (onUnmount) {
+        onUnmount(instanceRef.current);
+      }
       instanceRef.current = null;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
