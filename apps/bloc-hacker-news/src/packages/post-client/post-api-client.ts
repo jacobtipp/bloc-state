@@ -28,13 +28,15 @@ export class PostApiMalformedResponse extends Error {
   }
 }
 
-export class PostApiClient implements PostClient {
+export class PostApiClient extends PostClient {
   constructor(
     private readonly queryClient: QueryClient,
     private readonly httpClient: HttpClient = new AxiosHttpClient({
       baseURL: 'https://hacker-news.firebaseio.com/v0/',
     })
-  ) {}
+  ) {
+    super()
+  }
 
   getPost(id: number): Promise<Post> {
     const query = this.queryClient.getQuery({

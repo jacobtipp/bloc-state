@@ -1,6 +1,7 @@
 import { Post } from './model/post';
 
-export interface PostClient {
-  getPost(id: number): Promise<Post>;
-  cancelPost(id: number): void;
+export abstract class PostClient {
+  protected _!: void
+  abstract cancelPost(id: number): void
+  abstract getPost(id: number): Promise<Post>;
 }

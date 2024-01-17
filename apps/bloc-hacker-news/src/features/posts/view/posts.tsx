@@ -3,28 +3,26 @@ import { PostDetails } from '../components/post-details';
 import { PostNext } from '../components/post-next';
 import {
   BlocProvider,
-  useBlocInstance,
   useBlocListener,
   useRepository,
 } from '@jacobtipp/react-bloc';
-import { HomeBloc } from '../../home/bloc/home.cubit';
 import { PostBloc } from '../bloc/posts.bloc';
-import { PostCanceled, PostFetched } from '../bloc/posts.events';
+import { PostFetched } from '../bloc/posts.events';
 import { PostRepository } from '../../../packages/post-repository/post-repository';
 import { Suspense } from 'react';
 
 export function PostPage() {
-  const homeBloc = useBlocInstance(HomeBloc);
   const postRepository = useRepository(PostRepository);
 
   return (
     <BlocProvider
       bloc={PostBloc}
-      create={() =>
-        new PostBloc(postRepository).add(
-          new PostFetched(homeBloc.state.currentId)
-        )
-      }
+      create={() => new PostBloc(postRepository)}
+      dependencies={[postRepository]}
+      onMount={(postBloc) => {
+        const { currentId } = postBloc.state.data.postId;
+        postBloc.add(new PostFetched(currentId));
+      }}
     >
       <PostView />
     </BlocProvider>
@@ -32,15 +30,15 @@ export function PostPage() {
 }
 
 export function PostView() {
-  const { add } = useBlocInstance(PostBloc);
-
-  useBlocListener(HomeBloc, {
-    listenWhen: (previous, current) => previous !== current,
-    listener: (_, state) => {
-      if (state.previousId) {
-        add(new PostCanceled(state.previousId));
+  useBlocListener(PostBloc, {
+    listenWhen: (previous, current) =>
+      previous.data.postId.currentId !== current.data.postId.currentId,
+    listener: ({ add, cancelPost }, { data: { postId } }) => {
+      if (postId.previousId) {
+        cancelPost(postId.previousId);
       }
-      add(new PostFetched(state.currentId));
+
+      add(new PostFetched(postId.currentId));
     },
   });
 
