@@ -1,5 +1,10 @@
 import { PropsWithChildren } from 'react';
-import { BlocProvider, MultiBlocProvider, useBlocValue } from '../../../../src';
+import {
+  BlocProvider,
+  ContextMapProvider,
+  MultiBlocProvider,
+  useBlocValue,
+} from '../../../../src';
 import { UserBloc } from '../user-bloc';
 import { UserNameChangedEvent } from '../user-event';
 import { CounterBloc } from '../../counter';
@@ -29,9 +34,11 @@ const CounterBlocProvider = ({ children }: PropsWithChildren) => (
 
 export const CounterWithUserProvider = () => {
   return (
-    <MultiBlocProvider providers={[CounterBlocProvider, UserBlocProvider]}>
-      <MultiBlocConsumer />
-    </MultiBlocProvider>
+    <ContextMapProvider>
+      <MultiBlocProvider providers={[CounterBlocProvider, UserBlocProvider]}>
+        <MultiBlocConsumer />
+      </MultiBlocProvider>
+    </ContextMapProvider>
   );
 };
 

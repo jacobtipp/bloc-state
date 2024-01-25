@@ -1,90 +1,125 @@
-import { AbstractClassType, ClassType } from '@jacobtipp/bloc';
+import { BlocBase } from '@jacobtipp/bloc';
 import {
-  MutableRefObject,
   PropsWithChildren,
   ReactNode,
   createContext,
   createElement,
+  useContext,
   useEffect,
   useMemo,
   useRef,
   useState,
 } from 'react';
+import {
+  AnyClassType,
+  Closable,
+  ProviderContext,
+  contextMapContext,
+} from './context-map-provider';
 
-export type AnyClassType = ClassType<any> | AbstractClassType<any>;
-
-export type Closable = {
-  close?: () => void;
-} & InstanceType<AnyClassType>;
-
-export type ProviderContext = {
-  initialized: boolean;
-  instance: MutableRefObject<Closable | null>;
-};
-
-export type ProviderContextMap = Map<string, React.Context<ProviderContext>>;
+export type BaseList = ReadonlyArray<unknown>;
 
 export interface ProviderProps<Class extends AnyClassType> {
   classDef: Class;
   create: () => InstanceType<Class>;
   onMount?: (instance: InstanceType<Class>) => void;
   onUnmount?: (instance: InstanceType<Class>) => void;
+  disposeTimeout?: number;
+  hydrate?: boolean;
   children: ReactNode;
   dependencies?: any[];
 }
 
-export const providerContextMap: ProviderContextMap = new Map();
-
-export type InstanceMap = {
-  lastCreatedTimeStamp: number;
-  instance: Closable;
-};
+const mounted: WeakSet<BlocBase<any>> = new WeakSet();
 
 export const Provider = <Class extends AnyClassType>({
   children,
   classDef,
   dependencies = [],
   create,
+  hydrate = false,
+  disposeTimeout = 5000,
   onMount,
   onUnmount,
 }: ProviderProps<Class>) => {
-  const [initialized, setInitialized] = useState(false);
+  const [{ isHydrated }, setHydration] = useState({
+    isHydrated: false,
+  });
   const instanceRef = useRef<Closable | null>(null);
 
+  const createInstance = () => {
+    const instance = create();
+    setTimeout(() => {
+      if (!instance.isClosed && !mounted.has(instance)) {
+        console.warn(
+          `provider instance ${
+            instance.name ?? instance.constructor.name
+          } was never mounted and will be closed.`
+        );
+        instance?.close?.();
+      }
+    }, disposeTimeout);
+    return instance;
+  };
+
   if (instanceRef.current === null) {
-    instanceRef.current = create();
+    instanceRef.current = createInstance();
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const contextMap = useContext(contextMapContext)!;
+
   const context = useMemo(() => {
-    let context = providerContextMap.get(classDef.name);
-    if (!context) {
-      context = createContext<ProviderContext>({
-        initialized,
+    let cachedContext = contextMap.get(classDef.name);
+    if (!cachedContext) {
+      cachedContext = createContext<ProviderContext>({
+        isHydrated,
         instance: instanceRef,
       });
-      providerContextMap.set(classDef.name, context);
-      return context;
+      contextMap.set(classDef.name, cachedContext);
+      return cachedContext;
     } else {
-      return context;
+      return cachedContext;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
-    if (instanceRef.current === null) {
-      instanceRef.current = create();
-      setInitialized(!initialized);
+    if (!hydrate) return;
+
+    if (isHydrated && instanceRef.current !== null) {
+      onMount?.(instanceRef.current);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isHydrated, hydrate]);
+
+  useEffect(() => {
+    let instance = instanceRef.current;
+
+    if (instance === null) {
+      instance = instanceRef.current = createInstance();
+      mounted.add(instance);
+      setHydration({
+        isHydrated: true,
+      });
+    } else {
+      mounted.add(instance);
     }
 
-    if (onMount) {
-      onMount(instanceRef.current);
+    if (hydrate) {
+      setHydration({
+        isHydrated: true,
+      });
+    }
+
+    if (!hydrate) {
+      onMount?.(instance);
     }
 
     return () => {
-      if (onUnmount) {
-        onUnmount(instanceRef.current);
-      }
+      onUnmount?.(instance);
       instanceRef.current = null;
+      mounted.delete(instance);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, dependencies);
@@ -93,7 +128,7 @@ export const Provider = <Class extends AnyClassType>({
     context.Provider,
     {
       value: {
-        initialized,
+        isHydrated,
         instance: instanceRef,
       },
     },
@@ -104,13 +139,15 @@ export const Provider = <Class extends AnyClassType>({
 type ProviderReturnType = ReturnType<typeof Provider>;
 
 export type MultiProviderProps = {
-  providers: Array<({ children }: PropsWithChildren) => ProviderReturnType>;
+  providers: Array<
+    ({ children }: { children: ReactNode }) => ProviderReturnType
+  >;
 };
 
 export const MultiProvider = ({
   providers,
   children,
-}: PropsWithChildren<MultiProviderProps>) => {
+}: MultiProviderProps & { children: ReactNode }) => {
   const components = useMemo(() => {
     return providers.map((Provider) => {
       return ({ children }: PropsWithChildren) => (
