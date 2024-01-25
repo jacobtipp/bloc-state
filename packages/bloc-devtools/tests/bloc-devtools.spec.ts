@@ -1,5 +1,5 @@
 import { DevtoolsError, DevtoolsObserver } from '../src/lib/bloc-devtools';
-import { Bloc, Cubit } from '@jacobtipp/bloc';
+import { BlocObserver, Cubit } from '@jacobtipp/bloc';
 
 describe('blocDevtools ', () => {
   const tempConsoleError = console.error;
@@ -48,7 +48,7 @@ describe('blocDevtools ', () => {
 
   it('should create a subscription when a bloc is created', () => {
     const observer = new TestObserver();
-    Bloc.observer = observer;
+    BlocObserver.observer = observer;
 
     const counterBloc = new CounterBloc(0);
     expect(window.__REDUX_DEVTOOLS_EXTENSION__.connect).toHaveBeenCalledTimes(

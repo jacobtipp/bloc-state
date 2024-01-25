@@ -1,5 +1,5 @@
 import { switchMap, Observable, EMPTY, timer, retry } from 'rxjs';
-import { Bloc, EventTransformer, Transition } from '@jacobtipp/bloc';
+import { BlocObserver, EventTransformer, Transition } from '@jacobtipp/bloc';
 import { Failed, QueryBloc, QueryErrorEvent, QueryFetchEvent } from '.';
 
 export type RetryOptions = {
@@ -74,7 +74,7 @@ export const queryFetchTransformer =
               if (retryAttempt > maxRetryAttempts && !bloc.isClosed) {
                 const errorEvent = new QueryErrorEvent(error);
 
-                Bloc.observer.onEvent(bloc, errorEvent);
+                BlocObserver.observer.onEvent(bloc, errorEvent);
 
                 const stateToEmit: Failed<Data> = {
                   status: 'isError',
@@ -90,7 +90,7 @@ export const queryFetchTransformer =
 
                 bloc.__unsafeEmit__(stateToEmit);
 
-                Bloc.observer.onTransition(
+                BlocObserver.observer.onTransition(
                   bloc,
                   new Transition(bloc.state, errorEvent, stateToEmit)
                 );

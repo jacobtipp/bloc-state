@@ -81,7 +81,7 @@ export abstract class Bloc<Event, State> extends BlocBase<State> {
    * @param error - The error that occurred.
    */
   protected override onError(error: Error): void {
-    Bloc.observer.onError(this, error);
+    BlocObserver.observer.onError(this, error);
   }
 
   /**
@@ -90,7 +90,7 @@ export abstract class Bloc<Event, State> extends BlocBase<State> {
    * @param transition - The transition that occurred.
    */
   protected onTransition(transition: Transition<Event, State>): void {
-    Bloc.observer.onTransition(this, transition);
+    BlocObserver.observer.onTransition(this, transition);
   }
 
   /**
@@ -99,7 +99,7 @@ export abstract class Bloc<Event, State> extends BlocBase<State> {
    * @param event - The event that occurred.
    */
   protected onEvent(event: Event): void {
-    Bloc.observer.onEvent(this, event);
+    BlocObserver.observer.onEvent(this, event);
   }
 
   /**
@@ -209,9 +209,6 @@ export abstract class Bloc<Event, State> extends BlocBase<State> {
 
     this.subscriptions.add(subscription);
   }
-
-  /** An instance of the BlocObserver class. */
-  static observer: BlocObserver = new BlocObserver();
 
   /**
    * Adds an event to the BLoC's stream of events.
