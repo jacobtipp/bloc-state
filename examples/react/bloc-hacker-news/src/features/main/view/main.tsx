@@ -7,7 +7,7 @@ import { PostRepository } from '../../../packages/post-repository/post-repositor
 import { createApiClient } from '../../../packages/api-client/api-client';
 import { PostApiClient } from '../../../packages/post-client/post-api-client';
 
-Bloc.observer = new AppBlocObserver();
+BlocObserver.observer = new AppBlocObserver();
 
 const apiClient = createApiClient();
 

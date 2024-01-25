@@ -7,7 +7,7 @@ import {
 import { MockProxy, mock } from 'jest-mock-extended';
 import { Todo } from './model/todo';
 import { firstValueFrom, take } from 'rxjs';
-import { Bloc, BlocObserver } from '@jacobtipp/bloc';
+import { BlocObserver } from '@jacobtipp/bloc';
 
 describe('LocalStorageTodosClient', () => {
   let instance: LocalStorageTodosClient;
@@ -32,7 +32,7 @@ describe('LocalStorageTodosClient', () => {
   const todosJsonString = JSON.stringify(todos);
 
   const onBeforeEach = () => {
-    Bloc.observer = new BlocObserver();
+    BlocObserver.observer = new BlocObserver();
     queryClient = new QueryClient();
     mockStorage = mock<Storage>();
   };

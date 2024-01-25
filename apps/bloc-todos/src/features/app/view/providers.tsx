@@ -11,7 +11,7 @@ import { TodosClient } from '../../../packages/todos-client/todos-client';
 import { QueryClient } from '@jacobtipp/bloc-query';
 import { ThemeProvider as MuiThemeProvider, createTheme } from '@mui/material';
 import { AppBlocObserver } from '../../../packages/app-bloc-observer/app-bloc-observer';
-import { Bloc, BlocObserver } from '@jacobtipp/bloc';
+import { BlocObserver } from '@jacobtipp/bloc';
 import {
   HydratedLocalStorage,
   HydratedStorage,
@@ -38,7 +38,7 @@ export const AppBlocObserverProvider = ({ children }: PropsWithChildren) => (
   <Provider
     classDef={BlocObserver}
     create={() => new AppBlocObserver()}
-    onMount={(observer) => (Bloc.observer = observer)}
+    onMount={(observer) => (BlocObserver.observer = observer)}
   >
     {children}
   </Provider>

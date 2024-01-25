@@ -31,7 +31,7 @@ describe('bloc-observer', () => {
       blocObserver.onEvent(counterBloc, new CounterIncrementEvent())
     ).toBeUndefined();
 
-    Bloc.observer = new TestBlocObserver();
+    BlocObserver.observer = new TestBlocObserver();
     counterBloc.add(new CounterIncrementEvent());
     userBloc.add(new UserAgeChangedEvent(10));
     counterBloc.add(new CounterIncrementEvent());
@@ -63,7 +63,7 @@ describe('bloc-observer', () => {
       blocObserver.onError(counterBloc, new CounterBlocError('oops'))
     ).toBeUndefined();
 
-    Bloc.observer = new TestBlocObserver();
+    BlocObserver.observer = new TestBlocObserver();
     try {
       counterBloc.add(new CounterIncrementEvent());
     } catch (e) {
@@ -105,7 +105,7 @@ describe('bloc-observer', () => {
       )
     ).toBeUndefined();
 
-    Bloc.observer = new TestBlocObserver();
+    BlocObserver.observer = new TestBlocObserver();
     counterBloc.add(new CounterIncrementEvent());
 
     expect(transitions.length).toBe(1);
@@ -126,7 +126,7 @@ describe('bloc-observer', () => {
       }
     }
 
-    Bloc.observer = new TestBlocObserver();
+    BlocObserver.observer = new TestBlocObserver();
 
     counterBloc.close();
   });
