@@ -12,6 +12,6 @@ npm install @jacobtipp/bloc-devtools
 // main.tsx
 import { DevtoolsObserver  } from "@jacobtipp/bloc-devtools";
 
-Bloc.observer = new DevtoolsObserver()
+BlocObserver.observer = new DevtoolsObserver()
  
 ```

@@ -1,4 +1,4 @@
-import { Bloc, Emitter, Transition } from '@jacobtipp/bloc';
+import { Bloc, BlocObserver, Emitter, Transition } from '@jacobtipp/bloc';
 import {
   Observable,
   OperatorFunction,
@@ -193,7 +193,7 @@ export class QueryBloc<Data = unknown> extends Bloc<
     }
 
     const setQueryDataEvent = new SetQueryDataEvent();
-    Bloc.observer.onEvent(this, setQueryDataEvent);
+    BlocObserver.observer.onEvent(this, setQueryDataEvent);
 
     const previous = this.state;
     const stateToEmit: Ready<Data> = {
@@ -209,7 +209,7 @@ export class QueryBloc<Data = unknown> extends Bloc<
 
     this.emit(stateToEmit);
 
-    Bloc.observer.onTransition(
+    BlocObserver.observer.onTransition(
       this,
       new Transition(previous, setQueryDataEvent, stateToEmit)
     );
@@ -228,12 +228,12 @@ export class QueryBloc<Data = unknown> extends Bloc<
     this.add(new QueryFetchEvent(new AbortController(), true));
 
     const cancelEvent = new QueryCancelEvent();
-    Bloc.observer.onEvent(this, cancelEvent);
+    BlocObserver.observer.onEvent(this, cancelEvent);
 
     const previous = this.state;
     this.emit(this.revertedState);
 
-    Bloc.observer.onTransition(
+    BlocObserver.observer.onTransition(
       this,
       new Transition(previous, cancelEvent, this.state)
     );
@@ -247,7 +247,7 @@ export class QueryBloc<Data = unknown> extends Bloc<
     this.revertedState = this.state;
 
     const revalidateEvent = new QueryRevalidateEvent();
-    Bloc.observer.onEvent(this, revalidateEvent);
+    BlocObserver.observer.onEvent(this, revalidateEvent);
 
     const stateToEmit: Fetching<Data> = {
       status: 'isFetching',
@@ -262,7 +262,7 @@ export class QueryBloc<Data = unknown> extends Bloc<
 
     this.emit(stateToEmit);
 
-    Bloc.observer.onTransition(
+    BlocObserver.observer.onTransition(
       this,
       new Transition(this.revertedState, revalidateEvent, stateToEmit)
     );

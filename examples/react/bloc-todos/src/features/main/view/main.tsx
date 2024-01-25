@@ -11,7 +11,7 @@ import {
 } from '@jacobtipp/hydrated-bloc';
 import { StrictMode } from 'react';
 
-Bloc.observer = new AppBlocObserver();
+BlocObserver.observer = new AppBlocObserver();
 
 HydratedStorage.storage = new HydratedLocalStorage();
 

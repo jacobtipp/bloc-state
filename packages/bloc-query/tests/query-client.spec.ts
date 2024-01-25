@@ -8,7 +8,7 @@ import { delay } from './helpers/delay';
 import { getRandomInt } from './helpers/random';
 import { QueryState } from '../src/lib/query-state';
 import { TestApiError } from './helpers/test-error';
-import { Bloc, BlocBase, BlocObserver } from '@jacobtipp/bloc';
+import { BlocBase, BlocObserver } from '@jacobtipp/bloc';
 
 describe('QueryClient', () => {
   const queryClient = new QueryClient();
@@ -53,7 +53,7 @@ describe('QueryClient', () => {
         }
       }
 
-      Bloc.observer = new TestObserver();
+      BlocObserver.observer = new TestObserver();
       queryClient
         .getQuery({
           logErrors: true,
