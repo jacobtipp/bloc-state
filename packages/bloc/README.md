@@ -73,7 +73,7 @@ export class AppBlocObserver extends BlocObserver {
 // main.tsx
 
 // composition root of your application
-Bloc.observer = new AppBlocObserver();
+BlocObserver.observer = new AppBlocObserver();
 ```
 
 ## Creating a Bloc

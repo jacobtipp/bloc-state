@@ -1,6 +1,6 @@
 import { Observable, Subscription, Subject, Observer } from 'rxjs';
-import { Bloc } from './bloc';
 import { Change } from './change';
+import { BlocObserver } from './bloc-observer';
 import { StateError } from './errors';
 
 export type NextFunction<State> = (value: State) => void;
@@ -27,7 +27,7 @@ export abstract class BlocBase<State = unknown> {
     this.subscriptions.add(this.state$.subscribe());
 
     // Executes the BlocObserver's `onCreate` method specific to this BLoC.
-    Bloc.observer.onCreate(this, this._state);
+    BlocObserver.observer.onCreate(this, this._state);
   }
 
   /**
@@ -87,7 +87,7 @@ export abstract class BlocBase<State = unknown> {
    * @param error - The error encountered by the BLoC.
    */
   protected onError(error: Error): void {
-    Bloc.observer.onError(this, error);
+    BlocObserver.observer.onError(this, error);
   }
 
   /**
@@ -96,14 +96,14 @@ export abstract class BlocBase<State = unknown> {
    * @param change - Information about the change in state of the BLoC.
    */
   protected onChange(change: Change<State>): void {
-    Bloc.observer.onChange(this, change);
+    BlocObserver.observer.onChange(this, change);
   }
 
   /**
    * Executes when the BLoC instance is closed.
    */
   protected onClose() {
-    Bloc.observer.onClose(this);
+    BlocObserver.observer.onClose(this);
   }
 
   /**

@@ -10,13 +10,13 @@ import { PropsWithChildren } from 'react';
 import { PostClient } from '../../../packages/post-client/post-client';
 import { PostRepository } from '../../../packages/post-repository/post-repository';
 import { AppBlocObserver } from '../../../packages/app-bloc-observer/app-bloc-observer';
-import { Bloc, BlocObserver } from '@jacobtipp/bloc';
+import { BlocObserver } from '@jacobtipp/bloc';
 
 export const AppBlocObserverProvider = ({ children }: PropsWithChildren) => (
   <Provider
     classDef={BlocObserver}
     create={() => new AppBlocObserver()}
-    onMount={(observer) => (Bloc.observer = observer)}
+    onMount={(observer) => (BlocObserver.observer = observer)}
   >
     {children}
   </Provider>
