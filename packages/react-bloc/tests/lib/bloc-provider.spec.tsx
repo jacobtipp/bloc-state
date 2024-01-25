@@ -1,18 +1,26 @@
-import { fireEvent, render } from '@testing-library/react';
+import { fireEvent, render, waitFor } from '@testing-library/react';
 import { CounterExampleGroup } from './counter';
 import { CounterWithUserProvider } from './user';
 import { StrictMode } from 'react';
+import { clientContextMap } from '../../src';
 
 describe('MultiProvider', () => {
   const consoleError = console.error;
+  const consoleWarn = console.warn;
+  const mockWarn = jest.fn();
   beforeAll(() => {
     console.error = () => {
       return;
     };
+
+    console.warn = mockWarn;
+    clientContextMap.clear();
   });
 
   afterAll(() => {
     console.error = consoleError;
+    console.warn = consoleWarn;
+    jest.clearAllMocks();
   });
   it('should support providing multiple instances of the same bloc', async () => {
     const { getAllByTestId, getByText, findByTestId } = render(
@@ -37,7 +45,13 @@ describe('MultiProvider', () => {
     if (resetB) fireEvent.click(resetB);
 
     getByText('loading...');
-  });
+
+    await waitFor(() => expect(mockWarn).toHaveBeenCalledTimes(6), {
+      timeout: 6000,
+    });
+
+    console.log(clientContextMap);
+  }, 10000);
 
   it('should support providing multiple blocs with MultiBlocProvider', async () => {
     const { findByTestId } = render(<CounterWithUserProvider />);
