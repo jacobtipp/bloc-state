@@ -189,9 +189,9 @@ export abstract class BlocBase<State = unknown> {
 
       // Sets the new state and notifies observers.
       this._state = newState;
-      this._stateSubject$.next(newState);
       // Notifies observers of the change in state.
       this.onChange(new Change(previous, newState));
+      this._stateSubject$.next(newState);
 
       // Marks the current state as emitted.
       this._emitted = true;
