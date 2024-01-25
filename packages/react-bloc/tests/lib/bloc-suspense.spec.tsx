@@ -1,6 +1,6 @@
 import { fireEvent, render } from '@testing-library/react';
 
-import { CounterExample } from './counter';
+import { CounterExampleSuspense } from './counter';
 
 describe('BlocSuspense', () => {
   const originalConsoleError = console.error;
@@ -16,7 +16,9 @@ describe('BlocSuspense', () => {
   });
 
   it('should trigger a suspense with useBlocSelector and useBlocListener', async () => {
-    const { findByTestId, getByText } = render(<CounterExample count={0} />);
+    const { findByTestId, getByText } = render(
+      <CounterExampleSuspense count={0} />
+    );
 
     getByText('error');
 
