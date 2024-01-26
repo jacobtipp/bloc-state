@@ -1,4 +1,4 @@
-import { BlocBase, StateType, ClassType } from '@jacobtipp/bloc';
+import { BlocBase, StateType, ClassType, Bloc } from '@jacobtipp/bloc';
 import { useRef } from 'react';
 import { useBlocInstance } from './useBlocInstance';
 import { defaultListenWhen } from './defaults';
@@ -27,7 +27,7 @@ export const useBlocListener = <Bloc extends ClassType<BlocBase<any>>>(
         startWith(blocInstance.state),
         pairwise(),
         filter(([previous, current]) => {
-          return when(previous, current);
+          return !Bloc.ignoreListeners && when(previous, current);
         }),
         map(([_, current]) => listener(blocInstance, current))
       )
