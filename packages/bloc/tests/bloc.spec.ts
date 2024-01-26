@@ -354,6 +354,12 @@ describe('bloc', () => {
     });
   });
 
+  describe('Bloc.ignoreListeners', () => {
+    it('should not ignoreListeners by default', () => {
+      expect(Bloc.ignoreListeners).toBe(false);
+    });
+  });
+
   describe('isBlocInstance', () => {
     it('should return true if provided an instance of a bloc', () => {
       expect.assertions(2);
