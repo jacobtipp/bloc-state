@@ -36,7 +36,6 @@ export class HydratedLocalStorage extends Storage {
   }
 
   override async close(): Promise<void> {
-    await this.clear();
     this._closed = true;
   }
 }
