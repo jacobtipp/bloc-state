@@ -49,8 +49,6 @@ describe('MultiProvider', () => {
     await waitFor(() => expect(mockWarn).toHaveBeenCalledTimes(6), {
       timeout: 6000,
     });
-
-    console.log(clientContextMap);
   }, 10000);
 
   it('should support providing multiple blocs with MultiBlocProvider', async () => {

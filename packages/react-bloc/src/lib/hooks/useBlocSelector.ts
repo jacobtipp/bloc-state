@@ -1,5 +1,7 @@
+/// <reference types="react/experimental" />
+
 import { BlocBase, StateType, ClassType } from '@jacobtipp/bloc';
-import { useCallback, useDebugValue, useEffect, useRef, useState } from 'react';
+import { useCallback, useDebugValue, useRef, useState } from 'react';
 import useSyncExternalStoreExports from 'use-sync-external-store/shim/with-selector';
 import { useBlocInstance } from './useBlocInstance';
 import {
@@ -17,23 +19,9 @@ import {
   defaultListenWhen,
   defaultSelector,
 } from './defaults';
-import { useIsomorphicLayoutEffect } from '../util';
+import { use, useIsomorphicLayoutEffect } from '../util';
 
 const { useSyncExternalStoreWithSelector } = useSyncExternalStoreExports;
-
-export function useIsMounted() {
-  const isMounted = useRef(false);
-
-  useEffect(() => {
-    isMounted.current = true;
-
-    return () => {
-      isMounted.current = false;
-    };
-  }, []);
-
-  return useCallback(() => isMounted.current, []);
-}
 
 export type UseBlocSelectorConfig<Bloc extends BlocBase<any>, SelectedState> = {
   selector?: (state: StateType<Bloc>) => SelectedState;
@@ -52,19 +40,42 @@ const useSuspenseOrError = <
     errorWhen: (state: State) => boolean;
   }
 ) => {
-  const isMounted = useIsMounted();
-
   const suspendWhen = config.suspendWhen;
 
   const errorWhen = config.errorWhen;
 
-  const [suspend, setSuspend] = useState(() => suspendWhen(bloc.state));
-
-  const promise = useRef<Promise<any> | null>(null);
+  const [{ shouldSuspend }, setSuspend] = useState(() => ({
+    shouldSuspend: suspendWhen(bloc.state),
+  }));
 
   const suspendedState = useRef<State | null>(bloc.state);
 
+  const promise = useRef<Promise<any> | null>(null);
+
   const suspsenseSubscription = useRef<Subscription | null>(null);
+
+  const createSuspense = () => {
+    return firstValueFrom(
+      bloc.state$.pipe(
+        startWith(suspendedState.current),
+        filter((state) => {
+          return !suspendWhen(bloc.state) || !suspendWhen(state);
+        })
+      )
+    )
+      .then(() => {
+        promise.current = null;
+        suspendedState.current = null;
+      })
+      .catch(() => {
+        promise.current = null;
+        suspendedState.current = null;
+      });
+  };
+
+  if (shouldSuspend && !promise.current && suspendedState.current) {
+    promise.current = createSuspense();
+  }
 
   useIsomorphicLayoutEffect(() => {
     suspsenseSubscription.current = (bloc.state$ as Observable<State>)
@@ -72,7 +83,9 @@ const useSuspenseOrError = <
       .subscribe((state) => {
         if (suspendWhen(state)) {
           suspendedState.current = state;
-          setSuspend(true);
+          setSuspend({
+            shouldSuspend: true,
+          });
         }
       });
 
@@ -87,26 +100,8 @@ const useSuspenseOrError = <
     throw new BlocRenderError(bloc.state);
   }
 
-  if (suspend || promise.current) {
-    if (promise.current === null && suspendedState.current !== null) {
-      promise.current = firstValueFrom(
-        bloc.state$.pipe(
-          startWith(suspendedState.current),
-          filter((state) => !suspendWhen(state))
-        )
-      ).then(() => {
-        promise.current = null;
-        suspendedState.current = null;
-        if (isMounted()) {
-          setSuspend(false);
-        }
-      });
-    }
-
-    /* istanbul ignore next */
-    if (promise.current) {
-      throw promise.current;
-    }
+  if (promise.current) {
+    use(promise.current);
   }
 };
 
