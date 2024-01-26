@@ -1,12 +1,5 @@
 import { BlocBase, StateType, ClassType } from '@jacobtipp/bloc';
-import {
-  useCallback,
-  useDebugValue,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from 'react';
+import { useCallback, useDebugValue, useEffect, useRef, useState } from 'react';
 import useSyncExternalStoreExports from 'use-sync-external-store/shim/with-selector';
 import { useBlocInstance } from './useBlocInstance';
 import {
@@ -24,6 +17,7 @@ import {
   defaultListenWhen,
   defaultSelector,
 } from './defaults';
+import { useIsomorphicLayoutEffect } from '../util';
 
 const { useSyncExternalStoreWithSelector } = useSyncExternalStoreExports;
 
@@ -72,7 +66,7 @@ const useSuspenseOrError = <
 
   const suspsenseSubscription = useRef<Subscription | null>(null);
 
-  useLayoutEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     suspsenseSubscription.current = (bloc.state$ as Observable<State>)
       .pipe(startWith(bloc.state as State))
       .subscribe((state) => {
