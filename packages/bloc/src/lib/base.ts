@@ -1,7 +1,6 @@
 import { Observable, Subscription, Subject, Observer } from 'rxjs';
 import { Change } from './change';
 import { BlocObserver } from './bloc-observer';
-import { StateError } from './errors';
 
 export type NextFunction<State> = (value: State) => void;
 
@@ -180,7 +179,7 @@ export abstract class BlocBase<State = unknown> {
   protected emit(newState: State): void {
     try {
       if (this._isClosed) {
-        throw new StateError('Cannot emit new states after calling close');
+        console.warn('Cannot emit new states after calling close');
       }
 
       if (newState == this._state && this._emitted) return;
