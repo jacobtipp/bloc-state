@@ -21,6 +21,11 @@ export type ReadyOrFailed<Data> = Ready<Data> | Failed<Data>;
  * Represents a client for managing and interacting with queries.
  */
 export class QueryClient {
+  private _isClosed = false;
+
+  get isClosed() {
+    return this._isClosed;
+  }
   /**
    * The map containing the registered queries.
    * @type {Map<string, QueryBloc<any>>}
@@ -198,6 +203,11 @@ export class QueryClient {
    */
   cancelQuery = (queryKey: string) => {
     this.queryMap.get(queryKey)?.cancelQuery();
+  };
+
+  close = () => {
+    this._isClosed = true;
+    this.clear();
   };
 }
 
