@@ -21,6 +21,7 @@ export const useBlocValue = <
   const state = useSyncExternalStore<Value>(
     // Use the memoized subscription function here.
     subscriptionCallback,
+    () => blocInstance.state as Value,
     () => blocInstance.state as Value
   );
 
