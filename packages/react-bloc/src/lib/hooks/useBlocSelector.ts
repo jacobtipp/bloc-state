@@ -152,7 +152,7 @@ export const useBlocSelector = <
   const selected = useSyncExternalStoreWithSelector(
     subscriptionCallback,
     () => blocInstance.state,
-    null,
+    () => blocInstance.state,
     selector
   );
 
