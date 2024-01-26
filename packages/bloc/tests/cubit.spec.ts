@@ -1,7 +1,6 @@
 import { Observable, Observer, Subject, of, throwError } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { Cubit, Change, NextFunction } from '../src';
-import { StateError } from '../src';
 import { CounterCubit } from './helpers/counter/counter.cubit';
 import { SeededCounterCubit } from './helpers/counter/counter.seeded.cubit';
 
@@ -154,28 +153,28 @@ describe('Cubit', () => {
       emitBloc.close();
     });
 
-    it('should throw a StateError when the Cubit is closed', () => {
-      expect.assertions(6);
+    it('should warn the user when a Cubit is closed', () => {
+      expect.assertions(4);
+
+      const consoleWarn = console.warn;
+      const mockWarn = jest.fn();
+      console.warn = mockWarn;
 
       emitBloc.increment();
       emitBloc.increment();
 
       emitBloc.close();
 
-      try {
-        emitBloc.increment();
-      } catch (err) {
-        expect(err).toBeInstanceOf(StateError);
-      }
+      emitBloc.increment();
 
       const [a, b] = states;
-      const [error] = errors;
 
       expect(states.length).toBe(2);
-      expect(errors.length).toBe(1);
-      expect(error).toBeInstanceOf(StateError);
       expect(a).toBe(1);
       expect(b).toBe(2);
+      expect(mockWarn).toHaveBeenCalled();
+
+      console.warn = consoleWarn;
     });
 
     it('should emit states in the correct order', () => {
