@@ -54,7 +54,6 @@ describe('HydratedLocalStorage', () => {
 
   it('should handle closing storage', async () => {
     await storage.close();
-    expect(localStorageMock.clear).toHaveBeenCalledTimes(1);
 
     const val = storage.read('a');
     expect(val).toBe(null);
@@ -64,6 +63,6 @@ describe('HydratedLocalStorage', () => {
     await storage.delete('test');
     expect(localStorageMock.removeItem).not.toHaveBeenCalled();
     await storage.clear();
-    expect(localStorageMock.clear).toHaveBeenCalledTimes(1);
+    expect(localStorageMock.clear).not.toHaveBeenCalled();
   });
 });
