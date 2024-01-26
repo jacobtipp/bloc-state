@@ -66,6 +66,9 @@ export abstract class Bloc<Event, State> extends BlocBase<State> {
   /** Indicates whether this is an instance of Bloc. */
   readonly isBlocInstance = true;
 
+  /** This should only be used by devtools as signal to prevent BlocListeners from performing side-effects during time travel */
+  static ignoreListeners = false;
+
   /**
    * Returns an event transformer.
    *
@@ -242,6 +245,7 @@ export abstract class Bloc<Event, State> extends BlocBase<State> {
   override close(): void {
     this._emitters.forEach((emitter) => emitter.close());
     this._emitters.clear();
+    this._eventSubject$.complete();
     super.close();
   }
 }
