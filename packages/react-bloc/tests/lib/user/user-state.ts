@@ -10,6 +10,6 @@ export type User = {
 
 export class UserState extends State<User> {
   constructor() {
-    super({ name: { first: '', last: 'bloc-listener' }, age: 0 });
+    super({ name: { first: 'rick', last: 'bloc-listener' }, age: 0 });
   }
 }

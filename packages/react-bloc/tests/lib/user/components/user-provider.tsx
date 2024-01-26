@@ -70,12 +70,13 @@ export const UserBlocValueProvider = () => (
   <ContextMapProvider>
     <BlocProvider
       bloc={UserBloc}
-      create={() => {
-        const userBloc = new UserBloc();
-        return userBloc.add(
+      create={() => new UserBloc()}
+      hydrate={true}
+      onMount={(bloc) => {
+        bloc.add(
           new UserNameChangedEvent({
             first: 'bob',
-            last: userBloc.state.data.name.last,
+            last: bloc.state.data.name.last,
           })
         );
       }}
