@@ -1,8 +1,9 @@
 import { BlocBase, StateType, ClassType } from '@jacobtipp/bloc';
-import { useRef, useLayoutEffect } from 'react';
+import { useRef } from 'react';
 import { useBlocInstance } from './useBlocInstance';
 import { defaultListenWhen } from './defaults';
 import { Subscription, filter, map, pairwise, startWith } from 'rxjs';
+import { useIsomorphicLayoutEffect } from '../util';
 
 export interface BlocListenerProps<
   Bloc extends ClassType<BlocBase<any>>,
@@ -20,7 +21,7 @@ export const useBlocListener = <Bloc extends ClassType<BlocBase<any>>>(
   const when = listenWhen ?? defaultListenWhen;
   const listenerSubscription = useRef<Subscription | null>(null);
 
-  useLayoutEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     listenerSubscription.current = blocInstance.state$
       .pipe(
         startWith(blocInstance.state),
