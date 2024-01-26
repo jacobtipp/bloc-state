@@ -663,4 +663,24 @@ describe('QueryClient', () => {
       expect(queryClient.removeQuery(options.queryKey)).toBe(false);
     });
   });
+
+  describe('close', () => {
+    it('it should close a QueryClient', () => {
+      const options: GetQueryOptions<number> = {
+        initialData: 0,
+        queryKey: 'count',
+        queryFn: () => Promise.resolve(getRandomInt(1, 10)),
+      };
+
+      const queryClient = new QueryClient();
+
+      queryClient.getQuery(options);
+
+      expect(queryClient.isClosed).toBe(false);
+      expect(queryClient.getQueryKeys().length).toBeGreaterThan(0);
+      queryClient.close();
+      expect(queryClient.isClosed).toBe(true);
+      expect(queryClient.getQueryKeys().length).toBe(0);
+    });
+  });
 });
