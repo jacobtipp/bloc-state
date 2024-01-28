@@ -1,3 +1,40 @@
+## [4.0.0-next.1](https://github.com/jacobtipp/bloc-state/compare/react-bloc-v3.6.0...react-bloc-v4.0.0-next.1) (2024-01-28)
+
+
+### ⚠ BREAKING CHANGES
+
+* **bloc:** Bloc.observer is removed
+
+### Features
+
+* **bloc:** ✨ add static Bloc.ignoreListeners property ([fde8991](https://github.com/jacobtipp/bloc-state/commit/fde89917a5df4c889ebf0a8ac81de8cf581bc830))
+* **react-bloc:** ✨ add disposeTimer prop for Provider ([d514c1e](https://github.com/jacobtipp/bloc-state/commit/d514c1eb778a3de9c726338ecefd757f8a2c69c2))
+* **react-bloc:** ✨ add getServerSnapshot in useBlocValue and useBlocSelector ([4f88272](https://github.com/jacobtipp/bloc-state/commit/4f88272c0082555a321076c78e096c9d80cb2a4a))
+* **react-bloc:** ✨ add hydration to Provider and add ContextMapProvider ([16bacee](https://github.com/jacobtipp/bloc-state/commit/16baceee0078a4430b5bd162168ef80a4ef9dfff))
+* **react-bloc:** ✨ add usePropListener hook ([fafcb43](https://github.com/jacobtipp/bloc-state/commit/fafcb43d0ec77095dbcf2cfa6c96c3654cdea1b8))
+* **react-bloc:** ✨ useBlocListener now checks if Bloc.ignoreListeners is enabled ([a144f37](https://github.com/jacobtipp/bloc-state/commit/a144f378ae3c8ef1dbc3e085d6eec7f7eaf4eee1))
+
+
+### Bug Fixes
+
+* **bloc:** 💥 🐛 replace Bloc.observer with BlocObserver.observer static property ([394d8d5](https://github.com/jacobtipp/bloc-state/commit/394d8d56dde74f03946c1e25016edf8eb0ec8248))
+
+
+### Build System Dependencies
+
+* **deps:** 📦️ add @microsoft/use-disposable package and update to [@next](https://github.com/next) v14.1 ([204cf88](https://github.com/jacobtipp/bloc-state/commit/204cf8814bfa5048f4dcf5a1bf8e9b7fca452278))
+
+
+### Code Refactoring
+
+* **bloc:** ♻️ emit now warns instead of throws if a bloc is closed ([d359cc9](https://github.com/jacobtipp/bloc-state/commit/d359cc9ddd4a84b21e5bc6e053440ee2878d726b))
+* **bloc:** ♻️ onTransition and onChange are called before emitting ([9e857a4](https://github.com/jacobtipp/bloc-state/commit/9e857a4e1b904e2abc2782d5a6cfe11a4306c33a))
+* **bloc:** ♻️ prevent BlocObserver.observer from being set on the server ([1fa05ed](https://github.com/jacobtipp/bloc-state/commit/1fa05ed0f44b977be8b170c677d2d3c4bcefd406))
+* **react-bloc:** ♻️ add experimental React.use hook for handling suspense ([fd22e65](https://github.com/jacobtipp/bloc-state/commit/fd22e6523cb76df6f161ce58e6fae32206fd293b))
+* **react-bloc:** ♻️ add useIsomorphicLayoutEffect for SSR ([85b9618](https://github.com/jacobtipp/bloc-state/commit/85b961801674c5179d84344875dee88ae9ff2682))
+* **react-bloc:** ♻️ rename ContextMapProvider to RootProvider ([cf88a3b](https://github.com/jacobtipp/bloc-state/commit/cf88a3b27addf4588d600504a19880ddfd005e78))
+* **react-bloc:** ♻️ rename file name from app-provider to root-provider ([6e0d5fa](https://github.com/jacobtipp/bloc-state/commit/6e0d5fa776d71c78671ecbffd33bf8929f4273c8))
+
 ## [3.6.0](https://github.com/jacobtipp/bloc-state/compare/react-bloc-v3.5.0...react-bloc-v3.6.0) (2024-01-17)
 
 
