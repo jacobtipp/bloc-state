@@ -1,6 +1,8 @@
 import {
   GetQueryOptions,
+  QueryCanceledException,
   QueryClient,
+  QueryClientClosedException,
   QueryNotFoundException,
 } from '../src/lib';
 import { filter, take } from 'rxjs';
@@ -489,6 +491,31 @@ describe('QueryClient', () => {
       queryClient.clear();
     });
 
+    it('it should handle canceled queries', async () => {
+      const options: GetQueryOptions<number> = {
+        queryKey: 'count',
+        queryFn: async () => {
+          await delay(2000);
+          return 5;
+        },
+      };
+
+      const queryClient = new QueryClient();
+
+      queryClient.getQuery(options);
+
+      try {
+        setTimeout(() => queryClient.cancelQuery('count'), 500);
+        await queryClient.getQueryData<number>(options.queryKey, {
+          ignoreCancel: false,
+        });
+      } catch (e) {
+        expect(e).toBeInstanceOf(QueryCanceledException);
+      }
+
+      queryClient.clear();
+    });
+
     it('it should throw a QueryNotFoundException if a query does not exist', async () => {
       const options: GetQueryOptions<number> = {
         queryKey: 'count',
@@ -600,6 +627,7 @@ describe('QueryClient', () => {
       queryClient.setQueryData<{ count: number }>(options.queryKey, {
         count: 5,
       });
+      queryClient.close();
     });
   });
 
@@ -662,10 +690,38 @@ describe('QueryClient', () => {
       expect(queryClient.removeQuery(options.queryKey)).toBe(true);
       expect(queryClient.removeQuery(options.queryKey)).toBe(false);
     });
+
+    it('it should remove a query from closeSignal', async () => {
+      const options: GetQueryOptions<number> = {
+        initialData: 0,
+        queryKey: 'count',
+        queryFn: () => Promise.resolve(getRandomInt(1, 10)),
+        keepAlive: 0,
+      };
+
+      const options2: GetQueryOptions<number> = {
+        initialData: 0,
+        queryKey: 'count-permanent',
+        queryFn: () => Promise.resolve(getRandomInt(1, 10)),
+        keepAlive: Infinity,
+      };
+
+      const queryClient = new QueryClient();
+
+      const subscription = queryClient.getQuery(options).subscribe();
+      const subscription2 = queryClient.getQuery(options2).subscribe();
+      subscription.unsubscribe();
+      subscription2.unsubscribe();
+
+      await delay(10);
+      const keys = queryClient.getQueryKeys();
+      expect(keys.find((val) => val === options.queryKey)).toBeUndefined();
+      expect(keys.find((val) => val === options2.queryKey)).toBeDefined();
+    });
   });
 
   describe('close', () => {
-    it('it should close a QueryClient', () => {
+    it('it should close a QueryClient', async () => {
       const options: GetQueryOptions<number> = {
         initialData: 0,
         queryKey: 'count',
@@ -681,6 +737,13 @@ describe('QueryClient', () => {
       queryClient.close();
       expect(queryClient.isClosed).toBe(true);
       expect(queryClient.getQueryKeys().length).toBe(0);
+
+      await expect(queryClient.getQueryData('count')).rejects.toBeInstanceOf(
+        QueryClientClosedException
+      );
+      expect(() => queryClient.getQuery(options)).toThrowError(
+        QueryClientClosedException
+      );
     });
   });
 });
