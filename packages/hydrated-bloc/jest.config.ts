@@ -10,7 +10,7 @@ export default {
   transform: {
     '^.+\\.[tj]s?$': 'ts-jest',
   },
-  testEnvironment: 'node',
+  testEnvironment: 'jsdom',
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
   coverageThreshold: {
     global: {

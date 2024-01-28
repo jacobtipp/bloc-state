@@ -6,6 +6,8 @@ export abstract class Storage {
   abstract close(): Promise<void>;
 }
 
+const isServer = typeof window === 'undefined';
+
 export abstract class HydratedStorage {
   private static _storage: Storage | null = null;
 
@@ -16,6 +18,8 @@ export abstract class HydratedStorage {
   }
 
   static set storage(storage: Storage) {
+    /* istanbul ignore next */
+    if (isServer) return;
     HydratedStorage._storage = storage;
   }
 }
