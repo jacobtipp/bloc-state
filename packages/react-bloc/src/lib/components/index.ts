@@ -5,4 +5,4 @@ export * from './repository-provider';
 export * from './bloc-builder';
 export * from './bloc-consumer';
 export * from './provider';
-export * from './app-provider';
+export * from './root-provider';
