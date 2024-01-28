@@ -1,7 +1,7 @@
 import { render } from '@testing-library/react';
 import { ArticleClient } from './article';
 import {
-  ContextMapProvider,
+  RootProvider,
   Provider,
   clientContextMap,
   useProvider,
@@ -24,11 +24,11 @@ const ArticleComponentTest = ({ type }: { type: ErrorType }) => {
     };
 
     return (
-      <ContextMapProvider>
+      <RootProvider>
         <Provider classDef={ArticleClient} create={() => new ArticleClient()}>
           <ArticleComponent />
         </Provider>
-      </ContextMapProvider>
+      </RootProvider>
     );
   }
 };

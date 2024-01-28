@@ -1,6 +1,6 @@
 import { QueryClient } from '@jacobtipp/bloc-query';
 import {
-  ContextMapProvider,
+  RootProvider,
   MultiProvider,
   Provider,
   RepositoryProvider,
@@ -63,7 +63,7 @@ const PostRepositoryProvider = ({ children }: PropsWithChildren) => {
 
 export const Providers = ({ children }: PropsWithChildren) => {
   return (
-    <ContextMapProvider>
+    <RootProvider>
       <MultiProvider
         providers={[
           AppBlocObserverProvider,
@@ -74,6 +74,6 @@ export const Providers = ({ children }: PropsWithChildren) => {
       >
         {children}
       </MultiProvider>
-    </ContextMapProvider>
+    </RootProvider>
   );
 };

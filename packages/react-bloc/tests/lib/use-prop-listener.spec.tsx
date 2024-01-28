@@ -2,7 +2,7 @@ import { fireEvent, render } from '@testing-library/react';
 import { useState } from 'react';
 import {
   BlocProvider,
-  ContextMapProvider,
+  RootProvider,
   useBloc,
   usePropListener,
 } from '../../src/lib';
@@ -48,11 +48,11 @@ describe('useBlocValue', () => {
 
   it('should listen to states', async () => {
     const { findByTestId } = render(
-      <ContextMapProvider>
+      <RootProvider>
         <BlocProvider bloc={CounterBloc} create={() => new CounterBloc(0)}>
           <CounterChild />
         </BlocProvider>
-      </ContextMapProvider>
+      </RootProvider>
     );
 
     const inc1 = await findByTestId('increment');

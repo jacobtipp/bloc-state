@@ -1,7 +1,7 @@
 import { PropsWithChildren } from 'react';
 import {
   BlocProvider,
-  ContextMapProvider,
+  RootProvider,
   MultiBlocProvider,
   useBlocValue,
 } from '../../../../src';
@@ -34,11 +34,11 @@ const CounterBlocProvider = ({ children }: PropsWithChildren) => (
 
 export const CounterWithUserProvider = () => {
   return (
-    <ContextMapProvider>
+    <RootProvider>
       <MultiBlocProvider providers={[CounterBlocProvider, UserBlocProvider]}>
         <MultiBlocConsumer />
       </MultiBlocProvider>
-    </ContextMapProvider>
+    </RootProvider>
   );
 };
 

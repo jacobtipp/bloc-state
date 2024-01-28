@@ -5,7 +5,7 @@ import {
   Provider,
   RepositoryProvider,
   useProvider,
-  ContextMapProvider,
+  RootProvider,
 } from '@jacobtipp/react-bloc';
 import { PostApiClient } from '../../../packages/post-client/post-api-client';
 import { PropsWithChildren } from 'react';
@@ -67,7 +67,7 @@ const PostRepositoryProvider = ({ children }: PropsWithChildren) => {
 
 export const Providers = ({ children }: PropsWithChildren) => {
   return (
-    <ContextMapProvider>
+    <RootProvider>
       <MultiProvider
         providers={[
           //AppBlocObserverProvider,
@@ -78,6 +78,6 @@ export const Providers = ({ children }: PropsWithChildren) => {
       >
         {children}
       </MultiProvider>
-    </ContextMapProvider>
+    </RootProvider>
   );
 };

@@ -11,7 +11,7 @@ import {
   AnyClassType,
   ProviderContext,
   contextMapContext,
-} from './context-map-provider';
+} from './app-provider';
 import { useDisposable } from 'use-disposable';
 
 export type BaseList = ReadonlyArray<unknown>;

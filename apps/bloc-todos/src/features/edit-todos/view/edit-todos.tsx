@@ -40,7 +40,6 @@ export default function EditTodoPage() {
           editTodoBloc.add(new EditTodoSubscribed(todoId));
         }
       }}
-      dependencies={[todosRepository]}
     >
       <EditTodoView isNew={todoId === undefined} />
     </BlocProvider>
