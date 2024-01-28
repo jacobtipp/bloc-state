@@ -113,6 +113,10 @@
         "branches": [
           "main",
           {
+            "name": "next",
+            "prerelease": true
+          },
+          {
             "name": "dev-state",
             "prerelease": true
           }
