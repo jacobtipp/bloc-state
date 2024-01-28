@@ -82,6 +82,7 @@ export const queryFetchTransformer =
                   isInitial: false,
                   isLoading: false,
                   isFetching: false,
+                  isCanceled: false,
                   isReady: false,
                   isError: true,
                   data: bloc.state.data,
