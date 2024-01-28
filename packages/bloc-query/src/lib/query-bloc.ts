@@ -2,6 +2,7 @@ import { Bloc, BlocObserver, Emitter, Transition } from '@jacobtipp/bloc';
 import {
   Observable,
   OperatorFunction,
+  Subject,
   distinctUntilChanged,
   filter,
   map,
@@ -25,6 +26,7 @@ export type QueryKey = string;
 export type QueryOptions<Data> = {
   initialData?: Data;
   staleTime?: number;
+  keepAlive?: number;
   logErrors?: boolean;
   queryKey: QueryKey;
   queryFn: (options: QueryFnOptions) => Promise<Data>;
@@ -67,7 +69,8 @@ export class QueryBloc<Data = unknown> extends Bloc<
    */
   constructor(
     state: QueryState<Data>,
-    private options: QueryBlocOptions<Data>
+    private options: QueryBlocOptions<Data>,
+    private closeSignal: Subject<QueryKey>
   ) {
     const name = `QueryBloc - ${options.name ?? options.queryKey}`;
     super(state, name);
@@ -117,6 +120,7 @@ export class QueryBloc<Data = unknown> extends Bloc<
         isFetching: false,
         isReady: true,
         isError: false,
+        isCanceled: false,
         data: data,
       });
     } catch (e: unknown) {
@@ -161,7 +165,7 @@ export class QueryBloc<Data = unknown> extends Bloc<
       this.revalidateQuery();
     }
 
-    return this.state$.pipe(
+    return this.listen().pipe(
       startWith(this.state),
       filter(({ isReady, isError }) => (selector ? isReady || isError : true)),
       map((state) => {
@@ -204,6 +208,7 @@ export class QueryBloc<Data = unknown> extends Bloc<
       isFetching: false,
       isReady: true,
       isError: false,
+      isCanceled: false,
       data: newData,
     };
 
@@ -213,6 +218,29 @@ export class QueryBloc<Data = unknown> extends Bloc<
       this,
       new Transition(previous, setQueryDataEvent, stateToEmit)
     );
+  };
+
+  private subscribers = 0;
+
+  private pendingCloseTimeout: NodeJS.Timeout | null = null;
+
+  listen = () => {
+    return new Observable<QueryState<Data>>((subscriber) => {
+      this.subscribers++;
+      const stateSubscription = this.state$.subscribe(subscriber);
+      return () => {
+        this.subscribers--;
+        stateSubscription.unsubscribe();
+        if (this.subscribers <= 0) {
+          if (this.options?.keepAlive === Infinity) return;
+          if (this.pendingCloseTimeout) clearTimeout(this.pendingCloseTimeout);
+          this.pendingCloseTimeout = setTimeout(() => {
+            if (this.subscribers <= 0)
+              this.closeSignal.next(this.options.queryKey);
+          }, this.options?.keepAlive ?? 60 * 1000);
+        }
+      };
+    });
   };
 
   /**
@@ -231,7 +259,7 @@ export class QueryBloc<Data = unknown> extends Bloc<
     BlocObserver.observer.onEvent(this, cancelEvent);
 
     const previous = this.state;
-    this.emit(this.revertedState);
+    this.emit({ ...this.revertedState, isCanceled: true });
 
     BlocObserver.observer.onTransition(
       this,
@@ -257,6 +285,7 @@ export class QueryBloc<Data = unknown> extends Bloc<
       isFetching: true,
       isReady: false,
       isError: false,
+      isCanceled: false,
       data: this.state.data,
     };
 
