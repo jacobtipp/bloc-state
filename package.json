@@ -88,6 +88,7 @@
     "cypress": "^12.2.0",
     "devmoji": "^2.3.0",
     "eslint": "8.46.0",
+    "eslint-config-next": "^14.1.0",
     "eslint-config-prettier": "8.1.0",
     "eslint-plugin-cypress": "2.14.0",
     "eslint-plugin-import": "2.27.5",

@@ -1,0 +1,65 @@
+{
+  "name": "bloc-hacker-news-nextjs-app",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/bloc-hacker-news-nextjs-app",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "@nx/next:build",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "outputPath": "dist/apps/bloc-hacker-news-nextjs-app"
+      },
+      "configurations": {
+        "development": {
+          "outputPath": "apps/bloc-hacker-news-nextjs-app"
+        },
+        "production": {}
+      }
+    },
+    "serve": {
+      "executor": "@nx/next:server",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "bloc-hacker-news-nextjs-app:build",
+        "dev": true
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "bloc-hacker-news-nextjs-app:build:development",
+          "dev": true
+        },
+        "production": {
+          "buildTarget": "bloc-hacker-news-nextjs-app:build:production",
+          "dev": false
+        }
+      }
+    },
+    "export": {
+      "executor": "@nx/next:export",
+      "options": {
+        "buildTarget": "bloc-hacker-news-nextjs-app:build:production"
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "apps/bloc-hacker-news-nextjs-app/jest.config.ts",
+        "passWithNoTests": true
+      },
+      "configurations": {
+        "ci": {
+          "ci": true,
+          "codeCoverage": true
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    }
+  },
+  "tags": []
+}
