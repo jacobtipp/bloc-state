@@ -8,10 +8,6 @@ export class PostBloc extends Cubit<PostState> {
     private readonly postRepository: PostRepository
   ) {
     super(state);
-    console.log('created');
-  }
-  protected override onClose(): void {
-    console.log('closed');
   }
 
   getPost = async (id: number): Promise<void> => {
