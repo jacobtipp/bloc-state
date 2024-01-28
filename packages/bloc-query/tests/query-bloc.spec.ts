@@ -1,5 +1,5 @@
 //import { getRandomInt } from './helpers/random';
-import { take } from 'rxjs';
+import { Subject, take } from 'rxjs';
 import {
   GetQueryOptions,
   QueryBloc,
@@ -30,11 +30,13 @@ describe('QueryBloc', () => {
         isInitial: true,
         isLoading: false,
         isFetching: false,
+        isCanceled: false,
         isError: false,
         isReady: true,
         data: 0,
       },
-      options
+      options,
+      new Subject()
     );
 
     const states: QueryState<number>[] = [];
@@ -96,9 +98,11 @@ describe('QueryBloc', () => {
           isFetching: false,
           isError: false,
           isReady: true,
+          isCanceled: false,
           data: 0,
         },
-        options
+        options,
+        new Subject()
       );
 
       const states: QueryState<number>[] = [];
@@ -143,10 +147,12 @@ describe('QueryBloc', () => {
           isLoading: false,
           isFetching: false,
           isError: false,
+          isCanceled: false,
           isReady: true,
           data: 0,
         },
-        options
+        options,
+        new Subject()
       );
 
       const states: QueryState<number>[] = [];
@@ -192,9 +198,11 @@ describe('QueryBloc', () => {
           isFetching: false,
           isError: false,
           isReady: true,
+          isCanceled: false,
           data: 0,
         },
-        options
+        options,
+        new Subject()
       );
 
       const states: QueryState<number>[] = [];
@@ -241,10 +249,12 @@ describe('QueryBloc', () => {
           isLoading: false,
           isFetching: false,
           isError: false,
+          isCanceled: false,
           isReady: true,
           data: 0,
         },
-        options
+        options,
+        new Subject()
       );
 
       const states: QueryState<number>[] = [];
@@ -294,11 +304,13 @@ describe('QueryBloc', () => {
           isInitial: true,
           isLoading: false,
           isFetching: false,
+          isCanceled: false,
           isError: false,
           isReady: true,
           data: 0,
         },
-        options
+        options,
+        new Subject()
       );
 
       const states: QueryState<number>[] = [];
@@ -353,12 +365,14 @@ describe('QueryBloc', () => {
           lastUpdatedAt: Date.now(),
           isInitial: true,
           isLoading: false,
+          isCanceled: false,
           isFetching: false,
           isError: false,
           isReady: true,
           data: 0,
         },
-        options
+        options,
+        new Subject()
       );
 
       const states: QueryState<number>[] = [];
@@ -401,12 +415,13 @@ describe('QueryBloc', () => {
         isInitial: true,
         isLoading: false,
         isFetching: false,
+        isCanceled: true,
         isError: false,
         isReady: true,
         data: 0,
       };
 
-      const bloc = new QueryBloc<number>(initialState, options);
+      const bloc = new QueryBloc<number>(initialState, options, new Subject());
 
       bloc.getQuery();
 
@@ -422,7 +437,7 @@ describe('QueryBloc', () => {
 
       await delay(2000);
 
-      expect(bloc.state).toBe(initialState);
+      expect(bloc.state).toStrictEqual(initialState);
     });
 
     it('should revert state if the signal causes an error to be thrown', async () => {
@@ -446,12 +461,13 @@ describe('QueryBloc', () => {
         isInitial: true,
         isLoading: false,
         isFetching: false,
+        isCanceled: true,
         isError: false,
         isReady: true,
         data: 0,
       };
 
-      const bloc = new QueryBloc<number>(initialState, options);
+      const bloc = new QueryBloc<number>(initialState, options, new Subject());
 
       bloc.getQuery();
 
@@ -467,7 +483,7 @@ describe('QueryBloc', () => {
 
       await delay(2000);
 
-      expect(bloc.state).toBe(initialState);
+      expect(bloc.state).toStrictEqual(initialState);
 
       bloc.close();
     });
@@ -490,11 +506,12 @@ describe('QueryBloc', () => {
         isInitial: false,
         isLoading: true,
         isFetching: true,
+        isCanceled: false,
         isError: false,
         isReady: false,
       };
 
-      const bloc = new QueryBloc<number>(loadingState, options);
+      const bloc = new QueryBloc<number>(loadingState, options, new Subject());
 
       bloc.getQuery();
 
@@ -533,9 +550,11 @@ describe('QueryBloc', () => {
           isLoading: true,
           isFetching: true,
           isError: false,
+          isCanceled: false,
           isReady: false,
         },
-        options
+        options,
+        new Subject()
       );
 
       const states: QueryState<number>[] = [];

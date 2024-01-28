@@ -1,5 +1,11 @@
-import { Observable, filter, firstValueFrom, map } from 'rxjs';
-
+import {
+  Observable,
+  Subject,
+  filter,
+  firstValueFrom,
+  map,
+  timeout,
+} from 'rxjs';
 import {
   QueryBloc,
   QueryKey,
@@ -22,6 +28,12 @@ export type ReadyOrFailed<Data> = Ready<Data> | Failed<Data>;
  */
 export class QueryClient {
   private _isClosed = false;
+  private _closeSignal$ = new Subject<QueryKey>();
+  constructor() {
+    this._closeSignal$.subscribe({
+      next: (key) => this.removeQuery(key),
+    });
+  }
 
   get isClosed() {
     return this._isClosed;
@@ -43,6 +55,7 @@ export class QueryClient {
   getQuery = <Data, Selected = QueryState<Data>>(
     options: GetQueryOptions<Data, Selected>
   ): Observable<Selected> => {
+    if (this.isClosed) throw new QueryClientClosedException();
     if (!this.queryMap.has(options.queryKey)) {
       return this.createQuery<Data>(options).getQuery<Selected>(
         options.selector,
@@ -64,31 +77,40 @@ export class QueryClient {
    * @throws {QueryNotFoundException} - If the query does not exist in the QueryClient.
    */
   getQueryData = async <Data = unknown>(
-    keyOrQuery: GetQueryData<Data>
+    keyOrQuery: GetQueryData<Data>,
+    options?: {
+      ttl?: number;
+      ignoreCancel?: boolean;
+    }
   ): Promise<Data> => {
+    if (this.isClosed) throw new QueryClientClosedException();
     const query =
       typeof keyOrQuery === 'string'
         ? this.queryMap.get(keyOrQuery)?.getQuery()
         : keyOrQuery;
 
     if (query) {
+      const ignoreCancel = options?.ignoreCancel ?? true;
       return firstValueFrom<Data>(
         query.pipe(
           filter(
             (state: QueryState<Data>): state is ReadyOrFailed<Data> =>
-              state.isReady || state.isError
+              state.isReady || state.isError || state.isCanceled
           ),
           map((state) => {
             if (state.isError) throw state.error;
+            if (state.isCanceled && !ignoreCancel)
+              throw new QueryCanceledException(
+                'The query was canceled in GetQueryData call'
+              );
             return state.data;
-          })
+          }),
+          timeout(options?.ttl ?? 60 * 1000)
         )
       );
     }
 
-    throw new QueryNotFoundException(
-      `QueryNotFoundException: query ${keyOrQuery} does not exist in the QueryClient.`
-    );
+    throw new QueryNotFoundException(keyOrQuery.toString());
   };
 
   /**
@@ -129,9 +151,11 @@ export class QueryClient {
           isLoading: false,
           isReady: true,
           isError: false,
+          isCanceled: false,
           data: options.initialData,
         },
-        options
+        options,
+        this._closeSignal$
       );
 
       this.queryMap.set(options.queryKey, bloc);
@@ -146,8 +170,10 @@ export class QueryClient {
           isLoading: true,
           isReady: false,
           isError: false,
+          isCanceled: false,
         },
-        options
+        options,
+        this._closeSignal$
       );
 
       this.queryMap.set(options.queryKey, bloc);
@@ -208,6 +234,7 @@ export class QueryClient {
   close = () => {
     this._isClosed = true;
     this.clear();
+    this._closeSignal$.complete();
   };
 }
 
@@ -220,8 +247,22 @@ export class QueryNotFoundException extends Error {
    * Creates a new QueryNotFoundException instance.
    * @param {string} message - The error message.
    */
-  constructor(message: string) {
+  constructor(key: string, message = `Query ${key} is not found`) {
     super(message);
     Object.setPrototypeOf(this, QueryNotFoundException.prototype);
+  }
+}
+
+export class QueryCanceledException extends Error {
+  constructor(message: string) {
+    super(message);
+    Object.setPrototypeOf(this, QueryCanceledException.prototype);
+  }
+}
+
+export class QueryClientClosedException extends Error {
+  constructor(message = 'QueryClient has already been closed') {
+    super(message);
+    Object.setPrototypeOf(this, QueryClientClosedException.prototype);
   }
 }
