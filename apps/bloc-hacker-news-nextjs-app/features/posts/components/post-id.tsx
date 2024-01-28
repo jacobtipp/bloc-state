@@ -1,19 +1,15 @@
+import { useBlocSelector } from '@jacobtipp/react-bloc';
 import { useSpring, a } from '@react-spring/web';
-import { useQueryState, parseAsInteger } from 'nuqs';
+import { PostBloc } from '../bloc/posts.bloc';
 
 export function PostId() {
   console.log('postIdRendered');
 
-  const [id] = useQueryState(
-    'id',
-    parseAsInteger.withOptions({
-      history: 'push',
-    })
-  );
+  const postId = useBlocSelector(PostBloc, {
+    selector: (state) => state.data.postId.currentId,
+  });
 
-  const newId = id as number;
+  const props = useSpring({ from: { postId }, postId, reset: true });
 
-  const props = useSpring({ from: { newId }, newId, reset: true });
-
-  return <a.h1>{props.newId!.to(Math.round)}</a.h1>;
+  return <a.h1>{props.postId.to(Math.round)}</a.h1>;
 }

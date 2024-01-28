@@ -70,7 +70,7 @@ export const Providers = ({ children }: PropsWithChildren) => {
     <RootProvider>
       <MultiProvider
         providers={[
-          //AppBlocObserverProvider,
+          AppBlocObserverProvider,
           QueryClientProvider,
           PostClientProvider,
           PostRepositoryProvider,
