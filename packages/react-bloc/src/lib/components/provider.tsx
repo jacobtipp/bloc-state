@@ -1,4 +1,3 @@
-import { BlocBase } from '@jacobtipp/bloc';
 import {
   PropsWithChildren,
   ReactNode,
@@ -7,15 +6,13 @@ import {
   useContext,
   useEffect,
   useMemo,
-  useRef,
-  useState,
 } from 'react';
 import {
   AnyClassType,
-  Closable,
   ProviderContext,
   contextMapContext,
 } from './context-map-provider';
+import { useDisposable } from 'use-disposable';
 
 export type BaseList = ReadonlyArray<unknown>;
 
@@ -24,47 +21,33 @@ export interface ProviderProps<Class extends AnyClassType> {
   create: () => InstanceType<Class>;
   onMount?: (instance: InstanceType<Class>) => void;
   onUnmount?: (instance: InstanceType<Class>) => void;
-  disposeTimeout?: number;
-  hydrate?: boolean;
   children: ReactNode;
   dependencies?: any[];
 }
-
-const mounted: WeakSet<BlocBase<any>> = new WeakSet();
 
 export const Provider = <Class extends AnyClassType>({
   children,
   classDef,
   dependencies = [],
   create,
-  hydrate = false,
-  disposeTimeout = 5000,
   onMount,
   onUnmount,
 }: ProviderProps<Class>) => {
-  const [{ isHydrated }, setHydration] = useState({
-    isHydrated: false,
-  });
-  const instanceRef = useRef<Closable | null>(null);
-
-  const createInstance = () => {
+  const instance = useDisposable(() => {
     const instance = create();
-    setTimeout(() => {
-      if (!instance.isClosed && !mounted.has(instance)) {
-        console.warn(
-          `provider instance ${
-            instance.name ?? instance.constructor.name
-          } was never mounted and will be closed.`
-        );
-        instance?.close?.();
-      }
-    }, disposeTimeout);
-    return instance;
-  };
+    return [
+      instance,
+      () => {
+        onUnmount?.(instance);
+      },
+    ];
+  }, dependencies);
 
-  if (instanceRef.current === null) {
-    instanceRef.current = createInstance();
-  }
+  useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    onMount?.(instance!);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [instance]);
 
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const contextMap = useContext(contextMapContext)!;
@@ -73,8 +56,7 @@ export const Provider = <Class extends AnyClassType>({
     let cachedContext = contextMap.get(classDef.name);
     if (!cachedContext) {
       cachedContext = createContext<ProviderContext>({
-        isHydrated,
-        instance: instanceRef,
+        instance,
       });
       contextMap.set(classDef.name, cachedContext);
       return cachedContext;
@@ -84,52 +66,11 @@ export const Provider = <Class extends AnyClassType>({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  useEffect(() => {
-    if (!hydrate) return;
-
-    if (isHydrated && instanceRef.current !== null) {
-      onMount?.(instanceRef.current);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isHydrated, hydrate]);
-
-  useEffect(() => {
-    let instance = instanceRef.current;
-
-    if (instance === null) {
-      instance = instanceRef.current = createInstance();
-      mounted.add(instance);
-      setHydration({
-        isHydrated: true,
-      });
-    } else {
-      mounted.add(instance);
-    }
-
-    if (hydrate) {
-      setHydration({
-        isHydrated: true,
-      });
-    }
-
-    if (!hydrate) {
-      onMount?.(instance);
-    }
-
-    return () => {
-      onUnmount?.(instance);
-      instanceRef.current = null;
-      mounted.delete(instance);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, dependencies);
-
   return createElement(
     context.Provider,
     {
       value: {
-        isHydrated,
-        instance: instanceRef,
+        instance,
       },
     },
     children
