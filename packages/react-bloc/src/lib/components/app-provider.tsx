@@ -4,11 +4,6 @@ import { isServer } from '../util';
 
 export type AnyClassType = ClassType<any> | AbstractClassType<any>;
 
-export type Closable = {
-  close?: () => void;
-  isClosed?: boolean;
-} & InstanceType<AnyClassType>;
-
 export type ProviderContext = {
   instance: any;
 };
@@ -21,7 +16,7 @@ export const contextMapContext = createContext<ProviderContextMap | undefined>(
   undefined
 );
 
-export const ContextMapProvider = ({ children }: PropsWithChildren) => {
+export const RootProvider = ({ children }: PropsWithChildren) => {
   /* istanbul ignore next */
   return createElement(
     contextMapContext.Provider,

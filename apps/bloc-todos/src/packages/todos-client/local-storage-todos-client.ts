@@ -50,8 +50,6 @@ export class LocalStorageTodosClient extends TodosClient {
     private readonly storage: Storage = localStorage
   ) {
     super();
-    // Initialize Todos by retrieving them from storage
-    this.getTodos();
   }
 
   /**
@@ -88,6 +86,7 @@ export class LocalStorageTodosClient extends TodosClient {
       },
       selector: (state) => state.data,
       staleTime: Infinity,
+      keepAlive: Infinity,
     });
   }
 

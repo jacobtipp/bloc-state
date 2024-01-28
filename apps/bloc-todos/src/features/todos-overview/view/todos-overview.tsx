@@ -51,7 +51,6 @@ export default function TodosOverviewPage() {
       onMount={(todosOverviewBloc) =>
         todosOverviewBloc.add(new TodosOverviewSubscriptionRequested())
       }
-      dependencies={[todosRepository]}
     >
       <TodosOverViewSnackbar />
       <TodosOverviewView />
