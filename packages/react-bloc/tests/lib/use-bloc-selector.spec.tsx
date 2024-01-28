@@ -4,6 +4,14 @@ import { renderToString } from 'react-dom/server';
 import { ContextMapProvider } from '../../src';
 
 describe('useBlocSelector', () => {
+  const consoleError = console.error;
+  const mockError = jest.fn();
+  console.error = mockError;
+
+  afterAll(() => {
+    console.error = consoleError;
+  });
+
   it('should render on the server', async () => {
     expect.assertions(1);
     const ui = (
