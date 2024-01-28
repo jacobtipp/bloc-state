@@ -45,6 +45,7 @@ class DevtoolConnection {
   private bloc: BlocBase<any> | undefined = undefined;
   private initialState: any;
   private connectionUnsubscribe: () => void;
+  private isClosed = false;
 
   constructor(
     private options: DevtoolsOptions,
@@ -65,6 +66,7 @@ class DevtoolConnection {
           if (payloadType === 'RESET') {
             if (this.bloc) {
               this.lock = true;
+              Bloc.ignoreListeners = true;
               this.bloc.__unsafeEmit__(this.initialState);
               this.connectionInstance.init(this.bloc?.state);
               return;
@@ -77,6 +79,7 @@ class DevtoolConnection {
           ) {
             if (this.bloc) {
               this.lock = true;
+              Bloc.ignoreListeners = true;
               this.bloc.__unsafeEmit__(this.bloc.fromJson(message.state));
             }
 
@@ -88,22 +91,25 @@ class DevtoolConnection {
   }
 
   update = (state: any, action = 'onChange') => {
-    if (this.lock) {
-      this.lock = false;
-      return;
+    if (this.bloc) {
+      if (this.lock) {
+        this.lock = false;
+        Bloc.ignoreListeners = false;
+        return;
+      }
+
+      const name = this.options.name;
+      const msg = `[${name}] - ${action}`;
+
+      if (this.options?.logTrace) {
+        console.groupCollapsed(msg, state);
+        console.trace();
+        console.groupEnd();
+      }
+
+      this.options?.preAction?.();
+      this.send({ type: msg }, state);
     }
-
-    const name = this.options.name;
-    const msg = `[${name}] - ${action}`;
-
-    if (this.options?.logTrace) {
-      console.groupCollapsed(msg, state);
-      console.trace();
-      console.groupEnd();
-    }
-
-    this.options?.preAction?.();
-    this.send({ type: msg }, state);
   };
 
   private send = (action: Action, state: any) => {
@@ -111,8 +117,12 @@ class DevtoolConnection {
   };
 
   close() {
-    this.connectionInstance.unsubscribe();
-    this.connectionUnsubscribe();
+    if (!this.isClosed) {
+      this.isClosed = true;
+      this.removeBloc();
+      this.connectionInstance.unsubscribe();
+      this.connectionUnsubscribe();
+    }
   }
 
   addBloc(bloc: BlocBase<any>, initialState: any) {
@@ -129,7 +139,7 @@ class DevtoolConnection {
     this.send({ type: msg }, initialState);
   }
 
-  removeBloc() {
+  private removeBloc() {
     const name = this.options.name;
     this.send({ type: `[${name}] - onClose` }, this.bloc?.state);
     this.bloc = undefined;
@@ -137,11 +147,14 @@ class DevtoolConnection {
 }
 
 export class DevtoolsObserver implements BlocObserver {
-  private connections: Map<string, DevtoolConnection> = new Map();
+  static connections: WeakMap<BlocBase<any>, DevtoolConnection> = new WeakMap();
   private isDev = process.env['NODE_ENV'] !== 'production';
-  private options: DevtoolsOptions;
+  private isServer = typeof window === 'undefined';
+  private options: DevtoolsOptions = {};
 
   constructor(options?: DevtoolsOptions) {
+    if (this.isServer) return;
+
     const defaultOptions: DevtoolsOptions = {
       name: document.title,
       logTrace: false,
@@ -150,9 +163,7 @@ export class DevtoolsObserver implements BlocObserver {
     this.options = { ...defaultOptions, ...options };
 
     if (this.isDev && !window.__REDUX_DEVTOOLS_EXTENSION__) {
-      throw new DevtoolsError(
-        'DevtoolsObserver only works with Redux Devtools Extension installed in your web browser'
-      );
+      this.isDev = false;
     }
   }
 
@@ -171,44 +182,41 @@ export class DevtoolsObserver implements BlocObserver {
 
   onTransition(bloc: Bloc<any, any>, transition: Transition<any, any>): void {
     if (!this.isDev) return;
-    const connection = this.connections.get(bloc.name);
+    const connection = DevtoolsObserver.connections.get(bloc);
     const action = transition.event.name ?? transition.event.constructor.name;
     connection?.update(transition.nextState, action);
   }
 
   onChange(bloc: BlocBase<any>, change: Change<any>): void {
     if (!this.isDev) return;
+
     if ((bloc as Bloc<any, any>).isBlocInstance) {
       return;
     }
 
-    const connection = this.connections.get(bloc.name);
+    const connection = DevtoolsObserver.connections.get(bloc);
     connection?.update(change.nextState);
   }
 
   onClose(bloc: BlocBase<any>): void {
     if (!this.isDev) return;
-    const name = bloc.name;
-    const connection = this.connections.get(name);
+    const connection = DevtoolsObserver.connections.get(bloc);
 
-    connection?.removeBloc();
+    connection?.close();
   }
 
+  // @deprecated
   onDestroy(): void {
-    if (!this.isDev) return;
-    this.connections.forEach((connection) => {
-      connection.close();
-    });
-    this.connections.clear();
+    return;
   }
 
   private addBloc = (bloc: BlocBase<any>, initialState: any) => {
+    if (this.isServer) return;
+
+    if (DevtoolsObserver.connections.has(bloc)) return;
+
     const name = bloc.name;
 
-    const connection = this.connections.get(name);
-    if (connection) {
-      return connection.addBloc(bloc, initialState);
-    }
     const mergedOptions = { ...this.options, name };
 
     const connectionInstance =
@@ -217,9 +225,10 @@ export class DevtoolsObserver implements BlocObserver {
       mergedOptions,
       connectionInstance
     );
+
     devtoolConnection.addBloc(bloc, initialState);
 
-    this.connections.set(name, devtoolConnection);
+    DevtoolsObserver.connections.set(bloc, devtoolConnection);
   };
 }
 
