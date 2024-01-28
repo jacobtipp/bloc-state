@@ -87,6 +87,7 @@ describe('LocalStorageTodosClient', () => {
       expect.assertions(1);
       mockStorage.getItem.calledWith('todos').mockReturnValue(todosJsonString);
       instance = new LocalStorageTodosClient(queryClient, mockStorage);
+      instance.getTodos();
       await expect(instance.getTodo('1')).resolves.toStrictEqual(todos[0]);
     });
 
@@ -94,6 +95,7 @@ describe('LocalStorageTodosClient', () => {
       expect.assertions(1);
       mockStorage.getItem.calledWith('todos').mockReturnValue(todosJsonString);
       instance = new LocalStorageTodosClient(queryClient, mockStorage);
+      instance.getTodos();
       try {
         await instance.getTodo('3');
       } catch (e) {
@@ -107,6 +109,7 @@ describe('LocalStorageTodosClient', () => {
       expect.assertions(1);
       mockStorage.getItem.calledWith('todos').mockReturnValue(todosJsonString);
       instance = new LocalStorageTodosClient(queryClient, mockStorage);
+      instance.getTodos();
 
       const newTodo: Todo = {
         id: '3',
@@ -126,6 +129,7 @@ describe('LocalStorageTodosClient', () => {
       expect.assertions(2);
       mockStorage.getItem.calledWith('todos').mockReturnValue(todosJsonString);
       instance = new LocalStorageTodosClient(queryClient, mockStorage);
+      instance.getTodos();
 
       await expect(instance.getTodo('2')).resolves.toBeDefined();
 
@@ -142,6 +146,7 @@ describe('LocalStorageTodosClient', () => {
       expect.assertions(1);
       mockStorage.getItem.calledWith('todos').mockReturnValue(todosJsonString);
       instance = new LocalStorageTodosClient(queryClient, mockStorage);
+      instance.getTodos();
 
       await expect(instance.clearCompleted()).resolves.toBe(1);
     });
@@ -152,6 +157,7 @@ describe('LocalStorageTodosClient', () => {
       expect.assertions(2);
       mockStorage.getItem.calledWith('todos').mockReturnValue(todosJsonString);
       instance = new LocalStorageTodosClient(queryClient, mockStorage);
+      instance.getTodos();
 
       const newTodo: Todo = {
         id: '3',

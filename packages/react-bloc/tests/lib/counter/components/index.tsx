@@ -4,7 +4,7 @@ import {
   BlocConsumer,
   BlocErrorBoundary,
   BlocProvider,
-  ContextMapProvider,
+  RootProvider,
   useBlocInstance,
 } from '../../../../src';
 
@@ -78,27 +78,27 @@ export const CounterExample = ({ count }: CounterExampleProps) => {
 };
 
 export const CounterExampleSuspense = ({ count }: CounterExampleProps) => (
-  <ContextMapProvider>
+  <RootProvider>
     <CounterExample count={count} />
-  </ContextMapProvider>
+  </RootProvider>
 );
 
 export const CounterExampleGroup = () => {
   return (
-    <ContextMapProvider>
+    <RootProvider>
       <CounterExample count={0} />
       <CounterExample count={0} />
-    </ContextMapProvider>
+    </RootProvider>
   );
 };
 
 export const CounterBuilderParent = () => {
   return (
-    <ContextMapProvider>
+    <RootProvider>
       <BlocProvider bloc={CounterBloc} create={() => new CounterBloc(0)}>
         <CounterBuilderChild />
       </BlocProvider>
-    </ContextMapProvider>
+    </RootProvider>
   );
 };
 
