@@ -1,3 +1,28 @@
+## [4.0.0-next.1](https://github.com/jacobtipp/bloc-state/compare/hydrated-bloc-v3.1.0...hydrated-bloc-v4.0.0-next.1) (2024-01-28)
+
+
+### ⚠ BREAKING CHANGES
+
+* **bloc:** Bloc.observer is removed
+
+### Features
+
+* **bloc:** ✨ add static Bloc.ignoreListeners property ([fde8991](https://github.com/jacobtipp/bloc-state/commit/fde89917a5df4c889ebf0a8ac81de8cf581bc830))
+
+
+### Bug Fixes
+
+* **bloc:** 💥 🐛 replace Bloc.observer with BlocObserver.observer static property ([394d8d5](https://github.com/jacobtipp/bloc-state/commit/394d8d56dde74f03946c1e25016edf8eb0ec8248))
+
+
+### Code Refactoring
+
+* **bloc:** ♻️ emit now warns instead of throws if a bloc is closed ([d359cc9](https://github.com/jacobtipp/bloc-state/commit/d359cc9ddd4a84b21e5bc6e053440ee2878d726b))
+* **bloc:** ♻️ onTransition and onChange are called before emitting ([9e857a4](https://github.com/jacobtipp/bloc-state/commit/9e857a4e1b904e2abc2782d5a6cfe11a4306c33a))
+* **bloc:** ♻️ prevent BlocObserver.observer from being set on the server ([1fa05ed](https://github.com/jacobtipp/bloc-state/commit/1fa05ed0f44b977be8b170c677d2d3c4bcefd406))
+* **hydrated-bloc:** ♻️ localStorage should not be cleared when HydratedLocalStorage is closed ([113fbf4](https://github.com/jacobtipp/bloc-state/commit/113fbf4bf59f461992059807c9c303a57f1c7cdb))
+* **hydrated-bloc:** ♻️ prevent HydratedStorage.storage from being set on the server ([eb4e029](https://github.com/jacobtipp/bloc-state/commit/eb4e02914b86a585a950829271a58d0f15a4ebfb))
+
 ## [3.1.0](https://github.com/jacobtipp/bloc-state/compare/hydrated-bloc-v3.0.4...hydrated-bloc-v3.1.0) (2024-01-04)
 
 
