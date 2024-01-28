@@ -1,7 +1,7 @@
 import { PropsWithChildren } from 'react';
 import {
   BlocProvider,
-  ContextMapProvider,
+  RootProvider,
   MultiRepositoryProvider,
   Provider,
   RepositoryProvider,
@@ -68,7 +68,7 @@ export const ArticleConsumer = () => {
 };
 
 export const ArticleFeature = () => (
-  <ContextMapProvider>
+  <RootProvider>
     <ArticleClientProvider>
       <MultiRepositoryProvider
         providers={[ArticleRepositoryProvider, IdRepositoryProvider]}
@@ -78,5 +78,5 @@ export const ArticleFeature = () => (
         </ArticleBlocProvider>
       </MultiRepositoryProvider>
     </ArticleClientProvider>
-  </ContextMapProvider>
+  </RootProvider>
 );

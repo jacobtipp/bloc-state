@@ -14,15 +14,11 @@ import {
   UserBlocListenerConsumerWithListenerComponent,
   UserBlocListenerConsumerWithDefaultListenWhen,
 } from './user-consumer';
-import {
-  BlocErrorBoundary,
-  BlocProvider,
-  ContextMapProvider,
-} from '../../../../src';
+import { BlocErrorBoundary, BlocProvider, RootProvider } from '../../../../src';
 import { UserBloc } from '../user-bloc';
 
 export const UserBlocListenerProvider = () => (
-  <ContextMapProvider>
+  <RootProvider>
     <BlocProvider
       bloc={UserBloc}
       create={() =>
@@ -33,11 +29,11 @@ export const UserBlocListenerProvider = () => (
         <UserBlocListenerConsumer />
       </Suspense>
     </BlocProvider>
-  </ContextMapProvider>
+  </RootProvider>
 );
 
 export const UserBlocListenerProviderWithDefaultListenWhen = () => (
-  <ContextMapProvider>
+  <RootProvider>
     <BlocProvider
       bloc={UserBloc}
       create={() =>
@@ -48,11 +44,11 @@ export const UserBlocListenerProviderWithDefaultListenWhen = () => (
         <UserBlocListenerConsumerWithDefaultListenWhen />
       </Suspense>
     </BlocProvider>
-  </ContextMapProvider>
+  </RootProvider>
 );
 
 export const UserBlocListenerWithComnponentProvider = () => (
-  <ContextMapProvider>
+  <RootProvider>
     <BlocProvider
       bloc={UserBloc}
       create={() =>
@@ -63,11 +59,11 @@ export const UserBlocListenerWithComnponentProvider = () => (
         <UserBlocListenerConsumerWithListenerComponent />
       </Suspense>
     </BlocProvider>
-  </ContextMapProvider>
+  </RootProvider>
 );
 
 export const UserBlocValueProvider = () => (
-  <ContextMapProvider>
+  <RootProvider>
     <BlocProvider
       bloc={UserBloc}
       create={() => new UserBloc()}
@@ -82,11 +78,11 @@ export const UserBlocValueProvider = () => (
     >
       <UserBlocValueConsumer />
     </BlocProvider>
-  </ContextMapProvider>
+  </RootProvider>
 );
 
 export const UserBlocErrorProvider = () => (
-  <ContextMapProvider>
+  <RootProvider>
     <BlocProvider
       bloc={UserBloc}
       create={() => new UserBloc().add(new UserErrorEvent())}
@@ -106,15 +102,15 @@ export const UserBlocErrorProvider = () => (
         <UserBlocErrorConsumer />
       </BlocErrorBoundary>
     </BlocProvider>
-  </ContextMapProvider>
+  </RootProvider>
 );
 
 export const UserBlocSuspenseProvider = () => (
-  <ContextMapProvider>
+  <RootProvider>
     <BlocProvider bloc={UserBloc} create={() => new UserBloc()}>
       <Suspense fallback={<UserBlocSuspenseFallback />}>
         <UserBlocSelectorConsumer />
       </Suspense>
     </BlocProvider>
-  </ContextMapProvider>
+  </RootProvider>
 );

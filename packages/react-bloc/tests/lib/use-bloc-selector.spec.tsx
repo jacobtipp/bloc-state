@@ -1,7 +1,7 @@
 import { render } from '@testing-library/react';
 import { CounterExample } from './counter';
 import { renderToString } from 'react-dom/server';
-import { ContextMapProvider } from '../../src';
+import { RootProvider } from '../../src';
 
 describe('useBlocSelector', () => {
   const consoleError = console.error;
@@ -15,9 +15,9 @@ describe('useBlocSelector', () => {
   it('should render on the server', async () => {
     expect.assertions(1);
     const ui = (
-      <ContextMapProvider>
+      <RootProvider>
         <CounterExample count={5} />
-      </ContextMapProvider>
+      </RootProvider>
     );
     const container = document.createElement('div');
     container.innerHTML = renderToString(ui);

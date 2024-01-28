@@ -1,4 +1,5 @@
 import {
+  RootProvider,
   MultiProvider,
   Provider,
   RepositoryProvider,
@@ -52,7 +53,6 @@ export const QueryClientProvider = ({ children }: PropsWithChildren) => (
   <Provider
     classDef={QueryClient}
     create={() => new QueryClient()}
-    onUnmount={(client) => client.clear()}
     children={children}
   />
 );
@@ -63,7 +63,9 @@ export const TodosClientProvider = ({ children }: PropsWithChildren) => {
     <Provider
       classDef={TodosClient}
       create={() => new LocalStorageTodosClient(queryClient)}
-      dependencies={[queryClient]}
+      onMount={(todosClient) => {
+        todosClient.getTodos();
+      }}
     >
       {children}
     </Provider>
@@ -76,7 +78,6 @@ export const TodosRepositoryProvider = ({ children }: PropsWithChildren) => {
     <RepositoryProvider
       repository={TodosRepository}
       create={() => new TodosRepository(todosClient)}
-      dependencies={[todosClient]}
     >
       {children}
     </RepositoryProvider>
@@ -84,16 +85,18 @@ export const TodosRepositoryProvider = ({ children }: PropsWithChildren) => {
 };
 
 export const Providers = ({ children }: PropsWithChildren) => (
-  <MultiProvider
-    providers={[
-      AppBlocObserverProvider,
-      HydratedStorageProvider,
-      ThemeProvider,
-      QueryClientProvider,
-      TodosClientProvider,
-      TodosRepositoryProvider,
-    ]}
-  >
-    {children}
-  </MultiProvider>
+  <RootProvider>
+    <MultiProvider
+      providers={[
+        AppBlocObserverProvider,
+        HydratedStorageProvider,
+        ThemeProvider,
+        QueryClientProvider,
+        TodosClientProvider,
+        TodosRepositoryProvider,
+      ]}
+    >
+      {children}
+    </MultiProvider>
+  </RootProvider>
 );
