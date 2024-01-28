@@ -1,15 +1,16 @@
 import { HydratedLocalStorage, HydratedStorage } from '../src/lib';
 
-const localStorageMock = {
-  getItem: jest.fn(),
-  setItem: jest.fn(),
-  removeItem: jest.fn(),
-  clear: jest.fn(),
-};
-
-global.localStorage = localStorageMock as unknown as Storage;
-
 describe('HydratedLocalStorage', () => {
+  const mockSetItem = jest.spyOn(Storage.prototype, 'setItem');
+  const mockGetItem = jest.spyOn(Storage.prototype, 'getItem');
+  const mockRemoveItem = jest.spyOn(Storage.prototype, 'removeItem');
+  const mockClearItem = jest.spyOn(Storage.prototype, 'clear');
+
+  mockClearItem.mockImplementation(jest.fn());
+  mockSetItem.mockImplementation(jest.fn());
+  mockGetItem.mockImplementation(jest.fn());
+  mockRemoveItem.mockImplementation(jest.fn());
+
   const storage = new HydratedLocalStorage();
   HydratedStorage.storage = storage;
 
@@ -18,19 +19,21 @@ describe('HydratedLocalStorage', () => {
   it('should write values to localStorage', async () => {
     await storage.write('a', 0);
 
-    expect(localStorageMock.setItem).toHaveBeenCalled();
+    expect(mockSetItem).toHaveBeenCalled();
   });
 
   it('should read values to localStorage', () => {
     storage.read('a');
 
-    expect(localStorageMock.getItem).toHaveBeenCalled();
+    expect(mockGetItem).toHaveBeenCalled();
   });
 
   it('should handle error thrown from setItem', async () => {
-    jest.spyOn(localStorageMock, 'setItem').mockImplementation(() => {
-      throw new Error('Error was thrown');
-    });
+    const setItemErrorMock = jest
+      .spyOn(Storage.prototype, 'setItem')
+      .mockImplementation(() => {
+        throw new Error('Error was thrown');
+      });
 
     try {
       await storage.write('a', 0);
@@ -39,17 +42,17 @@ describe('HydratedLocalStorage', () => {
         expect(error.message).toBe('Error was thrown');
     }
 
-    expect(localStorageMock.setItem).toHaveBeenCalled();
+    expect(setItemErrorMock).toHaveBeenCalled();
   });
 
   it('should handle deletion of rows', async () => {
     await storage.delete('a');
-    expect(localStorageMock.removeItem).toHaveBeenCalled();
+    expect(mockRemoveItem).toHaveBeenCalled();
   });
 
   it('should handle clearing storage', async () => {
     await storage.clear();
-    expect(localStorageMock.clear).toHaveBeenCalled();
+    expect(mockClearItem).toHaveBeenCalled();
   });
 
   it('should handle closing storage', async () => {
@@ -57,12 +60,12 @@ describe('HydratedLocalStorage', () => {
 
     const val = storage.read('a');
     expect(val).toBe(null);
-    expect(localStorageMock.getItem).not.toHaveBeenCalled();
+    expect(mockGetItem).not.toHaveBeenCalled();
     await storage.write('test', 0);
-    expect(localStorageMock.setItem).not.toHaveBeenCalled();
+    expect(mockSetItem).not.toHaveBeenCalled();
     await storage.delete('test');
-    expect(localStorageMock.removeItem).not.toHaveBeenCalled();
+    expect(mockRemoveItem).not.toHaveBeenCalled();
     await storage.clear();
-    expect(localStorageMock.clear).not.toHaveBeenCalled();
+    expect(mockClearItem).not.toHaveBeenCalled();
   });
 });
