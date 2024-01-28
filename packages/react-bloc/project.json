@@ -107,6 +107,10 @@
         "branches": [
           "main",
           {
+            "name": "next",
+            "prerelease": true
+          },
+          {
             "name": "dev-react-bloc",
             "prerelease": true
           }
