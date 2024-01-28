@@ -1,10 +1,5 @@
 import { AbstractClassType, ClassType } from '@jacobtipp/bloc';
-import {
-  MutableRefObject,
-  PropsWithChildren,
-  createContext,
-  createElement,
-} from 'react';
+import { PropsWithChildren, createContext, createElement } from 'react';
 import { isServer } from '../util';
 
 export type AnyClassType = ClassType<any> | AbstractClassType<any>;
@@ -15,8 +10,7 @@ export type Closable = {
 } & InstanceType<AnyClassType>;
 
 export type ProviderContext = {
-  isHydrated: boolean;
-  instance: MutableRefObject<Closable>;
+  instance: any;
 };
 
 export const clientContextMap: ProviderContextMap = new Map();
