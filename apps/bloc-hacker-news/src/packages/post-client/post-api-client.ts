@@ -42,6 +42,7 @@ export class PostApiClient extends PostClient {
     const query = this.queryClient.getQuery({
       queryKey: `post/${id}`,
       queryFn: ({ signal }) => this._getPost(id, signal),
+      keepAlive: Infinity,
     });
 
     return this.queryClient.getQueryData<Post>(query);
