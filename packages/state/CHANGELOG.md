@@ -1,3 +1,10 @@
+## [1.1.0-next.1](https://github.com/jacobtipp/bloc-state/compare/state-v1.0.7...state-v1.1.0-next.1) (2024-01-28)
+
+
+### Features
+
+* **state:** ✨ loading now has an optional data param ([ba9c9f1](https://github.com/jacobtipp/bloc-state/commit/ba9c9f10b03ee058a2bdfaa39f14fa1de15391f3))
+
 ## [1.0.7](https://github.com/jacobtipp/bloc-state/compare/state-v1.0.6...state-v1.0.7) (2023-10-05)
 
 
