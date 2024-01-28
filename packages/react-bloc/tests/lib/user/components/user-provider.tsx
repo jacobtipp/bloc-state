@@ -71,7 +71,6 @@ export const UserBlocValueProvider = () => (
     <BlocProvider
       bloc={UserBloc}
       create={() => new UserBloc()}
-      hydrate={true}
       onMount={(bloc) => {
         bloc.add(
           new UserNameChangedEvent({

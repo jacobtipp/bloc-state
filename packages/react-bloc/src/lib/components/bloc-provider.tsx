@@ -6,7 +6,6 @@ export interface BlocProviderProps<Bloc extends ClassType<BlocBase<any>>> {
   bloc: Bloc;
   create: () => InstanceType<Bloc>;
   onMount?: (bloc: InstanceType<Bloc>) => void;
-  hydrate?: boolean;
   children: ReactNode;
   dependencies?: any[];
 }
@@ -14,7 +13,6 @@ export interface BlocProviderProps<Bloc extends ClassType<BlocBase<any>>> {
 export const BlocProvider = <Bloc extends ClassType<BlocBase<any>>>({
   bloc,
   children,
-  hydrate,
   dependencies = [],
   create,
   onMount,
@@ -23,7 +21,6 @@ export const BlocProvider = <Bloc extends ClassType<BlocBase<any>>>({
     classDef: bloc,
     create,
     onMount,
-    hydrate,
     onUnmount: (bloc) => bloc.close(),
     dependencies,
     children,
