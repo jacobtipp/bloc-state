@@ -397,6 +397,39 @@ describe('QueryBloc', () => {
   });
 
   describe('cancelQuery', () => {
+    it('should do nothing if query is not currently fetching', async () => {
+      const queryFn = async () => {
+        await delay(2000);
+        return 1;
+      };
+
+      const options: GetQueryOptions<number> = {
+        queryFn,
+        queryKey: 'test',
+        staleTime: Infinity,
+      };
+
+      const initialState: Initial<number> = {
+        status: 'isInitial',
+        lastUpdatedAt: Date.now(),
+        isInitial: true,
+        isLoading: false,
+        isFetching: false,
+        isCanceled: false,
+        isError: false,
+        isReady: true,
+        data: 0,
+      };
+
+      const bloc = new QueryBloc<number>(initialState, options, new Subject());
+
+      expect(bloc.state).toBe(initialState);
+
+      bloc.cancelQuery();
+
+      expect(bloc.state).toBe(initialState);
+    });
+
     it('should revert state if the query is being cancelled', async () => {
       const queryFn = async () => {
         await delay(2000);
@@ -415,7 +448,7 @@ describe('QueryBloc', () => {
         isInitial: true,
         isLoading: false,
         isFetching: false,
-        isCanceled: true,
+        isCanceled: false,
         isError: false,
         isReady: true,
         data: 0,
@@ -437,7 +470,7 @@ describe('QueryBloc', () => {
 
       await delay(2000);
 
-      expect(bloc.state).toStrictEqual(initialState);
+      expect(bloc.state).toStrictEqual({ ...initialState, isCanceled: true });
     });
 
     it('should revert state if the signal causes an error to be thrown', async () => {
@@ -461,7 +494,7 @@ describe('QueryBloc', () => {
         isInitial: true,
         isLoading: false,
         isFetching: false,
-        isCanceled: true,
+        isCanceled: false,
         isError: false,
         isReady: true,
         data: 0,
@@ -483,7 +516,7 @@ describe('QueryBloc', () => {
 
       await delay(2000);
 
-      expect(bloc.state).toStrictEqual(initialState);
+      expect(bloc.state).toStrictEqual({ ...initialState, isCanceled: true });
 
       bloc.close();
     });

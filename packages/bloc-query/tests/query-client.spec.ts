@@ -4,6 +4,7 @@ import {
   QueryClient,
   QueryClientClosedException,
   QueryNotFoundException,
+  QueryTimeoutException,
 } from '../src/lib';
 import { filter, take } from 'rxjs';
 import { delay } from './helpers/delay';
@@ -491,7 +492,7 @@ describe('QueryClient', () => {
       queryClient.clear();
     });
 
-    it('it should handle canceled queries', async () => {
+    it('it should throw QueryTimeoutException when timeout has been reached', async () => {
       const options: GetQueryOptions<number> = {
         queryKey: 'count',
         queryFn: async () => {
@@ -507,8 +508,31 @@ describe('QueryClient', () => {
       try {
         setTimeout(() => queryClient.cancelQuery('count'), 500);
         await queryClient.getQueryData<number>(options.queryKey, {
-          ignoreCancel: false,
+          timeout: 1,
         });
+      } catch (e) {
+        expect(e).toBeInstanceOf(QueryTimeoutException);
+      }
+
+      queryClient.clear();
+    });
+
+    it('it should handle canceled queries', async () => {
+      const options: GetQueryOptions<number> = {
+        queryKey: 'count',
+        queryFn: async () => {
+          await delay(2000);
+          return 5;
+        },
+      };
+
+      const queryClient = new QueryClient();
+
+      queryClient.getQuery(options);
+
+      try {
+        setTimeout(() => queryClient.cancelQuery('count'), 500);
+        await queryClient.getQueryData<number>(options.queryKey);
       } catch (e) {
         expect(e).toBeInstanceOf(QueryCanceledException);
       }
