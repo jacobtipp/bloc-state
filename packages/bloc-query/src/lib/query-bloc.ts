@@ -161,7 +161,7 @@ export class QueryBloc<Data = unknown> extends Bloc<
       this.add(new QueryFetchEvent(new AbortController()));
     }
 
-    if (this.state.isReady && this.isStale) {
+    if ((this.state.isReady && this.isStale) || this.state.isCanceled) {
       this.revalidateQuery();
     }
 
@@ -207,8 +207,8 @@ export class QueryBloc<Data = unknown> extends Bloc<
       isLoading: false,
       isFetching: false,
       isReady: true,
-      isError: false,
       isCanceled: false,
+      isError: false,
       data: newData,
     };
 
@@ -224,7 +224,12 @@ export class QueryBloc<Data = unknown> extends Bloc<
 
   private pendingCloseTimeout: NodeJS.Timeout | null = null;
 
-  listen = () => {
+  /**
+   * Returns an observable that provides updates of the query state.
+   * This method is used to subscribe to the query's state changes.
+   * @returns {Observable<QueryState<Data>>} An Observable that emits updates of the query state.
+   */
+  listen = (): Observable<QueryState<Data>> => {
     return new Observable<QueryState<Data>>((subscriber) => {
       this.subscribers++;
       const stateSubscription = this.state$.subscribe(subscriber);
@@ -244,7 +249,8 @@ export class QueryBloc<Data = unknown> extends Bloc<
   };
 
   /**
-   * Cancels the query, aborting the ongoing fetch operation.
+   * Cancels the query, aborting the ongoing fetch operation and reverting the state.
+   * It emits a 'QueryCancelEvent' and updates the state accordingly.
    */
   cancelQuery = () => {
     if (!this.state.isFetching) return;
@@ -268,10 +274,10 @@ export class QueryBloc<Data = unknown> extends Bloc<
   };
 
   /**
-   * Revalidates the query, triggering a new fetch operation.
+   * Revalidates the query, triggering a new fetch operation if the query is stale or canceled.
+   * It emits a 'QueryRevalidateEvent' and updates the state to reflect the fetching status.
    */
   revalidateQuery = () => {
-    this.cancelQuery();
     this.revertedState = this.state;
 
     const revalidateEvent = new QueryRevalidateEvent();
@@ -283,9 +289,9 @@ export class QueryBloc<Data = unknown> extends Bloc<
       isInitial: false,
       isLoading: false,
       isFetching: true,
+      isCanceled: false,
       isReady: false,
       isError: false,
-      isCanceled: false,
       data: this.state.data,
     };
 
@@ -302,6 +308,7 @@ export class QueryBloc<Data = unknown> extends Bloc<
 
 /**
  * Represents an exception thrown when attempting to set query data in an invalid manner.
+ * This exception is thrown when the new data for a query cannot be set due to a missing previous data state or other constraints.
  * @extends {Error}
  */
 export class SetQueryDataException extends Error {
@@ -309,6 +316,8 @@ export class SetQueryDataException extends Error {
    * Creates a new SetQueryDataException instance.
    * @param {string} message - The error message.
    */
+
+  override name = 'SetQueryDataException';
   constructor(message: string) {
     super(message);
     Object.setPrototypeOf(this, SetQueryDataException.prototype);
@@ -317,6 +326,7 @@ export class SetQueryDataException extends Error {
 
 /**
  * Represents an exception thrown when attempting to interact with a closed query.
+ * This exception is thrown when operations are performed on a query that has been closed or is no longer available.
  * @extends {Error}
  */
 export class QueryClosedException extends Error {
@@ -324,6 +334,7 @@ export class QueryClosedException extends Error {
    * Creates a new QueryClosedException instance.
    * @param {string} message - The error message.
    */
+  override name = 'QueryClosedException';
   constructor(message: string) {
     super(message);
     Object.setPrototypeOf(this, QueryClosedException.prototype);
