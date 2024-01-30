@@ -213,6 +213,19 @@ export abstract class Bloc<Event, State> extends BlocBase<State> {
     this.subscriptions.add(subscription);
   }
 
+  private hasAncestor(event: Event, pass = false): boolean {
+    let constructor = Object.getPrototypeOf(event);
+    if (!pass) {
+      constructor = constructor.constructor;
+    }
+
+    if (this._eventMap.has(constructor)) {
+      return true;
+    }
+
+    return constructor === null ? false : this.hasAncestor(constructor, true);
+  }
+
   /**
    * Adds an event to the BLoC's stream of events.
    *
@@ -223,7 +236,7 @@ export abstract class Bloc<Event, State> extends BlocBase<State> {
    * @returns The instance of the Bloc.
    */
   add(event: Event) {
-    if (!this._eventMap.has(Object.getPrototypeOf(event).constructor)) {
+    if (!this.hasAncestor(event)) {
       throw new StateError(`
         add(${event}) was called without a registered event handler.
         Make sure to register a handler via on(${event}, (event, emit) {...})
