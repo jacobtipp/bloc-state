@@ -5,7 +5,7 @@ import { BlocObserver } from './bloc-observer';
 import { Emitter, EmitterImpl } from './emitter';
 import { StateError } from './errors';
 import { Transition } from './transition';
-import { ClassType } from './types';
+import { AbstractClassType, ClassType } from './types';
 
 /**
  * EventHandler that takes an event and emits state changes.
@@ -58,7 +58,9 @@ export abstract class Bloc<Event, State> extends BlocBase<State> {
   private readonly _eventSubject$ = new Subject<Event>();
 
   /** A mapping of registered events to their corresponding handler. */
-  private readonly _eventMap = new WeakMap<ClassType<Event>, 1>();
+  private readonly _eventMap = new WeakSet<
+    ClassType<Event> | AbstractClassType<Event>
+  >();
 
   /** A set of emitters for the state. */
   private readonly _emitters = new Set<EmitterImpl<State>>();
@@ -115,7 +117,7 @@ export abstract class Bloc<Event, State> extends BlocBase<State> {
    * @throws if there is already an event handler registered for the given event.
    */
   protected on<T extends Event>(
-    event: ClassType<T>,
+    event: ClassType<T> | AbstractClassType<T>,
     eventHandler: EventHandler<T, State>,
     transformer?: EventTransformer<T>
   ): void {
@@ -123,7 +125,7 @@ export abstract class Bloc<Event, State> extends BlocBase<State> {
       throw new Error(`${event.name} can only have one EventHandler`);
     }
 
-    this._eventMap.set(event, 1);
+    this._eventMap.add(event);
 
     const mapEventToState = (event: T): Observable<T> => {
       const stateToBeEmittedStream$ = new Subject<State>();
