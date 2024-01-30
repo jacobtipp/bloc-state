@@ -1,3 +1,10 @@
+## [3.0.0-next.2](https://github.com/jacobtipp/bloc-state/compare/bloc-query-v3.0.0-next.1...bloc-query-v3.0.0-next.2) (2024-01-30)
+
+
+### Features
+
+* **bloc-query:** ✨ add QueryTimeoutException to QueryClient.getQueryData ([4a6ba77](https://github.com/jacobtipp/bloc-state/commit/4a6ba7799c8216e186f7c4cb11d98e1cdb1a7cd4))
+
 ## [3.0.0-next.1](https://github.com/jacobtipp/bloc-state/compare/bloc-query-v2.4.0...bloc-query-v3.0.0-next.1) (2024-01-28)
 
 
