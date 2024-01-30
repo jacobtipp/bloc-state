@@ -1,4 +1,9 @@
-import { BlocProvider, useBlocSelector, useBloc } from '@jacobtipp/react-bloc';
+import {
+  BlocProvider,
+  useBlocSelector,
+  useBloc,
+  RootProvider,
+} from '@jacobtipp/react-bloc';
 import { TimerBloc } from './timer.bloc';
 import { Ticker } from './ticker';
 import { TimerStatus } from './timer.state';
@@ -11,7 +16,6 @@ const Count = () => {
     suspendWhen: ({ timerStatus, data }) =>
       timerStatus === TimerStatus.InProgress && data <= 50 && data > 40,
   });
-  console.log(count);
 
   return <div>{count}</div>;
 };
@@ -63,27 +67,24 @@ const Timer = ({ id }: { id: number }) => {
   );
 };
 
+const ids = [1, 2, 3, 4, 5];
+
 function App() {
   return (
-    <Suspense fallback={<h1>ParentLoading...</h1>}>
-      <p>
-        Timers suspend when duration is less than 30 seconds and unsuspend when
-        duration reaches 0
-      </p>
-      <p>Refresh the page to see they persist between refresh</p>
-      <>
-        <Timer id={0} />
-        <Timer id={1} />
-        <Timer id={2} />
-        <Timer id={3} />
-        <Timer id={4} />
-        <Timer id={5} />
-        <Timer id={6} />
-        <Timer id={7} />
-        <Timer id={8} />
-        <Timer id={9} />
-      </>
-    </Suspense>
+    <RootProvider>
+      <Suspense fallback={<h1>ParentLoading...</h1>}>
+        <p>
+          Timers suspend when duration is less than 30 seconds and unsuspend
+          when duration reaches 0
+        </p>
+        <p>Refresh the page to see they persist between refresh</p>
+        <>
+          {ids.map((id) => (
+            <Timer id={id} />
+          ))}
+        </>
+      </Suspense>
+    </RootProvider>
   );
 }
 
