@@ -1,4 +1,5 @@
 import { Bloc, Emitter } from '@jacobtipp/bloc';
+import { sequential } from '@jacobtipp/bloc-concurrency';
 
 import {
   TodosOverviewClearCompletedRequested,
@@ -26,15 +27,32 @@ export class TodosOverviewBlocBase extends Bloc<
       })
     );
 
-    this.on(TodosOverviewSubscriptionRequested, this.onSubscriptionRequested);
-    this.on(TodosOverviewTodoCompletionToggled, this.onTodoCompletionToggled);
-    this.on(TodosOverviewFilterChanged, this.onFilterChanged);
-    this.on(TodosOverviewToggleAllRequested, this.onToggleAllRequested);
-    this.on(TodosOverviewTodoDeleted, this.onTodoDeleted);
-    this.on(TodosOverviewUndoDeletionRequested, this.onUndoDeletionRequsted);
+    this.on(
+      TodosOverviewSubscriptionRequested,
+      this.onSubscriptionRequested,
+      sequential()
+    );
+    this.on(
+      TodosOverviewTodoCompletionToggled,
+      this.onTodoCompletionToggled,
+      sequential()
+    );
+    this.on(TodosOverviewFilterChanged, this.onFilterChanged, sequential());
+    this.on(
+      TodosOverviewToggleAllRequested,
+      this.onToggleAllRequested,
+      sequential()
+    );
+    this.on(TodosOverviewTodoDeleted, this.onTodoDeleted, sequential());
+    this.on(
+      TodosOverviewUndoDeletionRequested,
+      this.onUndoDeletionRequsted,
+      sequential()
+    );
     this.on(
       TodosOverviewClearCompletedRequested,
-      this.onClearCompletedRequested
+      this.onClearCompletedRequested,
+      sequential()
     );
   }
 

@@ -13,8 +13,15 @@ import {
 } from './helpers/counter/counter.seeded.bloc';
 import { CounterState } from './helpers/counter/counter.state';
 import { delay } from './helpers/delay';
-import { EventTransformerBloc } from './helpers/transformer/transformer.bloc';
-import { EventTransformerRestartableEvent } from './helpers/transformer/transformer.event';
+import {
+  EventTransformerBloc,
+  GlobalEventTransformerBloc,
+  restartable,
+} from './helpers/transformer/transformer.bloc';
+import {
+  EventTransformerRestartableEvent,
+  SecondEventTransformerRestartableEvent,
+} from './helpers/transformer/transformer.event';
 
 describe('bloc', () => {
   let bloc: CounterBloc;
@@ -54,6 +61,53 @@ describe('bloc', () => {
     bloc.add(new CounterIncrementEvent());
     bloc.add(new CounterIncrementEvent());
     bloc.add(new CounterDecrementEvent());
+  });
+
+  it('global event transformer should work', async () => {
+    expect.assertions(3);
+    const transformerBloc = new GlobalEventTransformerBloc();
+    const states: number[] = [];
+    transformerBloc.state$.subscribe({
+      next: (state) => states.push(state),
+    });
+
+    expect(states.length).toBe(0);
+    transformerBloc.add(new EventTransformerRestartableEvent());
+    transformerBloc.add(new SecondEventTransformerRestartableEvent(4));
+    transformerBloc.add(new EventTransformerRestartableEvent());
+    transformerBloc.add(new EventTransformerRestartableEvent());
+    transformerBloc.add(new SecondEventTransformerRestartableEvent(2));
+    await delay(600);
+    const [first] = states;
+    expect(states.length).toBe(1);
+    expect(first).toBe(-2);
+  });
+
+  it('should throw when providing a transformer for invididuals events along with a bloc-level event transformer', () => {
+    expect.assertions(1);
+    class TestEvent {}
+
+    class TestBloc extends Bloc<TestEvent, null> {
+      constructor() {
+        super(null, { transformer: restartable() });
+
+        this.on(
+          TestEvent,
+          (_event, _emit) => {
+            return;
+          },
+          restartable()
+        );
+
+        this.on(TestEvent, (_event, _emit) => {
+          return;
+        });
+      }
+    }
+
+    expect(() => new TestBloc()).toThrowError(
+      "Can't provide a transformer for invididuals events along with a bloc-level event transformer"
+    );
   });
 
   describe('Bloc.on', () => {

@@ -5,3 +5,9 @@ export class EventTransformerRestartableEvent extends EventTransformerEvent {
     super();
   }
 }
+
+export class SecondEventTransformerRestartableEvent extends EventTransformerEvent {
+  constructor(public num = 1) {
+    super();
+  }
+}

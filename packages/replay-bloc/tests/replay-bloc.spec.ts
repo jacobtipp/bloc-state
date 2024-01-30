@@ -8,7 +8,7 @@ describe('ReplayBloc', () => {
 
   class CounterBlocBase extends Bloc<CounterEvent, number> {
     constructor(state: number, name?: string) {
-      super(state, name);
+      super(state, { name: name });
 
       this.on(Increment, (_event, emit) => {
         emit(this.state + 1);
