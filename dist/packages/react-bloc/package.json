@@ -1,0 +1,34 @@
+{
+  "name": "@jacobtipp/react-bloc",
+  "version": "3.6.0",
+  "main": "./index.js",
+  "private": false,
+  "sideEffects": false,
+  "license": "MIT",
+  "publishConfig": {
+    "directory": "../../dist/packages/react-bloc",
+    "linkDirectory": true,
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "types": "./bloc-state/packages/react-bloc/src/lib/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./index.mjs",
+      "require": "./index.js"
+    }
+  },
+  "dependencies": {
+    "use-sync-external-store": "^1.2.0"
+  },
+  "devDependencies": {
+    "@jacobtipp/state": "workspace:*",
+    "immer": "9.0.18"
+  },
+  "peerDependencies": {
+    "@jacobtipp/bloc": "workspace:*",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "rxjs": "7.8.0"
+  }
+}
