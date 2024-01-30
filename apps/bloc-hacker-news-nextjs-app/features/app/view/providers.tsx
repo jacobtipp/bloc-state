@@ -7,12 +7,12 @@ import {
   useProvider,
   RootProvider,
 } from '@jacobtipp/react-bloc';
-import { PostApiClient } from '../../../packages/post-client/post-api-client';
 import { PropsWithChildren } from 'react';
-import { PostClient } from '../../../packages/post-client/post-client';
-import { PostRepository } from '../../../packages/post-repository/post-repository';
 import { BlocObserver } from '@jacobtipp/bloc';
-import { AppBlocObserver } from '../../../packages/app-bloc-observer/app-bloc-observer';
+import { AppBlocObserver } from '@bloc-hn-nextjs-app/lib/app-bloc-observer/app-bloc-observer';
+import { PostApiClient } from '@bloc-hn-nextjs-app/lib/post-client/post-api-client';
+import { PostClient } from '@bloc-hn-nextjs-app/lib/post-client/post-client';
+import { PostRepository } from '@bloc-hn-nextjs-app/lib/post-repository/post-repository';
 
 export const AppBlocObserverProvider = ({ children }: PropsWithChildren) => (
   <Provider

@@ -1,5 +1,5 @@
-import { Providers } from '../features/app/view/providers';
-import '../features/app/view/app.css';
+import { Providers } from '@bloc-hn-nextjs-app/features/app/view/providers';
+import '@bloc-hn-nextjs-app/features/app/view/app.css';
 
 export const metadata = {
   title: 'Welcome to bloc-hacker-news-nextjs-app',

@@ -1,8 +1,10 @@
 import { useBlocInstance, usePropListener } from '@jacobtipp/react-bloc';
 import { PostBloc } from '../bloc/posts.bloc';
 import { useQueryState, parseAsInteger } from 'nuqs';
+import { useEffect, useState } from 'react';
 export function PostNext() {
   console.log('postNextRendered');
+  const [shouldFetch, setShouldFetch] = useState(false);
   const postBloc = useBlocInstance(PostBloc);
 
   const [id, setId] = useQueryState(
@@ -13,6 +15,14 @@ export function PostNext() {
       })
       .withDefault(postBloc.state.data.postId.currentId)
   );
+
+  useEffect(() => {
+    if (!shouldFetch) return;
+    const id = setInterval(() => setId((id) => id + 1), 100);
+    return () => {
+      clearInterval(id);
+    };
+  }, [shouldFetch]);
 
   usePropListener(
     id,
@@ -27,6 +37,7 @@ export function PostNext() {
 
   return (
     <button
+      onMouseOver={() => setShouldFetch(!shouldFetch)}
       onClick={() => {
         setId((id) => id + 1);
       }}

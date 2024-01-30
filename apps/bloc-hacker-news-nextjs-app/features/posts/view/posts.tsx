@@ -8,7 +8,7 @@ import { PostBloc } from '../bloc/posts.bloc';
 import { PropsWithChildren, Suspense } from 'react';
 import { PostViewModel } from '../models/post-view-model';
 import { PostState } from '../bloc/posts.state';
-import { PostRepository } from '../../../packages/post-repository/post-repository';
+import { PostRepository } from '@bloc-hn-nextjs-app/lib/post-repository/post-repository';
 
 export type PostProps = {
   post: PostViewModel;
