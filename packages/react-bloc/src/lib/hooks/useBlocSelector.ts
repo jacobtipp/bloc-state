@@ -57,7 +57,7 @@ const useSuspenseOrError = <
   const createSuspense = () => {
     return firstValueFrom(
       bloc.state$.pipe(
-        startWith(suspendedState.current),
+        startWith(bloc.state),
         filter((state) => {
           return !suspendWhen(bloc.state) || !suspendWhen(state);
         })

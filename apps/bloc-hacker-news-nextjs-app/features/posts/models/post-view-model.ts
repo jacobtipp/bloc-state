@@ -1,8 +1,7 @@
-import { Post } from '../../../packages/post-client/model/post';
+import { Post } from '@bloc-hn-nextjs-app/lib/post-client/model/post';
 
 export type PostViewModel = {
   postId: {
-    previousId?: number;
     currentId: number;
   };
   details: Post;

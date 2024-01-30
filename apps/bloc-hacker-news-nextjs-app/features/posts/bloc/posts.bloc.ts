@@ -1,6 +1,10 @@
-import { PostRepository } from '../../../packages/post-repository/post-repository';
+import {
+  GetPostCanceledException,
+  PostRepository,
+} from '@bloc-hn-nextjs-app/lib/post-repository/post-repository';
 import { PostState } from './posts.state';
 import { Cubit } from '@jacobtipp/bloc';
+import { assertIsError } from '@bloc-hn-nextjs-app/lib/common/assert-is-error';
 
 export class PostBloc extends Cubit<PostState> {
   constructor(
@@ -29,8 +33,12 @@ export class PostBloc extends Cubit<PostState> {
         })
       );
     } catch (e) {
-      if (e instanceof Error) {
-        this.addError(e);
+      assertIsError(e);
+
+      this.addError(e);
+
+      if (e instanceof GetPostCanceledException) {
+        this.emit(this.state.failed(e));
       }
     }
   };
