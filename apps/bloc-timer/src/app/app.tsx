@@ -74,8 +74,8 @@ function App() {
     <RootProvider>
       <Suspense fallback={<h1>ParentLoading...</h1>}>
         <p>
-          Timers suspend when duration is less than 30 seconds and unsuspend
-          when duration reaches 0
+          Timers suspend when duration is less than 50 seconds and unsuspend
+          when duration reaches 40 seconds
         </p>
         <p>Refresh the page to see they persist between refresh</p>
         <>
