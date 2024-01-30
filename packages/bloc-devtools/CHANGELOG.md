@@ -1,3 +1,11 @@
+## [2.0.0-next.2](https://github.com/jacobtipp/bloc-state/compare/bloc-devtools-v2.0.0-next.1...bloc-devtools-v2.0.0-next.2) (2024-01-30)
+
+
+### Features
+
+* **bloc:** ✨ abstract class types can be used with on method ([bcf6be3](https://github.com/jacobtipp/bloc-state/commit/bcf6be3fdc1a622afd1393a59df50bd43eddaf58))
+* **bloc:** ✨ check for ancestors of event types in add method ([3cfa364](https://github.com/jacobtipp/bloc-state/commit/3cfa364993f090d232bb77eb5ce3ea3c34ae0366))
+
 ## [2.0.0-next.1](https://github.com/jacobtipp/bloc-state/compare/bloc-devtools-v1.1.0...bloc-devtools-v2.0.0-next.1) (2024-01-28)
 
 
