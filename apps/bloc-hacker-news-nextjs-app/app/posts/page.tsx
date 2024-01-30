@@ -1,5 +1,8 @@
+import {
+  PostBlocProvider,
+  PostView,
+} from '@bloc-hn-nextjs-app/features/posts/view/posts';
 import { getPostUseCase } from '../../api/posts/get-post-usecase';
-import { PostBlocProvider, PostView } from '../../features/posts/view/posts';
 
 type PostPageProps = {
   searchParams?: {

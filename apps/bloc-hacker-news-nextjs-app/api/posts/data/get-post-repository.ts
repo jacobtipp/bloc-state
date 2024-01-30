@@ -1,4 +1,4 @@
-import { PostRepository } from '../../../packages/post-repository/post-repository';
-import { PostApiClient } from '../../../packages/post-client/post-api-client';
+import { PostApiClient } from '@bloc-hn-nextjs-app/lib/post-client/post-api-client';
+import { PostRepository } from '@bloc-hn-nextjs-app/lib/post-repository/post-repository';
 
 export const getPostRepository = () => new PostRepository(new PostApiClient());
