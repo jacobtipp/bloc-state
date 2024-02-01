@@ -19,6 +19,6 @@
     }
   },
   "peerDependencies": {
-    "immer": "9.0.18"
+    "immer": "^9.0.18"
   }
 }
