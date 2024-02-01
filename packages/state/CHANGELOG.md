@@ -1,3 +1,10 @@
+## [1.1.0-next.2](https://github.com/jacobtipp/bloc-state/compare/state-v1.1.0-next.1...state-v1.1.0-next.2) (2024-02-01)
+
+
+### Build System Dependencies
+
+* **deps:** 📦️ update immer peerDep to support minor and patch releases ([497ab83](https://github.com/jacobtipp/bloc-state/commit/497ab8344690c2eae827ee653b973113469aac23))
+
 ## [1.1.0-next.1](https://github.com/jacobtipp/bloc-state/compare/state-v1.0.7...state-v1.1.0-next.1) (2024-01-28)
 
 
