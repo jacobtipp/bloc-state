@@ -1,3 +1,10 @@
+## [3.0.0-next.4](https://github.com/jacobtipp/bloc-state/compare/bloc-query-v3.0.0-next.3...bloc-query-v3.0.0-next.4) (2024-02-01)
+
+
+### Build System Dependencies
+
+* **deps:** 📦️ update rxjs peerDep to support minor and patch releases ([bf91636](https://github.com/jacobtipp/bloc-state/commit/bf916369ad11007e4a4361113e5ef8e91c13673e))
+
 ## [3.0.0-next.3](https://github.com/jacobtipp/bloc-state/compare/bloc-query-v3.0.0-next.2...bloc-query-v3.0.0-next.3) (2024-01-30)
 
 
