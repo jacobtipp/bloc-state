@@ -38,7 +38,7 @@
     "react-router-dom": "6.11.2",
     "regenerator-runtime": "0.13.7",
     "reselect": "^4.1.8",
-    "rxjs": "7.8.0",
+    "rxjs": "^7.8.0",
     "tslib": "^2.3.0",
     "use-disposable": "^1.0.2",
     "use-sync-external-store": "^1.2.0",
