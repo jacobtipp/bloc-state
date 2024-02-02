@@ -4,7 +4,7 @@ import { MultiProvider, Provider } from './provider';
 
 export interface BlocProviderProps<Bloc extends ClassType<BlocBase<any>>> {
   bloc: Bloc;
-  create: () => InstanceType<Bloc>;
+  create: (() => InstanceType<Bloc>) | InstanceType<Bloc>;
   onMount?: (bloc: InstanceType<Bloc>) => void;
   children: ReactNode;
   dependencies?: any[];
@@ -21,7 +21,11 @@ export const BlocProvider = <Bloc extends ClassType<BlocBase<any>>>({
     classDef: bloc,
     create,
     onMount,
-    onUnmount: (bloc) => bloc.close(),
+    onUnmount: (bloc) => {
+      if (typeof create === 'function') {
+        bloc.close();
+      }
+    },
     dependencies,
     children,
   });
