@@ -10,8 +10,8 @@ export const getPostUseCase = async (searchId?: string): Promise<Post> => {
   }
 
   const id = paramsResult.output;
-  const { getPost } = getPostRepository();
-  const details = await getPost(id);
+  const { getPostDetails } = getPostRepository();
+  const details = await getPostDetails(id);
 
   return {
     postId: {
