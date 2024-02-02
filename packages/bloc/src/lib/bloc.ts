@@ -122,7 +122,13 @@ export abstract class Bloc<Event, State> extends BlocBase<State> {
     transformer?: EventTransformer<T>
   ): void {
     if (this._eventMap.has(event)) {
-      throw new Error(`${event.name} can only have one EventHandler`);
+      throw new BlocError(`${event.name} can only have one EventHandler`);
+    }
+
+    if (this.hasAncestor(event, true)) {
+      throw new BlocError(
+        `${event.name} can only have one EventHandler per hierarchy`
+      );
     }
 
     this._eventMap.add(event);
@@ -215,7 +221,10 @@ export abstract class Bloc<Event, State> extends BlocBase<State> {
     this.subscriptions.add(subscription);
   }
 
-  private hasAncestor(event: Event, pass = false): boolean {
+  private hasAncestor(
+    event: Event | ClassType<Event> | AbstractClassType<Event>,
+    pass = false
+  ): boolean {
     let constructor = Object.getPrototypeOf(event);
     if (!pass) {
       constructor = constructor.constructor;
@@ -275,3 +284,7 @@ export abstract class Bloc<Event, State> extends BlocBase<State> {
 export const isBlocInstance = (bloc: any): bloc is Bloc<any, any> => {
   return bloc instanceof Bloc || Boolean(bloc.isBlocInstance);
 };
+
+class BlocError extends Error {
+  override name = 'BlocError';
+}
