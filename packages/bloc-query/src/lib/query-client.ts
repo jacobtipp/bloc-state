@@ -278,7 +278,7 @@ export class QueryCanceledException extends Error {
    * @param {string} [message='QueryCanceledException: The query has been canceled'] - The error message.
    */
   override name = 'QueryCanceledException';
-  constructor(message = 'QueryCanceledException: The query has been canceled') {
+  constructor(message = 'The query has been canceled') {
     super(message);
     Object.setPrototypeOf(this, QueryCanceledException.prototype);
   }
