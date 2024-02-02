@@ -3,7 +3,6 @@ import { useBlocSelector } from '@jacobtipp/react-bloc';
 import { PostBloc } from '../bloc/posts.bloc';
 
 export function PostDetails() {
-  console.log('postDetailsRendered');
   const details = useBlocSelector(PostBloc, {
     selector: (state) => state.data.details,
     suspendWhen: ({ status }) => status === 'loading',

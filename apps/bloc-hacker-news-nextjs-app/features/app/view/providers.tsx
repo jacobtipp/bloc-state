@@ -6,6 +6,7 @@ import {
   RepositoryProvider,
   useProvider,
   RootProvider,
+  isClient,
 } from '@jacobtipp/react-bloc';
 import { PropsWithChildren } from 'react';
 import { BlocObserver } from '@jacobtipp/bloc';
@@ -18,9 +19,13 @@ export const AppBlocObserverProvider = ({ children }: PropsWithChildren) => (
   <Provider
     classDef={BlocObserver}
     create={() => {
-      const observer = new AppBlocObserver();
-      BlocObserver.observer = observer;
-      return observer;
+      if (isClient()) {
+        const observer = new AppBlocObserver();
+        BlocObserver.observer = observer;
+        return observer;
+      } else {
+        return BlocObserver.observer;
+      }
     }}
   >
     {children}
@@ -40,13 +45,8 @@ export const QueryClientProvider = ({ children }: PropsWithChildren) => {
 };
 
 const PostClientProvider = ({ children }: PropsWithChildren) => {
-  const queryClient = useProvider(QueryClient);
   return (
-    <Provider
-      classDef={PostClient}
-      create={() => new PostApiClient(queryClient)}
-      dependencies={[queryClient]}
-    >
+    <Provider classDef={PostClient} create={() => new PostApiClient()}>
       {children}
     </Provider>
   );
@@ -54,11 +54,12 @@ const PostClientProvider = ({ children }: PropsWithChildren) => {
 
 const PostRepositoryProvider = ({ children }: PropsWithChildren) => {
   const postClient = useProvider(PostClient);
+  const queryClient = useProvider(QueryClient);
   return (
     <RepositoryProvider
       repository={PostRepository}
-      create={() => new PostRepository(postClient)}
-      dependencies={[postClient]}
+      create={() => new PostRepository(postClient, queryClient)}
+      dependencies={[postClient, queryClient]}
     >
       {children}
     </RepositoryProvider>
@@ -70,7 +71,6 @@ export const Providers = ({ children }: PropsWithChildren) => {
     <RootProvider>
       <MultiProvider
         providers={[
-          AppBlocObserverProvider,
           QueryClientProvider,
           PostClientProvider,
           PostRepositoryProvider,

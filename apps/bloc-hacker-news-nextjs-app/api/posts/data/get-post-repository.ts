@@ -1,4 +1,9 @@
 import { PostApiClient } from '@bloc-hn-nextjs-app/lib/post-client/post-api-client';
-import { PostRepository } from '@bloc-hn-nextjs-app/lib/post-repository/post-repository';
+import { cache } from 'react';
 
-export const getPostRepository = () => new PostRepository(new PostApiClient());
+export const getPostRepository = cache(() => {
+  const client = new PostApiClient();
+  return {
+    getPostDetails: (id: number) => client.getPostDetails(id),
+  };
+});
