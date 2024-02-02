@@ -14,11 +14,9 @@ import {
 } from './root-provider';
 import { useDisposable } from 'use-disposable';
 
-export type BaseList = ReadonlyArray<unknown>;
-
 export interface ProviderProps<Class extends AnyClassType> {
   classDef: Class;
-  create: () => InstanceType<Class>;
+  create: (() => InstanceType<Class>) | InstanceType<Class>;
   onMount?: (instance: InstanceType<Class>) => void;
   onUnmount?: (instance: InstanceType<Class>) => void;
   disposeTime?: number;
@@ -37,14 +35,22 @@ export const Provider = <Class extends AnyClassType>({
   onMount,
   onUnmount,
 }: ProviderProps<Class>) => {
+  const isDisposable = typeof create === 'function';
+
   const createInstance = () => {
-    const instance = create();
-    setTimeout(() => {
-      /* istanbul ignore else */
-      if (!mounted.has(instance)) {
-        onUnmount?.(instance);
-      }
-    }, disposeTime);
+    const instance = isDisposable
+      ? (create as () => InstanceType<Class>)()
+      : create;
+
+    if (isDisposable) {
+      setTimeout(() => {
+        /* istanbul ignore else */
+        if (!mounted.has(instance)) {
+          onUnmount?.(instance);
+        }
+      }, disposeTime);
+    }
+
     return instance;
   };
 
@@ -59,17 +65,17 @@ export const Provider = <Class extends AnyClassType>({
   }, dependencies) as InstanceType<Class>;
 
   useEffect(() => {
-    const created = instance;
+    const provided = instance;
 
-    onMount?.(created);
+    onMount?.(provided);
 
     /* istanbul ignore else */
-    if (!mounted.has(created)) {
-      mounted.add(created);
+    if (!mounted.has(provided) && isDisposable) {
+      mounted.add(provided);
     }
 
     return () => {
-      mounted.delete(created);
+      mounted.delete(provided);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [instance]);

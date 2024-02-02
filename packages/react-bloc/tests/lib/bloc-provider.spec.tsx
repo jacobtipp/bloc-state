@@ -1,8 +1,14 @@
 import { fireEvent, render } from '@testing-library/react';
 import { CounterExampleGroup } from './counter';
 import { CounterWithUserProvider } from './user';
-import { StrictMode } from 'react';
-import { clientContextMap } from '../../src';
+import { PropsWithChildren, StrictMode, useEffect } from 'react';
+import {
+  BlocProvider,
+  RootProvider,
+  clientContextMap,
+  useBlocInstance,
+} from '../../src';
+import { Cubit } from '@jacobtipp/bloc';
 
 describe('MultiProvider', () => {
   const consoleError = console.error;
@@ -49,5 +55,51 @@ describe('MultiProvider', () => {
     const first = (await findByTestId('first')).textContent;
     expect(count).toBe('0');
     expect(first).toBe('bob');
+  });
+
+  it('should support passing an instance to a bloc to create', () => {
+    expect.assertions(3);
+    class TestBloc extends Cubit<number> {
+      setState = (state: number) => {
+        this.emit(state);
+      };
+    }
+
+    const bloc = new TestBloc(0);
+
+    const IncrementProvider = ({ children }: PropsWithChildren) => {
+      return (
+        <RootProvider>
+          <BlocProvider bloc={TestBloc} create={bloc}>
+            {children}
+          </BlocProvider>
+        </RootProvider>
+      );
+    };
+
+    const Increment = () => {
+      const { setState } = useBlocInstance(TestBloc);
+
+      useEffect(() => {
+        setState(1);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+      }, []);
+
+      // eslint-disable-next-line react/jsx-no-useless-fragment
+      return <></>;
+    };
+
+    expect(bloc.state).toBe(0);
+
+    const { unmount } = render(
+      <IncrementProvider>
+        <Increment />
+      </IncrementProvider>
+    );
+
+    unmount();
+
+    expect(bloc.isClosed).toBe(false);
+    expect(bloc.state).toBe(1);
   });
 });
