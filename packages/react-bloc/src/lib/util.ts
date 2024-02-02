@@ -1,10 +1,11 @@
 import React, { useEffect, useLayoutEffect } from 'react';
 
-export const isServer = typeof window === 'undefined';
+export const isServer = () => typeof window === 'undefined';
+export const isClient = () => !isServer();
 
 export const useIsomorphicLayoutEffect = (() =>
   /* istanbul ignore next */
-  typeof window === 'undefined' ? useEffect : useLayoutEffect)();
+  isServer() ? useEffect : useLayoutEffect)();
 
 // this is from jotai useAtomValue https://github.com/pmndrs/jotai/blob/main/src/react/useAtomValue.ts
 /* istanbul ignore next */

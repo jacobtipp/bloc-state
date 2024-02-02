@@ -21,7 +21,7 @@ export const RootProvider = ({ children }: PropsWithChildren) => {
   return createElement(
     contextMapContext.Provider,
     {
-      value: isServer ? new Map() : clientContextMap,
+      value: isServer() ? new Map() : clientContextMap,
     },
     children
   );
