@@ -3,8 +3,6 @@ import { useSpring, a } from '@react-spring/web';
 import { PostBloc } from '../bloc/posts.bloc';
 
 export function PostId() {
-  console.log('postIdRendered');
-
   const postId = useBlocSelector(PostBloc, {
     selector: (state) => state.data.postId.currentId,
   });
