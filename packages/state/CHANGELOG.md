@@ -1,3 +1,15 @@
+## [1.1.0](https://github.com/jacobtipp/bloc-state/compare/state-v1.0.7...state-v1.1.0) (2024-02-03)
+
+
+### Features
+
+* **state:** ✨ loading now has an optional data param ([d1c975c](https://github.com/jacobtipp/bloc-state/commit/d1c975c0b94c0487b0366b67096f2b4b1bec9c40))
+
+
+### Build System Dependencies
+
+* **deps:** 📦️ update immer peerDep to support minor and patch releases ([fe8dd75](https://github.com/jacobtipp/bloc-state/commit/fe8dd75c7d60105243255e853c821397fb76ec16))
+
 ## [1.1.0-next.2](https://github.com/jacobtipp/bloc-state/compare/state-v1.1.0-next.1...state-v1.1.0-next.2) (2024-02-01)
 
 
