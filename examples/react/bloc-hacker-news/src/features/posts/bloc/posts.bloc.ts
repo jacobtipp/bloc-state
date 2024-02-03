@@ -1,45 +1,50 @@
-import { PostEvent, PostSubscribed } from './posts.events';
+import {
+  GetPostCanceledException,
+  PostRepository,
+} from '@/lib/post-repository/post-repository';
 import { PostState } from './posts.state';
-import { Bloc, Emitter } from '@jacobtipp/bloc';
-import { PostRepository } from '../../../packages/post-repository/post-repository';
+import { Cubit } from '@jacobtipp/bloc';
+import { assertIsError } from '@/lib/common/assert-is-error';
 
-export class PostBloc extends Bloc<PostEvent, PostState> {
-  constructor(private postRepository: PostRepository) {
-    super(
-      new PostState({
-        details: {
-          by: '',
-          time: 0,
-          type: 'comment',
-        },
+export class PostBloc extends Cubit<PostState> {
+  constructor(
+    state: PostState,
+    private readonly postRepository: PostRepository
+  ) {
+    super(state);
+  }
+
+  getPost = async (id: number): Promise<void> => {
+    const { currentId } = this.state.data.postId;
+
+    this.postRepository.cancelPost(currentId);
+
+    this.emit(
+      this.state.loading((draft) => {
+        draft.postId.currentId = id;
       })
     );
 
-    this.on(PostSubscribed, this.onSubscribed);
-  }
-
-  async onSubscribed(
-    event: PostSubscribed,
-    emit: Emitter<PostState>
-  ): Promise<void> {
     try {
-      emit(this.state.loading());
-
-      const post = await this.postRepository.getPost(event.id);
-      emit(
-        this.state.ready((data) => {
-          data.details = post;
+      const post = await this.postRepository.getPost(id);
+      this.emit(
+        this.state.ready((draft) => {
+          draft.details = post;
         })
       );
     } catch (e) {
-      if (e instanceof Error) {
-        emit(this.state.failed(e));
+      assertIsError(e);
+
+      this.addError(e);
+
+      if (e instanceof GetPostCanceledException) {
+        this.emit(this.state.failed(e));
       }
     }
-  }
+  };
 
   override fromJson(json: string): PostState {
-    const parsed = super.fromJson(json);
+    const parsed = JSON.parse(json) as PostState;
     return new PostState(parsed.data, parsed.status);
   }
 }

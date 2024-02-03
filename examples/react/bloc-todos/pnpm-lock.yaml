@@ -15,26 +15,26 @@ importers:
         specifier: 11.11.0
         version: 11.11.0(@emotion/react@11.11.1)(@types/react@18.2.38)(react@18.2.0)
       '@jacobtipp/bloc':
-        specifier: ^3.0.3
-        version: 3.0.3(rxjs@7.8.0)
+        specifier: 4.0.0-next.4
+        version: 4.0.0-next.4(rxjs@7.8.0)
       '@jacobtipp/bloc-concurrency':
-        specifier: ^3.0.4
-        version: 3.0.4(@jacobtipp/bloc@3.0.3)(rxjs@7.8.0)
+        specifier: 4.0.0-next.4
+        version: 4.0.0-next.4(@jacobtipp/bloc@4.0.0-next.4)(rxjs@7.8.0)
       '@jacobtipp/bloc-devtools':
-        specifier: ^1.0.6
-        version: 1.0.6(@jacobtipp/bloc@3.0.3)(rxjs@7.8.0)
+        specifier: 2.0.0-next.4
+        version: 2.0.0-next.4(@jacobtipp/bloc@4.0.0-next.4)(rxjs@7.8.0)
       '@jacobtipp/bloc-query':
-        specifier: 2.1.2
-        version: 2.1.2(@jacobtipp/bloc@3.0.3)(rxjs@7.8.0)
+        specifier: 3.0.0-next.5
+        version: 3.0.0-next.5(@jacobtipp/bloc@4.0.0-next.4)(rxjs@7.8.0)
       '@jacobtipp/hydrated-bloc':
-        specifier: ^3.0.4
-        version: 3.0.4(@jacobtipp/bloc@3.0.3)(rxjs@7.8.0)
+        specifier: 4.0.0-next.4
+        version: 4.0.0-next.4(@jacobtipp/bloc@4.0.0-next.4)(rxjs@7.8.0)
       '@jacobtipp/react-bloc':
-        specifier: 3.2.5
-        version: 3.2.5(@jacobtipp/bloc@3.0.3)(react-dom@18.2.0)(react@18.2.0)(rxjs@7.8.0)
+        specifier: 4.0.0-next.4
+        version: 4.0.0-next.4(@jacobtipp/bloc@4.0.0-next.4)(@types/react-dom@18.2.17)(@types/react@18.2.38)(react-dom@18.2.0)(react@18.2.0)(rxjs@7.8.0)
       '@jacobtipp/state':
-        specifier: ^1.0.7
-        version: 1.0.7(immer@9.0.18)
+        specifier: 1.1.0-next.2
+        version: 1.1.0-next.2(immer@9.0.18)
       '@mui/material':
         specifier: ^5.10.17
         version: 5.10.17(@emotion/react@11.11.1)(@emotion/styled@11.11.0)(@types/react@18.2.38)(react-dom@18.2.0)(react@18.2.0)
@@ -57,7 +57,7 @@ importers:
         specifier: ^4.1.8
         version: 4.1.8
       rxjs:
-        specifier: 7.8.0
+        specifier: ^7.8.0
         version: 7.8.0
     devDependencies:
       '@types/react':
@@ -522,73 +522,77 @@ packages:
     resolution: {integrity: sha512-dvuCeX5fC9dXgJn9t+X5atfmgQAzUOWqS1254Gh0m6i8wKd10ebXkfNKiRK+1GWi/yTvvLDHpoxLr0xxxeslWw==}
     dev: true
 
-  /@jacobtipp/bloc-concurrency@3.0.4(@jacobtipp/bloc@3.0.3)(rxjs@7.8.0):
-    resolution: {integrity: sha512-L+8Foh6b4phWu3zWFh5N/aFqL3+oN7djFhKf7wkZageFz/GJG2XI4GWxhLhX6H8zqaY/15YFPd0jWXa6huomFw==}
+  /@jacobtipp/bloc-concurrency@4.0.0-next.4(@jacobtipp/bloc@4.0.0-next.4)(rxjs@7.8.0):
+    resolution: {integrity: sha512-c2i1Mx1zuVc0tpKh2OHGhj5lHGwFnEACCN+0X4wX78bQFiclCyD42h0GydqkYS+jHpPsN4uYSC6G9H08vdS4aw==}
     peerDependencies:
-      '@jacobtipp/bloc': 3.0.3
-      rxjs: 7.8.0
+      '@jacobtipp/bloc': 4.0.0-next.4
+      rxjs: ^7.8.0
     dependencies:
-      '@jacobtipp/bloc': 3.0.3(rxjs@7.8.0)
+      '@jacobtipp/bloc': 4.0.0-next.4(rxjs@7.8.0)
       rxjs: 7.8.0
     dev: false
 
-  /@jacobtipp/bloc-devtools@1.0.6(@jacobtipp/bloc@3.0.3)(rxjs@7.8.0):
-    resolution: {integrity: sha512-RCbSMF4fGWoCZDBZ3gBicInseS4m5BWaaCZMgVS3hzBfxKglwvttnW9VpkWSZ8Dg8uxVXJ4g1sgeWffO7QSKmA==}
+  /@jacobtipp/bloc-devtools@2.0.0-next.4(@jacobtipp/bloc@4.0.0-next.4)(rxjs@7.8.0):
+    resolution: {integrity: sha512-IEREsEJy0wNIBUjD7+5E1LEvak8cXVgO2ghvT2LX+QN6oKqi/XWaQYam1kmKcv1pYVkWEHbril75fKREhMRhMQ==}
     peerDependencies:
-      '@jacobtipp/bloc': 3.0.3
-      rxjs: 7.8.0
+      '@jacobtipp/bloc': 4.0.0-next.4
+      rxjs: ^7.8.0
     dependencies:
-      '@jacobtipp/bloc': 3.0.3(rxjs@7.8.0)
+      '@jacobtipp/bloc': 4.0.0-next.4(rxjs@7.8.0)
       rxjs: 7.8.0
     dev: false
 
-  /@jacobtipp/bloc-query@2.1.2(@jacobtipp/bloc@3.0.3)(rxjs@7.8.0):
-    resolution: {integrity: sha512-0nrVyZ4kgZRJQ5tbM78AP0jZHkhSNMOrqc/IQeTsYs6ly8+V4MDEsErePuFQ5OoRL7z/YhJHKl5WuJCmI6YtPQ==}
+  /@jacobtipp/bloc-query@3.0.0-next.5(@jacobtipp/bloc@4.0.0-next.4)(rxjs@7.8.0):
+    resolution: {integrity: sha512-Aal7SDKC6bInvorHdBr4syv4UImcpxlsF+MJ4AmvuawEoknUhMhe2vbPwzs+qBx/fIrKSsLAMH04D1mVd6awgQ==}
     peerDependencies:
-      '@jacobtipp/bloc': 3.0.3
-      rxjs: 7.8.0
+      '@jacobtipp/bloc': 4.0.0-next.4
+      rxjs: ^7.8.0
     dependencies:
-      '@jacobtipp/bloc': 3.0.3(rxjs@7.8.0)
+      '@jacobtipp/bloc': 4.0.0-next.4(rxjs@7.8.0)
       rxjs: 7.8.0
     dev: false
 
-  /@jacobtipp/bloc@3.0.3(rxjs@7.8.0):
-    resolution: {integrity: sha512-LbKAEhvx9fPnyPqLflFie+2R8dxlCS290+ppXc+ncNOO+9ih0oyRNu8Wxw7Pi6S52lrBB9WtaVWEBpvcTf4Q9A==}
+  /@jacobtipp/bloc@4.0.0-next.4(rxjs@7.8.0):
+    resolution: {integrity: sha512-+xE5GhJ6DFAyiYB9KlzgpD2eV0eLeKcYH6uXN9y4ZbqN1k959zKQ579QSfQeCBKVGEGrrgRGeYJZJ9vRdyfPMA==}
     peerDependencies:
-      rxjs: 7.8.0
+      rxjs: ^7.8.0
     dependencies:
       rxjs: 7.8.0
     dev: false
 
-  /@jacobtipp/hydrated-bloc@3.0.4(@jacobtipp/bloc@3.0.3)(rxjs@7.8.0):
-    resolution: {integrity: sha512-mF+CV5sxbLdUKytAScAnD2yDxF8B7gGXuHRiqPQrQLFXLEgFLPLOr2/IbT7vCpTxKTe3gQRyryr84Ez/hgzx7g==}
+  /@jacobtipp/hydrated-bloc@4.0.0-next.4(@jacobtipp/bloc@4.0.0-next.4)(rxjs@7.8.0):
+    resolution: {integrity: sha512-dxNL/uhLSC9ZrMx8I5rJLRfO08eS3njpATCWOUhOks2EF0fQ8KvjqD790rf6HArW+3IKD6tW8VV+HvzhaCXqYQ==}
     peerDependencies:
-      '@jacobtipp/bloc': 3.0.3
-      rxjs: 7.8.0
+      '@jacobtipp/bloc': 4.0.0-next.4
+      rxjs: ^7.8.0
     dependencies:
-      '@jacobtipp/bloc': 3.0.3(rxjs@7.8.0)
+      '@jacobtipp/bloc': 4.0.0-next.4(rxjs@7.8.0)
       rxjs: 7.8.0
     dev: false
 
-  /@jacobtipp/react-bloc@3.2.5(@jacobtipp/bloc@3.0.3)(react-dom@18.2.0)(react@18.2.0)(rxjs@7.8.0):
-    resolution: {integrity: sha512-wjDpBRI4cKt2mWhQyrFUxgmoCtAlqIXsxJpNBGCt9sewZWo1YQg8c3Ic5PxfGIUodeydQZDgaoIysZTQSAqwkQ==}
+  /@jacobtipp/react-bloc@4.0.0-next.4(@jacobtipp/bloc@4.0.0-next.4)(@types/react-dom@18.2.17)(@types/react@18.2.38)(react-dom@18.2.0)(react@18.2.0)(rxjs@7.8.0):
+    resolution: {integrity: sha512-qkTdC1GRcnpR6x8Sd6nD7Umxoas9P8L9BGUZw++UIS6K+YxaBqArJZbvBYCyAfTs7yrnHcLE+5Jju1GbbQcpLA==}
     peerDependencies:
-      '@jacobtipp/bloc': 3.0.3
+      '@jacobtipp/bloc': 4.0.0-next.4
       react: 18.2.0
       react-dom: 18.2.0
-      rxjs: 7.8.0
+      rxjs: ^7.8.0
     dependencies:
-      '@jacobtipp/bloc': 3.0.3(rxjs@7.8.0)
+      '@jacobtipp/bloc': 4.0.0-next.4(rxjs@7.8.0)
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
       rxjs: 7.8.0
+      use-disposable: 1.0.2(@types/react-dom@18.2.17)(@types/react@18.2.38)(react-dom@18.2.0)(react@18.2.0)
       use-sync-external-store: 1.2.0(react@18.2.0)
+    transitivePeerDependencies:
+      - '@types/react'
+      - '@types/react-dom'
     dev: false
 
-  /@jacobtipp/state@1.0.7(immer@9.0.18):
-    resolution: {integrity: sha512-Igp4JbPHgfUl/O0AT9EmJalV8dQ3HJ9BjLKkkbb5B4XjoBAKEkkuC5Jvu6quQeRLBtNMYFsIarHWhM9G7QJMbg==}
+  /@jacobtipp/state@1.1.0-next.2(immer@9.0.18):
+    resolution: {integrity: sha512-sBl5qu7hs/vFgqcGvIT1zu7crGK2WOfpa5oTcNuDEX+Hy7WHihp+sFYSdw4WicjB2MdLAfzspA2wr5EGhUa1EA==}
     peerDependencies:
-      immer: 9.0.18
+      immer: ^9.0.18
     dependencies:
       immer: 9.0.18
     dev: false
@@ -913,7 +917,6 @@ packages:
     resolution: {integrity: sha512-rvrT/M7Df5eykWFxn6MYt5Pem/Dbyc1N8Y0S9Mrkw2WFCRiqUgw9P7ul2NpwsXCSM1DVdENzdG9J5SreqfAIWg==}
     dependencies:
       '@types/react': 18.2.38
-    dev: true
 
   /@types/react-transition-group@4.4.9:
     resolution: {integrity: sha512-ZVNmWumUIh5NhH8aMD9CR2hdW0fNuYInlocZHaZ+dgk/1K49j1w/HoAuK1ki+pgscQrOFRTlXeoURtuzEkV3dg==}
@@ -2812,6 +2815,20 @@ packages:
     dependencies:
       punycode: 2.3.1
     dev: true
+
+  /use-disposable@1.0.2(@types/react-dom@18.2.17)(@types/react@18.2.38)(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-UMaXVlV77dWOu4GqAFNjRzHzowYKUKbJBQfCexvahrYeIz4OkUYUjna4Tjjdf92NH8Nm8J7wEfFRgTIwYjO5jg==}
+    peerDependencies:
+      '@types/react': '>=16.8.0 <19.0.0'
+      '@types/react-dom': '>=16.8.0 <19.0.0'
+      react: '>=16.8.0 <19.0.0'
+      react-dom: '>=16.8.0 <19.0.0'
+    dependencies:
+      '@types/react': 18.2.38
+      '@types/react-dom': 18.2.17
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
+    dev: false
 
   /use-sync-external-store@1.2.0(react@18.2.0):
     resolution: {integrity: sha512-eEgnFxGQ1Ife9bzYs6VLi8/4X6CObHMw9Qr9tPY43iKwsPw8xE8+EFsf/2cFZ5S3esXgpWgtSCtLNS41F+sKPA==}
