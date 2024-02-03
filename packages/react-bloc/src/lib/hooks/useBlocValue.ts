@@ -2,29 +2,43 @@ import { BlocBase, StateType, ClassType } from '@jacobtipp/bloc';
 import { useCallback, useSyncExternalStore, useDebugValue } from 'react';
 import { useBlocInstance } from './useBlocInstance';
 
+/**
+ * A custom React hook that subscribes to the state of a specified Bloc and returns its current value.
+ * This hook uses `useSyncExternalStore` to subscribe to Bloc state changes in a way that is compatible
+ * with React's concurrent features, ensuring that the component using this hook re-renders with the latest state.
+ *
+ * @template Bloc The class type of the Bloc extending BlocBase with any type of state.
+ * @template Value The specific type of state managed by the Bloc. This allows the hook to be typed
+ * according to the state type of the Bloc being used, improving type safety and developer experience.
+ * @param {Bloc} bloc The class of the Bloc for which the current state value is desired.
+ * @returns {Value} The current state value of the specified Bloc. This value is updated whenever the Bloc's state changes.
+ */
 export const useBlocValue = <
   Bloc extends ClassType<BlocBase<any>>,
   Value = StateType<InstanceType<Bloc>>
 >(
   bloc: Bloc
 ): Value => {
-  const blocInstance = useBlocInstance(bloc);
+  const blocInstance = useBlocInstance(bloc); // Retrieve the instance of the specified Bloc.
+
+  // Define a callback for creating a subscription to the Bloc's state changes.
   const subscriptionCallback = useCallback(
     (notify: () => void) => {
-      const subscription = blocInstance.state$.subscribe(notify);
-      return () => subscription.unsubscribe();
+      const subscription = blocInstance.state$.subscribe(notify); // Subscribe to state changes and call notify on each change.
+      return () => subscription.unsubscribe(); // Return an unsubscribe function to be called on cleanup.
+      // Dependencies list is kept to blocInstance to re-subscribe when it changes.
       // eslint-disable-next-line react-hooks/exhaustive-deps
     },
     [blocInstance]
   );
 
+  // Use the subscription callback with useSyncExternalStore to subscribe to the Bloc's state changes.
   const state = useSyncExternalStore<Value>(
-    // Use the memoized subscription function here.
-    subscriptionCallback,
-    () => blocInstance.state as Value,
-    () => blocInstance.state as Value
+    subscriptionCallback, // The memoized subscription function.
+    () => blocInstance.state as Value, // A function to get the current state synchronously.
+    () => blocInstance.state as Value // A function to get the snapshot for server rendering (optional here).
   );
 
-  useDebugValue(state);
-  return state;
+  useDebugValue(state); // Optionally display the current state in React DevTools for debugging.
+  return state; // Return the current state.
 };
