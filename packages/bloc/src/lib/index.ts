@@ -7,3 +7,4 @@ export * from './transition';
 export * from './change';
 export * from './errors';
 export * from './emitter';
+export * from './util';

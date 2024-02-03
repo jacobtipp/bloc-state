@@ -6,10 +6,9 @@ import {
   RepositoryProvider,
   useProvider,
   RootProvider,
-  isClient,
 } from '@jacobtipp/react-bloc';
 import { PropsWithChildren } from 'react';
-import { BlocObserver } from '@jacobtipp/bloc';
+import { BlocObserver, isClient } from '@jacobtipp/bloc';
 import { AppBlocObserver } from '@bloc-hn-nextjs-app/lib/app-bloc-observer/app-bloc-observer';
 import { PostApiClient } from '@bloc-hn-nextjs-app/lib/post-client/post-api-client';
 import { PostClient } from '@bloc-hn-nextjs-app/lib/post-client/post-client';

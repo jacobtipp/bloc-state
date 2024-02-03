@@ -1,6 +1,5 @@
-import { AbstractClassType, ClassType } from '@jacobtipp/bloc';
+import { AbstractClassType, ClassType, isServer } from '@jacobtipp/bloc';
 import { PropsWithChildren, createContext, createElement } from 'react';
-import { isServer } from '../util';
 
 /**
  * Type definition for any class type, including both concrete and abstract classes.
