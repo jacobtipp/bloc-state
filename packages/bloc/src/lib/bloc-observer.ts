@@ -1,9 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { Bloc, BlocBase, Transition } from '.';
+import { Bloc, BlocBase, Transition, isServer } from '.';
 import { Change } from './';
-
-const isServer = typeof window === 'undefined';
 
 /**
  * Defines methods to observe the state changes of a Bloc.
@@ -17,7 +15,7 @@ export class BlocObserver {
 
   static set observer(toObserve: BlocObserver) {
     /* istanbul ignore next */
-    if (isServer) return;
+    if (isServer()) return;
     BlocObserver._observer = toObserve;
   }
   /**
