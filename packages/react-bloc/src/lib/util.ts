@@ -1,7 +1,5 @@
+import { isServer } from '@jacobtipp/bloc';
 import React, { useEffect, useLayoutEffect } from 'react';
-
-export const isServer = () => typeof window === 'undefined';
-export const isClient = () => !isServer();
 
 export const useIsomorphicLayoutEffect = (() =>
   /* istanbul ignore next */

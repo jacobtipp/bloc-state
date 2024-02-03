@@ -1,4 +1,4 @@
-import { isClient } from '../../src';
+import { isClient } from '../src';
 
 describe('isClient', () => {
   it('it should check if the environment is in a browser environment', () => {
