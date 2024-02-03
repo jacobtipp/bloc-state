@@ -1,3 +1,27 @@
+## [4.0.0-next.4](https://github.com/jacobtipp/bloc-state/compare/react-bloc-v4.0.0-next.3...react-bloc-v4.0.0-next.4) (2024-02-03)
+
+
+### Features
+
+* **bloc:** ✨ add isServer and isClient methods ([52f74dd](https://github.com/jacobtipp/bloc-state/commit/52f74ddaa14b9b98a1fba30dd94cd76ee9592363))
+* **react-bloc:** ✨ add isServer and isClient global methods ([d5e6937](https://github.com/jacobtipp/bloc-state/commit/d5e6937d709d994d68bc1582e2bacf1b9bcc7814))
+* **react-bloc:** ✨ Providers optionally accept an instance instead of a create function ([ab6f58d](https://github.com/jacobtipp/bloc-state/commit/ab6f58d77c1f673054ed31010b484aece150fd13))
+
+
+### Code Refactoring
+
+* **bloc:** ♻️ check ancestor event hierarchy in on method ([5b19aa5](https://github.com/jacobtipp/bloc-state/commit/5b19aa5f38b1267e3f36b35851e3001ead6e021c))
+
+
+### Build System Dependencies
+
+* **deps:** 📦️ add use-disposable dependency to @jacobtipp/react-bloc ([5695baa](https://github.com/jacobtipp/bloc-state/commit/5695baa78ac429e14e7d5848e6a9e64c69842c1f))
+
+
+### Documentation
+
+* **readme:** 📚️ update docs for @jacobtipp/react-bloc ([90f6e61](https://github.com/jacobtipp/bloc-state/commit/90f6e61401ffea8a714c7b391cc2cebe4d546300))
+
 ## [4.0.0-next.3](https://github.com/jacobtipp/bloc-state/compare/react-bloc-v4.0.0-next.2...react-bloc-v4.0.0-next.3) (2024-02-01)
 
 
