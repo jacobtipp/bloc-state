@@ -1,5 +1,4 @@
 import { Bloc, Emitter } from '@jacobtipp/bloc';
-import { Todo } from '../../../packages/todos-client/model/todo';
 import {
   EditTodoDescriptionChanged,
   EditTodoEvent,
@@ -8,7 +7,8 @@ import {
   EditTodoTitleChanged,
 } from './edit-todo.event';
 import { EditTodoState } from './edit-todo.state';
-import { TodosRepository } from '../../../packages/todos-repository/todos-repository';
+import { TodosRepository } from '@/packages/todos-repository/todos-repository';
+import { v4 as uuid } from 'uuid';
 
 export class EditTodoBloc extends Bloc<EditTodoEvent, EditTodoState> {
   constructor(private todosRepository: TodosRepository) {
@@ -26,20 +26,19 @@ export class EditTodoBloc extends Bloc<EditTodoEvent, EditTodoState> {
   }
 
   async onSubmitted(_event: EditTodoSubmitted, emit: Emitter<EditTodoState>) {
-    try {
-      const { title, description, id, isCompleted } = this.state.data;
-      await this.todosRepository.saveTodo(
-        new Todo(title, description, isCompleted, id)
-      );
-      emit(
-        this.state.copyWith((draft) => {
-          draft.status = 'ready';
-          draft.submitSuccess = true;
-        })
-      );
-    } catch (e) {
-      emit(this.state.failed());
-    }
+    const { title, description, id, isCompleted } = this.state.data;
+    await this.todosRepository.saveTodo({
+      id: id ?? uuid(),
+      title,
+      description,
+      isCompleted: isCompleted ?? false,
+    });
+    emit(
+      this.state.copyWith((draft) => {
+        draft.status = 'ready';
+        draft.submitSuccess = true;
+      })
+    );
   }
 
   onDescriptionChanged(

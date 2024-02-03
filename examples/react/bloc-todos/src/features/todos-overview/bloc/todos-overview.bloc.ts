@@ -12,7 +12,7 @@ import {
 } from './todos-overview.event';
 import { TodosOverviewState } from './todos-overview.state';
 import { WithHydratedBloc } from '@jacobtipp/hydrated-bloc';
-import { TodosRepository } from '../../../packages/todos-repository/todos-repository';
+import { TodosRepository } from '@/packages/todos-repository/todos-repository';
 
 export class TodosOverviewBlocBase extends Bloc<
   TodosOverviewEvent,
@@ -109,7 +109,10 @@ export class TodosOverviewBlocBase extends Bloc<
           data.todos = todos;
         });
       },
-      (_error) => this.state.failed()
+      (error: Error) => {
+        this.addError(error);
+        return this.state.failed(error);
+      }
     );
   }
 

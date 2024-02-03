@@ -5,8 +5,7 @@ import { PostBloc } from '../bloc/posts.bloc';
 export function PostDetails() {
   const details = useBlocSelector(PostBloc, {
     selector: (state) => state.data.details,
-    suspendWhen: (state) =>
-      state.status === 'loading' || state.status === 'initial',
+    suspendWhen: ({ status }) => status === 'loading',
   });
   const { by, text, time, title, url } = details;
 
