@@ -376,6 +376,9 @@ importers:
       rxjs:
         specifier: ^7.8.0
         version: 7.8.0
+      use-disposable:
+        specifier: ^1.0.2
+        version: 1.0.2(@types/react-dom@18.2.6)(@types/react@18.2.14)(react-dom@18.2.0)(react@18.2.0)
       use-sync-external-store:
         specifier: ^1.2.0
         version: 1.2.0(react@18.2.0)
