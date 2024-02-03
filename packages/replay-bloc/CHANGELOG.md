@@ -1,3 +1,15 @@
+## [3.0.0-next.4](https://github.com/jacobtipp/bloc-state/compare/replay-bloc-v3.0.0-next.3...replay-bloc-v3.0.0-next.4) (2024-02-03)
+
+
+### Features
+
+* **bloc:** ✨ add isServer and isClient methods ([52f74dd](https://github.com/jacobtipp/bloc-state/commit/52f74ddaa14b9b98a1fba30dd94cd76ee9592363))
+
+
+### Code Refactoring
+
+* **bloc:** ♻️ check ancestor event hierarchy in on method ([5b19aa5](https://github.com/jacobtipp/bloc-state/commit/5b19aa5f38b1267e3f36b35851e3001ead6e021c))
+
 ## [3.0.0-next.3](https://github.com/jacobtipp/bloc-state/compare/replay-bloc-v3.0.0-next.2...replay-bloc-v3.0.0-next.3) (2024-02-01)
 
 
