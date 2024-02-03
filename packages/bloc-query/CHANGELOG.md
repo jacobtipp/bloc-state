@@ -1,3 +1,21 @@
+## [3.0.0-next.5](https://github.com/jacobtipp/bloc-state/compare/bloc-query-v3.0.0-next.4...bloc-query-v3.0.0-next.5) (2024-02-03)
+
+
+### Features
+
+* **bloc:** ✨ add isServer and isClient methods ([52f74dd](https://github.com/jacobtipp/bloc-state/commit/52f74ddaa14b9b98a1fba30dd94cd76ee9592363))
+
+
+### Code Refactoring
+
+* **bloc-query:** ♻️ update QueryCanceledException message ([1b27ed4](https://github.com/jacobtipp/bloc-state/commit/1b27ed4ff12464c234cf344ff780fbea26a6d3d3))
+* **bloc:** ♻️ check ancestor event hierarchy in on method ([5b19aa5](https://github.com/jacobtipp/bloc-state/commit/5b19aa5f38b1267e3f36b35851e3001ead6e021c))
+
+
+### Documentation
+
+* **readme:** 📚️ update docs for @jacobtipp/bloc-query ([13478be](https://github.com/jacobtipp/bloc-state/commit/13478beca1e9d77f969e7036723056fc81729ff1))
+
 ## [3.0.0-next.4](https://github.com/jacobtipp/bloc-state/compare/bloc-query-v3.0.0-next.3...bloc-query-v3.0.0-next.4) (2024-02-01)
 
 
