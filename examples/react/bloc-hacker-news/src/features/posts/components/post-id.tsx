@@ -1,10 +1,13 @@
+import { useBlocSelector } from '@jacobtipp/react-bloc';
 import { useSpring, a } from '@react-spring/web';
-import { HomeBloc } from '../../home/bloc/home.cubit';
-import { useBlocValue } from '@jacobtipp/react-bloc';
+import { PostBloc } from '../bloc/posts.bloc';
 
 export function PostId() {
-  const id = useBlocValue(HomeBloc);
-  const props = useSpring({ from: { id }, id, reset: true });
+  const postId = useBlocSelector(PostBloc, {
+    selector: (state) => state.data.postId.currentId,
+  });
 
-  return <a.h1>{props.id.to(Math.round)}</a.h1>;
+  const props = useSpring({ from: { postId }, postId, reset: true });
+
+  return <a.h1>{props.postId.to(Math.round)}</a.h1>;
 }
