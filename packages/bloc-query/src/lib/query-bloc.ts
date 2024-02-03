@@ -21,29 +21,68 @@ import {
 } from './query-fetch-transformer';
 import { Fetching, QueryState, Ready } from './query-state';
 
+/**
+ * Represents the unique key used to identify a query. This is typically a string
+ * that uniquely identifies the data being fetched or manipulated.
+ */
 export type QueryKey = string;
 
+/**
+ * Defines the configuration options available for a query operation. These options
+ * dictate how the query behaves, including its initial state, cache behavior, and
+ * error logging.
+ *
+ * @template Data The type of data expected to be returned by the query function.
+ */
 export type QueryOptions<Data> = {
+  /** Initial data to be used before the query completes. Useful for SSR or initial placeholders. */
   initialData?: Data;
+  /** Time in milliseconds after which the data is considered stale and may be refetched. */
   staleTime?: number;
+  /** Time in milliseconds to keep the data alive in cache after it becomes inactive. */
   keepAlive?: number;
+  /** Whether to log errors to the console. */
   logErrors?: boolean;
+  /** A unique key to identify the query. */
   queryKey: QueryKey;
+  /** A function returning a promise that resolves with the data. */
   queryFn: (options: QueryFnOptions) => Promise<Data>;
 };
 
+/**
+ * Extends `QueryOptions` with additional options specific to QueryBloc, which may
+ * include options for naming the bloc and configuring stale time at the bloc level.
+ *
+ * @template Data The type of data expected to be returned by the query function.
+ */
 export type QueryBlocOptions<Data> = {
+  /** Optional name for the bloc. Useful for debugging or identification. */
   name?: string;
+  /** Time in milliseconds after which the data in the bloc is considered stale. */
   staleTime?: number;
 } & FetchTransformerOptions &
   QueryOptions<Data>;
 
+/**
+ * Options passed to the query function, providing it with an `AbortSignal` to
+ * support cancellable fetch operations.
+ */
 export type QueryFnOptions = {
+  /** An AbortSignal to signal the fetch operation can be cancelled. */
   signal: AbortSignal;
 };
 
+/**
+ * Configuration options for retrieving query data, allowing for the selection
+ * of a specific part of the query state and comparison of state for updates.
+ *
+ * @template Data The type of data managed by the query.
+ * @template Selected The type of the selected or derived data from the query state.
+ */
 export type GetQueryOptions<Data = unknown, Selected = QueryState<Data>> = {
+  /** Optional selector function to derive a part of the state. */
   selector?: (state: Ready<Data>) => Selected;
+  /** Optional comparator function to determine if the selected state has changed. */
   comparator?: (previous: Selected, current: Selected) => boolean;
 } & QueryOptions<Data> &
   FetchTransformerOptions;

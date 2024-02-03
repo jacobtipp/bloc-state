@@ -206,7 +206,7 @@ export class QueryClient {
   setQueryData = <Data>(
     queryKey: string,
     set: ((old: Data) => Data) | Data
-  ) => {
+  ): void => {
     const queryBloc = this.queryMap.get(queryKey);
     if (queryBloc) {
       queryBloc.setQueryData(set);
