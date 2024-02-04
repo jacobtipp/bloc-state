@@ -5,13 +5,13 @@ import {
   RepositoryProvider,
   useProvider,
 } from '@jacobtipp/react-bloc';
-import { TodosRepository } from '@/packages/todos-repository/todos-repository';
-import { LocalStorageTodosClient } from '@/packages/todos-client/local-storage-todos-client';
+import { TodosRepository } from '@/lib/todos-repository/todos-repository';
+import { LocalStorageTodosClient } from '@/lib/todos-client/local-storage-todos-client';
 import { PropsWithChildren } from 'react';
-import { TodosClient } from '@/packages/todos-client/todos-client';
+import { TodosClient } from '@/lib/todos-client/todos-client';
 import { QueryClient } from '@jacobtipp/bloc-query';
 import { ThemeProvider as MuiThemeProvider, createTheme } from '@mui/material';
-import { AppBlocObserver } from '@/packages/app-bloc-observer/app-bloc-observer';
+import { AppBlocObserver } from '@/lib/app-bloc-observer/app-bloc-observer';
 import { BlocObserver } from '@jacobtipp/bloc';
 import {
   HydratedLocalStorage,

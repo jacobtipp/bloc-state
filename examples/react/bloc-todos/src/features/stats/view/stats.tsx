@@ -16,7 +16,7 @@ import {
   useRepository,
 } from '@jacobtipp/react-bloc';
 import { StatsBloc } from '../bloc/stats.bloc';
-import { TodosRepository } from '@/packages/todos-repository/todos-repository';
+import { TodosRepository } from '@/lib/todos-repository/todos-repository';
 
 export default function StatsPage() {
   const todosRepository = useRepository(TodosRepository);

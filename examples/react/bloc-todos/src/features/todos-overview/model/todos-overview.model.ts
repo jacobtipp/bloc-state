@@ -1,4 +1,4 @@
-import { Todo } from '@/packages/todos-client/model/todo';
+import { Todo } from '@/lib/todos-client/model/todo';
 import { TodosOverviewFilter } from './todos-overview-filter';
 
 export type TodosOverview = {
