@@ -2,7 +2,7 @@ import { AppBar, Toolbar } from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
 import { Route, Routes } from 'react-router-dom';
 import { lazy, Suspense } from 'react';
-import { CircularLoader } from '@/packages/app-ui/components/circular-loader';
+import { CircularLoader } from '@/lib/app-ui/components/circular-loader';
 
 import './app.css';
 import { Providers } from './providers';

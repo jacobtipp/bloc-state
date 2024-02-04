@@ -17,7 +17,7 @@ import { useNavigate } from 'react-router-dom';
 import { TodosOverviewOptionsButton } from '../components/todos-overview-options-button';
 import { TodosOverviewFilterButton } from '../components/todos-overview-filter-button';
 import { TodosOverviewEmptyText } from '../components/todos-overview-empty-text';
-import { Todo } from '@/packages/todos-client/model/todo';
+import { Todo } from '@/lib/todos-client/model/todo';
 import {
   BlocProvider,
   useBloc,
@@ -31,7 +31,7 @@ import {
   TodosOverviewTodoCompletionToggled,
 } from '../bloc/todos-overview.event';
 import { TodosOverviewFilter } from '../model/todos-overview-filter';
-import { TodosRepository } from '@/packages/todos-repository/todos-repository';
+import { TodosRepository } from '@/lib/todos-repository/todos-repository';
 import { TodosOverViewSnackbar } from '../components/todos-overview-snackbar';
 
 const todoFilterMap = (todo: Todo, filter: TodosOverviewFilter) =>
@@ -48,6 +48,7 @@ export default function TodosOverviewPage() {
     <BlocProvider
       bloc={TodosOverviewBloc}
       create={() => new TodosOverviewBloc(todosRepository)}
+      dependencies={[todosRepository]}
       onMount={(todosOverviewBloc) =>
         todosOverviewBloc.add(new TodosOverviewSubscriptionRequested())
       }

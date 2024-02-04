@@ -25,7 +25,8 @@ import {
   useRepository,
 } from '@jacobtipp/react-bloc';
 import { EditTodoBloc } from '../bloc/edit-todo.bloc';
-import { TodosRepository } from '@/packages/todos-repository/todos-repository';
+import { TodosRepository } from '@/lib/todos-repository/todos-repository';
+import { useEffect } from 'react';
 
 export default function EditTodoPage() {
   const { todoId } = useParams();
@@ -55,6 +56,10 @@ export function EditTodoView({ isNew }: EditTodoViewProps) {
   const [[title, description], { add }] = useBloc(EditTodoBloc, {
     selector: (state) => [state.data.title, state.data.description],
   });
+
+  useEffect(() => {
+    navigate('/');
+  }, []);
 
   useBlocListener(EditTodoBloc, {
     listenWhen(_previous, current) {

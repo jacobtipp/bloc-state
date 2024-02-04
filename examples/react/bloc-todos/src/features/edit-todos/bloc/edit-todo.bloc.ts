@@ -7,7 +7,7 @@ import {
   EditTodoTitleChanged,
 } from './edit-todo.event';
 import { EditTodoState } from './edit-todo.state';
-import { TodosRepository } from '@/packages/todos-repository/todos-repository';
+import { TodosRepository } from '@/lib/todos-repository/todos-repository';
 import { v4 as uuid } from 'uuid';
 
 export class EditTodoBloc extends Bloc<EditTodoEvent, EditTodoState> {
