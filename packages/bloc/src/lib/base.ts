@@ -125,11 +125,11 @@ export abstract class BlocBase<State = unknown> {
    *
    * @template State - The type of the state maintained by the observable.
    */
-  protected listenTo(
-    observable: Observable<State>,
-    observerOrNext: Partial<Observer<State>> | NextFunction<State>
+  protected listenTo<Stream>(
+    observable: Observable<Stream>,
+    observerOrNext: Partial<Observer<Stream>> | NextFunction<Stream>
   ): { unsubscribe: () => void; isClosed: boolean } {
-    let observer: Partial<Observer<State>>;
+    let observer: Partial<Observer<Stream>>;
 
     if (typeof observerOrNext === 'function') {
       observer = { next: observerOrNext };
@@ -137,7 +137,7 @@ export abstract class BlocBase<State = unknown> {
       observer = observerOrNext;
     }
 
-    const boundObserver: Observer<State> = {
+    const boundObserver: Observer<Stream> = {
       next: (newState) => {
         observer.next?.call(this, newState);
       },
