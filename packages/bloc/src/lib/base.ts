@@ -117,19 +117,17 @@ export abstract class BlocBase<State = unknown> {
   /**
    * Listens to an observable and manages the subscription internally.
    *
-   * @param {Observable<State>} observable - The observable to subscribe to.
-   * @param {Partial<Observer<State>> | NextFunction<State>} observerOrNext -
-   * An observer object or a function to be used as the next callback.
-   * @returns {{ unsubscribe: () => void, isClosed: boolean }} An object with an unsubscribe method
-   * to stop the subscription and a boolean indicating whether the subscription is closed.
-   *
-   * @template State - The type of the state maintained by the observable.
+   * @template T - The type emitted by the Observable.
+   * @param {Observable<T>} observable - The Observable to listen to.
+   * @param {Partial<Observer<T>> | NextFunction<T>} observerOrNext - Either an observer object or a callback function for next events.
+   * @returns {{ unsubscribe: () => void; isClosed: boolean }} An object with an `unsubscribe` method to detach the subscription
+   * and an `isClosed` property indicating whether the subscription is closed.
    */
-  protected listenTo<Stream>(
-    observable: Observable<Stream>,
-    observerOrNext: Partial<Observer<Stream>> | NextFunction<Stream>
+  protected listenTo<T>(
+    observable: Observable<T>,
+    observerOrNext: Partial<Observer<T>> | NextFunction<T>
   ): { unsubscribe: () => void; isClosed: boolean } {
-    let observer: Partial<Observer<Stream>>;
+    let observer: Partial<Observer<T>>;
 
     if (typeof observerOrNext === 'function') {
       observer = { next: observerOrNext };
@@ -137,7 +135,7 @@ export abstract class BlocBase<State = unknown> {
       observer = observerOrNext;
     }
 
-    const boundObserver: Observer<Stream> = {
+    const boundObserver: Observer<T> = {
       next: (newState) => {
         observer.next?.call(this, newState);
       },
