@@ -1,3 +1,10 @@
+## [4.0.1](https://github.com/jacobtipp/bloc-state/compare/react-bloc-v4.0.0...react-bloc-v4.0.1) (2024-02-04)
+
+
+### Bug Fixes
+
+* **bloc:** 🐛 BlocBase.listenTo should infer its observable type ([d61187a](https://github.com/jacobtipp/bloc-state/commit/d61187ae2926c8bad95615853ccc77f3709928c5))
+
 ## [4.0.0](https://github.com/jacobtipp/bloc-state/compare/react-bloc-v3.6.0...react-bloc-v4.0.0) (2024-02-03)
 
 
