@@ -208,6 +208,70 @@ describe('bloc', () => {
       );
     });
 
+    it('should throw an error if attempting to subscribe to an event that already has a BaseEvent', () => {
+      expect.assertions(1);
+      abstract class TestEvent {
+        protected _!: void;
+      }
+
+      class TestChildEvent extends TestEvent {}
+
+      class TestBloc extends Bloc<TestEvent, null> {
+        constructor() {
+          super(null);
+
+          this.on(TestEvent, (_event, _emit) => {
+            return;
+          });
+
+          this.on(TestChildEvent, (_event, _emit) => {
+            return;
+          });
+        }
+      }
+
+      expect(() => new TestBloc()).toThrowError(
+        'TestChildEvent can only have one EventHandler per hierarchy'
+      );
+    });
+
+    it('should handle multiple child events under a single parent event handler', () => {
+      expect.assertions(3);
+      abstract class TestEvent {
+        protected _!: void;
+      }
+
+      class TestChildEvent extends TestEvent {}
+      class TestGrandChildEvent extends TestChildEvent {}
+
+      class TestBloc extends Bloc<TestEvent, string> {
+        constructor() {
+          super('none');
+
+          this.on(TestEvent, (event, emit) => {
+            if (event instanceof TestGrandChildEvent) {
+              emit('grandchild');
+              return;
+            }
+            if (event instanceof TestChildEvent) {
+              emit('child');
+              return;
+            }
+          });
+        }
+      }
+
+      const bloc = new TestBloc();
+      const states: string[] = [];
+      bloc.state$.subscribe((state) => states.push(state));
+      bloc.add(new TestGrandChildEvent());
+      bloc.add(new TestChildEvent());
+      delay(1000);
+      expect(states.length).toBe(2);
+      expect(states[0]).toBe('grandchild');
+      expect(states[1]).toBe('child');
+    });
+
     it('should use optional event transformer', async () => {
       expect.assertions(3);
       const transformerBloc = new EventTransformerBloc();
@@ -405,6 +469,12 @@ describe('bloc', () => {
       expect(state).toBe('0');
 
       cubit.close();
+    });
+  });
+
+  describe('Bloc.ignoreListeners', () => {
+    it('should not ignoreListeners by default', () => {
+      expect(Bloc.ignoreListeners).toBe(false);
     });
   });
 

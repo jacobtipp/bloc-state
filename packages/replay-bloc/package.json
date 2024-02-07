@@ -1,6 +1,6 @@
 {
   "name": "@jacobtipp/replay-bloc",
-  "version": "2.1.0",
+  "version": "3.0.1",
   "main": "./index.js",
   "private": false,
   "sideEffects": false,
@@ -25,6 +25,6 @@
   },
   "peerDependencies": {
     "@jacobtipp/bloc": "workspace:*",
-    "rxjs": "7.8.0"
+    "rxjs": "^7.8.0"
   }
 }

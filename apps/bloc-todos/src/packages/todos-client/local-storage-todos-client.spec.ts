@@ -7,7 +7,7 @@ import {
 import { MockProxy, mock } from 'jest-mock-extended';
 import { Todo } from './model/todo';
 import { firstValueFrom, take } from 'rxjs';
-import { Bloc, BlocObserver } from '@jacobtipp/bloc';
+import { BlocObserver } from '@jacobtipp/bloc';
 
 describe('LocalStorageTodosClient', () => {
   let instance: LocalStorageTodosClient;
@@ -32,7 +32,7 @@ describe('LocalStorageTodosClient', () => {
   const todosJsonString = JSON.stringify(todos);
 
   const onBeforeEach = () => {
-    Bloc.observer = new BlocObserver();
+    BlocObserver.observer = new BlocObserver();
     queryClient = new QueryClient();
     mockStorage = mock<Storage>();
   };
@@ -87,6 +87,7 @@ describe('LocalStorageTodosClient', () => {
       expect.assertions(1);
       mockStorage.getItem.calledWith('todos').mockReturnValue(todosJsonString);
       instance = new LocalStorageTodosClient(queryClient, mockStorage);
+      instance.getTodos();
       await expect(instance.getTodo('1')).resolves.toStrictEqual(todos[0]);
     });
 
@@ -94,6 +95,7 @@ describe('LocalStorageTodosClient', () => {
       expect.assertions(1);
       mockStorage.getItem.calledWith('todos').mockReturnValue(todosJsonString);
       instance = new LocalStorageTodosClient(queryClient, mockStorage);
+      instance.getTodos();
       try {
         await instance.getTodo('3');
       } catch (e) {
@@ -107,6 +109,7 @@ describe('LocalStorageTodosClient', () => {
       expect.assertions(1);
       mockStorage.getItem.calledWith('todos').mockReturnValue(todosJsonString);
       instance = new LocalStorageTodosClient(queryClient, mockStorage);
+      instance.getTodos();
 
       const newTodo: Todo = {
         id: '3',
@@ -126,6 +129,7 @@ describe('LocalStorageTodosClient', () => {
       expect.assertions(2);
       mockStorage.getItem.calledWith('todos').mockReturnValue(todosJsonString);
       instance = new LocalStorageTodosClient(queryClient, mockStorage);
+      instance.getTodos();
 
       await expect(instance.getTodo('2')).resolves.toBeDefined();
 
@@ -142,6 +146,7 @@ describe('LocalStorageTodosClient', () => {
       expect.assertions(1);
       mockStorage.getItem.calledWith('todos').mockReturnValue(todosJsonString);
       instance = new LocalStorageTodosClient(queryClient, mockStorage);
+      instance.getTodos();
 
       await expect(instance.clearCompleted()).resolves.toBe(1);
     });
@@ -152,6 +157,7 @@ describe('LocalStorageTodosClient', () => {
       expect.assertions(2);
       mockStorage.getItem.calledWith('todos').mockReturnValue(todosJsonString);
       instance = new LocalStorageTodosClient(queryClient, mockStorage);
+      instance.getTodos();
 
       const newTodo: Todo = {
         id: '3',

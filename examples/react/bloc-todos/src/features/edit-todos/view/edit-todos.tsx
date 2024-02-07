@@ -24,10 +24,9 @@ import {
   useBlocListener,
   useRepository,
 } from '@jacobtipp/react-bloc';
-import { createSelector } from 'reselect';
 import { EditTodoBloc } from '../bloc/edit-todo.bloc';
-import { EditTodoState } from '../bloc/edit-todo.state';
-import { TodosRepository } from '../../../packages/todos-repository/todos-repository';
+import { TodosRepository } from '@/lib/todos-repository/todos-repository';
+import { useEffect } from 'react';
 
 export default function EditTodoPage() {
   const { todoId } = useParams();
@@ -36,10 +35,11 @@ export default function EditTodoPage() {
   return (
     <BlocProvider
       bloc={EditTodoBloc}
-      create={() => {
-        const editTodoBloc = new EditTodoBloc(todosRepository);
-        if (todoId) editTodoBloc.add(new EditTodoSubscribed(todoId));
-        return editTodoBloc;
+      create={() => new EditTodoBloc(todosRepository)}
+      onMount={(editTodoBloc) => {
+        if (todoId) {
+          editTodoBloc.add(new EditTodoSubscribed(todoId));
+        }
       }}
     >
       <EditTodoView isNew={todoId === undefined} />
@@ -51,28 +51,22 @@ export type EditTodoViewProps = {
   isNew: boolean;
 };
 
-const getData = (state: EditTodoState) => state.data;
-const title = createSelector(getData, (data) => data.title);
-const description = createSelector(getData, (data) => data.description);
-const titleAndDescriptionSelector = createSelector(
-  [title, description],
-  (title, description) => {
-    return [title, description];
-  }
-);
-
 export function EditTodoView({ isNew }: EditTodoViewProps) {
   const navigate = useNavigate();
   const [[title, description], { add }] = useBloc(EditTodoBloc, {
-    selector: titleAndDescriptionSelector,
+    selector: (state) => [state.data.title, state.data.description],
   });
+
+  useEffect(() => {
+    navigate('/');
+  }, []);
 
   useBlocListener(EditTodoBloc, {
     listenWhen(_previous, current) {
       return current.submitSuccess;
     },
     listener() {
-      navigate('/');
+      navigate(-1);
     },
   });
 
@@ -119,7 +113,6 @@ export function EditTodoView({ isNew }: EditTodoViewProps) {
             name="title"
             control={control}
             rules={{
-              required: true,
               minLength: {
                 value: 1,
                 message: 'Title must have at least one character.',
@@ -128,6 +121,7 @@ export function EditTodoView({ isNew }: EditTodoViewProps) {
             render={({ field: { onChange }, fieldState: { error } }) => {
               return (
                 <TextField
+                  required
                   fullWidth
                   error={!!error}
                   helperText={error ? error.message : null}
@@ -148,7 +142,6 @@ export function EditTodoView({ isNew }: EditTodoViewProps) {
             name="description"
             control={control}
             rules={{
-              required: true,
               minLength: {
                 value: 1,
                 message: 'Description must have at least one character.',
@@ -157,6 +150,7 @@ export function EditTodoView({ isNew }: EditTodoViewProps) {
             render={({ field: { onChange }, fieldState: { error } }) => (
               <TextField
                 fullWidth
+                required
                 error={!!error}
                 helperText={error ? error.message : null}
                 name="description"

@@ -5,7 +5,7 @@ import { BlocObserver } from './bloc-observer';
 import { Emitter, EmitterImpl } from './emitter';
 import { StateError } from './errors';
 import { Transition } from './transition';
-import { ClassType } from './types';
+import { AbstractClassType, ClassType } from './types';
 
 /**
  * EventHandler that takes an event and emits state changes.
@@ -79,7 +79,9 @@ export abstract class Bloc<Event, State> extends BlocBase<State> {
   private readonly _eventSubject$ = new Subject<Event>();
 
   /** A mapping of registered events to their corresponding handler. */
-  private readonly _eventMap = new WeakMap<ClassType<Event>, 1>();
+  private readonly _eventMap = new WeakSet<
+    ClassType<Event> | AbstractClassType<Event>
+  >();
 
   /** A collection of stateMappers with their respective filters for each registerered handler. */
   private readonly _eventStateMappers = new Array<FilterMapperPair>();
@@ -92,6 +94,9 @@ export abstract class Bloc<Event, State> extends BlocBase<State> {
 
   /** Indicates whether this is an instance of Bloc. */
   readonly isBlocInstance = true;
+
+  /** This should only be used by devtools as signal to prevent BlocListeners from performing side-effects during time travel */
+  static ignoreListeners = false;
 
   /**
    * Returns an event transformer.
@@ -108,7 +113,7 @@ export abstract class Bloc<Event, State> extends BlocBase<State> {
    * @param error - The error that occurred.
    */
   protected override onError(error: Error): void {
-    Bloc.observer.onError(this, error);
+    BlocObserver.observer.onError(this, error);
   }
 
   /**
@@ -117,7 +122,7 @@ export abstract class Bloc<Event, State> extends BlocBase<State> {
    * @param transition - The transition that occurred.
    */
   protected onTransition(transition: Transition<Event, State>): void {
-    Bloc.observer.onTransition(this, transition);
+    BlocObserver.observer.onTransition(this, transition);
   }
 
   /**
@@ -126,7 +131,7 @@ export abstract class Bloc<Event, State> extends BlocBase<State> {
    * @param event - The event that occurred.
    */
   protected onEvent(event: Event): void {
-    Bloc.observer.onEvent(this, event);
+    BlocObserver.observer.onEvent(this, event);
   }
 
   /**
@@ -139,12 +144,12 @@ export abstract class Bloc<Event, State> extends BlocBase<State> {
    * @throws if there is already an event handler registered for the given event.
    */
   protected on<T extends Event>(
-    event: ClassType<T>,
+    event: ClassType<T> | AbstractClassType<T>,
     eventHandler: EventHandler<T, State>,
     transformer?: EventTransformer<T>
   ): void {
     if (this._eventMap.has(event)) {
-      throw new Error(`${event.name} can only have one EventHandler`);
+      throw new BlocError(`${event.name} can only have one EventHandler`);
     }
     if (this._globalTransformer && transformer) {
       throw new Error(
@@ -152,7 +157,13 @@ export abstract class Bloc<Event, State> extends BlocBase<State> {
       );
     }
 
-    this._eventMap.set(event, 1);
+    if (this.hasAncestor(event, true)) {
+      throw new BlocError(
+        `${event.name} can only have one EventHandler per hierarchy`
+      );
+    }
+
+    this._eventMap.add(event);
 
     const mapEventToState = (event: T): Observable<T> => {
       const stateToBeEmittedStream$ = new Subject<State>();
@@ -167,8 +178,8 @@ export abstract class Bloc<Event, State> extends BlocBase<State> {
 
         try {
           const previous = this.state;
-          stateToBeEmittedStream$.next(nextState);
           this.onTransition(new Transition(previous, event, nextState));
+          stateToBeEmittedStream$.next(nextState);
         } catch (error) {
           this.onError(error as Error);
           throw error;
@@ -246,8 +257,21 @@ export abstract class Bloc<Event, State> extends BlocBase<State> {
     }
   }
 
-  /** An instance of the BlocObserver class. */
-  static observer: BlocObserver = new BlocObserver();
+  private hasAncestor(
+    event: Event | ClassType<Event> | AbstractClassType<Event>,
+    pass = false
+  ): boolean {
+    let constructor = Object.getPrototypeOf(event);
+    if (!pass) {
+      constructor = constructor.constructor;
+    }
+
+    if (this._eventMap.has(constructor)) {
+      return true;
+    }
+
+    return constructor === null ? false : this.hasAncestor(constructor, true);
+  }
 
   /**
    * Adds an event to the BLoC's stream of events.
@@ -259,7 +283,7 @@ export abstract class Bloc<Event, State> extends BlocBase<State> {
    * @returns The instance of the Bloc.
    */
   add(event: Event) {
-    if (!this._eventMap.has(Object.getPrototypeOf(event).constructor)) {
+    if (!this.hasAncestor(event)) {
       throw new StateError(`
         add(${event}) was called without a registered event handler.
         Make sure to register a handler via on(${event}, (event, emit) {...})
@@ -281,6 +305,7 @@ export abstract class Bloc<Event, State> extends BlocBase<State> {
   override close(): void {
     this._emitters.forEach((emitter) => emitter.close());
     this._emitters.clear();
+    this._eventSubject$.complete();
     super.close();
   }
 }
@@ -295,3 +320,7 @@ export abstract class Bloc<Event, State> extends BlocBase<State> {
 export const isBlocInstance = (bloc: any): bloc is Bloc<any, any> => {
   return bloc instanceof Bloc || Boolean(bloc.isBlocInstance);
 };
+
+class BlocError extends Error {
+  override name = 'BlocError';
+}

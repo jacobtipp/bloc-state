@@ -1,3 +1,116 @@
+## [3.0.1](https://github.com/jacobtipp/bloc-state/compare/bloc-query-v3.0.0...bloc-query-v3.0.1) (2024-02-04)
+
+
+### Bug Fixes
+
+* **bloc:** 🐛 BlocBase.listenTo should infer its observable type ([d61187a](https://github.com/jacobtipp/bloc-state/commit/d61187ae2926c8bad95615853ccc77f3709928c5))
+
+## [3.0.0](https://github.com/jacobtipp/bloc-state/compare/bloc-query-v2.4.0...bloc-query-v3.0.0) (2024-02-03)
+
+
+### ⚠ BREAKING CHANGES
+
+* **bloc:** Bloc.observer is removed
+
+### Features
+
+* **bloc-query:** ✨ add close method with isClosed property to QueryClient ([c23a80d](https://github.com/jacobtipp/bloc-state/commit/c23a80d6010a32273d1bc1e9089cfe382f4fd51a))
+* **bloc-query:** ✨ add QueryTimeoutException to QueryClient.getQueryData ([f4f31db](https://github.com/jacobtipp/bloc-state/commit/f4f31dbe70b55bbfa4c21d3332277055bc5a018d))
+* **bloc:** ✨ abstract class types can be used with on method ([49c1c5b](https://github.com/jacobtipp/bloc-state/commit/49c1c5bf4b748eb463b1973b4a8a0c0097be2646))
+* **bloc:** ✨ add isServer and isClient methods ([0e850dc](https://github.com/jacobtipp/bloc-state/commit/0e850dce97eb28c341e02373facbbfd600bea654))
+* **bloc:** ✨ add static Bloc.ignoreListeners property ([46dc707](https://github.com/jacobtipp/bloc-state/commit/46dc707fc015c1c4d1295b355abc6b43eb103dde))
+* **bloc:** ✨ check for ancestors of event types in add method ([f9d91ad](https://github.com/jacobtipp/bloc-state/commit/f9d91adf7d70434c3726e8163c9501910b0a6d30))
+* **react-bloc:** ✨ query subscriptions are now tracked with QueryBloc.listen ([0d0cbe1](https://github.com/jacobtipp/bloc-state/commit/0d0cbe1955f25f4ab10c59e10fed2d6839fef30d))
+
+
+### Bug Fixes
+
+* **bloc:** 💥 🐛 replace Bloc.observer with BlocObserver.observer static property ([acb5511](https://github.com/jacobtipp/bloc-state/commit/acb5511a31181addb22fa08396c1c076cc42fb3a))
+
+
+### Build System Dependencies
+
+* **deps:** 📦️ update rxjs peerDep to support minor and patch releases ([79d58f5](https://github.com/jacobtipp/bloc-state/commit/79d58f594ddc80ed6a4f087f4b06ad6c10da1135))
+
+
+### Code Refactoring
+
+* **bloc-query:** ♻️ update QueryCanceledException message ([d9f227c](https://github.com/jacobtipp/bloc-state/commit/d9f227c17154255fcd3e31297f27514bf541777e))
+* **bloc:** ♻️ check ancestor event hierarchy in on method ([123ef1b](https://github.com/jacobtipp/bloc-state/commit/123ef1b9e83ad1d6bfb57962f5bb6787c88279ba))
+* **bloc:** ♻️ emit now warns instead of throws if a bloc is closed ([5fb68b6](https://github.com/jacobtipp/bloc-state/commit/5fb68b63734097d654830954867c4e748d9a419f))
+* **bloc:** ♻️ onTransition and onChange are called before emitting ([c56918d](https://github.com/jacobtipp/bloc-state/commit/c56918d2eab538749fa37732c9c25d5883dbd42d))
+* **bloc:** ♻️ prevent BlocObserver.observer from being set on the server ([3d93074](https://github.com/jacobtipp/bloc-state/commit/3d93074db5450fd5e6c6d7559fe9c25d85c909de))
+
+
+### Documentation
+
+* **readme:** 📚️ update docs for @jacobtipp/bloc-query ([82d0c98](https://github.com/jacobtipp/bloc-state/commit/82d0c980e5b9535b047e0e28f55632ce69ae46e1))
+
+## [3.0.0-next.5](https://github.com/jacobtipp/bloc-state/compare/bloc-query-v3.0.0-next.4...bloc-query-v3.0.0-next.5) (2024-02-03)
+
+
+### Features
+
+* **bloc:** ✨ add isServer and isClient methods ([52f74dd](https://github.com/jacobtipp/bloc-state/commit/52f74ddaa14b9b98a1fba30dd94cd76ee9592363))
+
+
+### Code Refactoring
+
+* **bloc-query:** ♻️ update QueryCanceledException message ([1b27ed4](https://github.com/jacobtipp/bloc-state/commit/1b27ed4ff12464c234cf344ff780fbea26a6d3d3))
+* **bloc:** ♻️ check ancestor event hierarchy in on method ([5b19aa5](https://github.com/jacobtipp/bloc-state/commit/5b19aa5f38b1267e3f36b35851e3001ead6e021c))
+
+
+### Documentation
+
+* **readme:** 📚️ update docs for @jacobtipp/bloc-query ([13478be](https://github.com/jacobtipp/bloc-state/commit/13478beca1e9d77f969e7036723056fc81729ff1))
+
+## [3.0.0-next.4](https://github.com/jacobtipp/bloc-state/compare/bloc-query-v3.0.0-next.3...bloc-query-v3.0.0-next.4) (2024-02-01)
+
+
+### Build System Dependencies
+
+* **deps:** 📦️ update rxjs peerDep to support minor and patch releases ([bf91636](https://github.com/jacobtipp/bloc-state/commit/bf916369ad11007e4a4361113e5ef8e91c13673e))
+
+## [3.0.0-next.3](https://github.com/jacobtipp/bloc-state/compare/bloc-query-v3.0.0-next.2...bloc-query-v3.0.0-next.3) (2024-01-30)
+
+
+### Features
+
+* **bloc:** ✨ abstract class types can be used with on method ([bcf6be3](https://github.com/jacobtipp/bloc-state/commit/bcf6be3fdc1a622afd1393a59df50bd43eddaf58))
+* **bloc:** ✨ check for ancestors of event types in add method ([3cfa364](https://github.com/jacobtipp/bloc-state/commit/3cfa364993f090d232bb77eb5ce3ea3c34ae0366))
+
+## [3.0.0-next.2](https://github.com/jacobtipp/bloc-state/compare/bloc-query-v3.0.0-next.1...bloc-query-v3.0.0-next.2) (2024-01-30)
+
+
+### Features
+
+* **bloc-query:** ✨ add QueryTimeoutException to QueryClient.getQueryData ([4a6ba77](https://github.com/jacobtipp/bloc-state/commit/4a6ba7799c8216e186f7c4cb11d98e1cdb1a7cd4))
+
+## [3.0.0-next.1](https://github.com/jacobtipp/bloc-state/compare/bloc-query-v2.4.0...bloc-query-v3.0.0-next.1) (2024-01-28)
+
+
+### ⚠ BREAKING CHANGES
+
+* **bloc:** Bloc.observer is removed
+
+### Features
+
+* **bloc-query:** ✨ add close method with isClosed property to QueryClient ([cb03693](https://github.com/jacobtipp/bloc-state/commit/cb03693b1e5ae967009ee04957dc8ac528f1e941))
+* **bloc:** ✨ add static Bloc.ignoreListeners property ([fde8991](https://github.com/jacobtipp/bloc-state/commit/fde89917a5df4c889ebf0a8ac81de8cf581bc830))
+* **react-bloc:** ✨ query subscriptions are now tracked with QueryBloc.listen ([34cd884](https://github.com/jacobtipp/bloc-state/commit/34cd884963a4ee464e853ac8c747b57d499a5b84))
+
+
+### Bug Fixes
+
+* **bloc:** 💥 🐛 replace Bloc.observer with BlocObserver.observer static property ([394d8d5](https://github.com/jacobtipp/bloc-state/commit/394d8d56dde74f03946c1e25016edf8eb0ec8248))
+
+
+### Code Refactoring
+
+* **bloc:** ♻️ emit now warns instead of throws if a bloc is closed ([d359cc9](https://github.com/jacobtipp/bloc-state/commit/d359cc9ddd4a84b21e5bc6e053440ee2878d726b))
+* **bloc:** ♻️ onTransition and onChange are called before emitting ([9e857a4](https://github.com/jacobtipp/bloc-state/commit/9e857a4e1b904e2abc2782d5a6cfe11a4306c33a))
+* **bloc:** ♻️ prevent BlocObserver.observer from being set on the server ([1fa05ed](https://github.com/jacobtipp/bloc-state/commit/1fa05ed0f44b977be8b170c677d2d3c4bcefd406))
+
 ## [2.4.0](https://github.com/jacobtipp/bloc-state/compare/bloc-query-v2.3.0...bloc-query-v2.4.0) (2024-01-04)
 
 

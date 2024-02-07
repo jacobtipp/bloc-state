@@ -109,6 +109,10 @@
         "branches": [
           "main",
           {
+            "name": "next",
+            "prerelease": true
+          },
+          {
             "name": "dev-bloc-concurrency",
             "prerelease": true
           }

@@ -1,7 +1,8 @@
-import { Bloc, Emitter, Transition } from '@jacobtipp/bloc';
+import { Bloc, BlocObserver, Emitter, Transition } from '@jacobtipp/bloc';
 import {
   Observable,
   OperatorFunction,
+  Subject,
   distinctUntilChanged,
   filter,
   map,
@@ -20,28 +21,68 @@ import {
 } from './query-fetch-transformer';
 import { Fetching, QueryState, Ready } from './query-state';
 
+/**
+ * Represents the unique key used to identify a query. This is typically a string
+ * that uniquely identifies the data being fetched or manipulated.
+ */
 export type QueryKey = string;
 
+/**
+ * Defines the configuration options available for a query operation. These options
+ * dictate how the query behaves, including its initial state, cache behavior, and
+ * error logging.
+ *
+ * @template Data The type of data expected to be returned by the query function.
+ */
 export type QueryOptions<Data> = {
+  /** Initial data to be used before the query completes. Useful for SSR or initial placeholders. */
   initialData?: Data;
+  /** Time in milliseconds after which the data is considered stale and may be refetched. */
   staleTime?: number;
+  /** Time in milliseconds to keep the data alive in cache after it becomes inactive. */
+  keepAlive?: number;
+  /** Whether to log errors to the console. */
   logErrors?: boolean;
+  /** A unique key to identify the query. */
   queryKey: QueryKey;
+  /** A function returning a promise that resolves with the data. */
   queryFn: (options: QueryFnOptions) => Promise<Data>;
 };
 
+/**
+ * Extends `QueryOptions` with additional options specific to QueryBloc, which may
+ * include options for naming the bloc and configuring stale time at the bloc level.
+ *
+ * @template Data The type of data expected to be returned by the query function.
+ */
 export type QueryBlocOptions<Data> = {
+  /** Optional name for the bloc. Useful for debugging or identification. */
   name?: string;
+  /** Time in milliseconds after which the data in the bloc is considered stale. */
   staleTime?: number;
 } & FetchTransformerOptions &
   QueryOptions<Data>;
 
+/**
+ * Options passed to the query function, providing it with an `AbortSignal` to
+ * support cancellable fetch operations.
+ */
 export type QueryFnOptions = {
+  /** An AbortSignal to signal the fetch operation can be cancelled. */
   signal: AbortSignal;
 };
 
+/**
+ * Configuration options for retrieving query data, allowing for the selection
+ * of a specific part of the query state and comparison of state for updates.
+ *
+ * @template Data The type of data managed by the query.
+ * @template Selected The type of the selected or derived data from the query state.
+ */
 export type GetQueryOptions<Data = unknown, Selected = QueryState<Data>> = {
+  /** Optional selector function to derive a part of the state. */
   selector?: (state: Ready<Data>) => Selected;
+  /** Optional comparator function to determine if the selected state has changed. */
   comparator?: (previous: Selected, current: Selected) => boolean;
 } & QueryOptions<Data> &
   FetchTransformerOptions;
@@ -67,7 +108,8 @@ export class QueryBloc<Data = unknown> extends Bloc<
    */
   constructor(
     state: QueryState<Data>,
-    private options: QueryBlocOptions<Data>
+    private options: QueryBlocOptions<Data>,
+    private closeSignal: Subject<QueryKey>
   ) {
     const name = `QueryBloc - ${options.name ?? options.queryKey}`;
     super(state, { name: name });
@@ -117,6 +159,7 @@ export class QueryBloc<Data = unknown> extends Bloc<
         isFetching: false,
         isReady: true,
         isError: false,
+        isCanceled: false,
         data: data,
       });
     } catch (e: unknown) {
@@ -157,11 +200,11 @@ export class QueryBloc<Data = unknown> extends Bloc<
       this.add(new QueryFetchEvent(new AbortController()));
     }
 
-    if (this.state.isReady && this.isStale) {
+    if ((this.state.isReady && this.isStale) || this.state.isCanceled) {
       this.revalidateQuery();
     }
 
-    return this.state$.pipe(
+    return this.listen().pipe(
       startWith(this.state),
       filter(({ isReady, isError }) => (selector ? isReady || isError : true)),
       map((state) => {
@@ -193,7 +236,7 @@ export class QueryBloc<Data = unknown> extends Bloc<
     }
 
     const setQueryDataEvent = new SetQueryDataEvent();
-    Bloc.observer.onEvent(this, setQueryDataEvent);
+    BlocObserver.observer.onEvent(this, setQueryDataEvent);
 
     const previous = this.state;
     const stateToEmit: Ready<Data> = {
@@ -203,20 +246,50 @@ export class QueryBloc<Data = unknown> extends Bloc<
       isLoading: false,
       isFetching: false,
       isReady: true,
+      isCanceled: false,
       isError: false,
       data: newData,
     };
 
     this.emit(stateToEmit);
 
-    Bloc.observer.onTransition(
+    BlocObserver.observer.onTransition(
       this,
       new Transition(previous, setQueryDataEvent, stateToEmit)
     );
   };
 
+  private subscribers = 0;
+
+  private pendingCloseTimeout: NodeJS.Timeout | null = null;
+
   /**
-   * Cancels the query, aborting the ongoing fetch operation.
+   * Returns an observable that provides updates of the query state.
+   * This method is used to subscribe to the query's state changes.
+   * @returns {Observable<QueryState<Data>>} An Observable that emits updates of the query state.
+   */
+  listen = (): Observable<QueryState<Data>> => {
+    return new Observable<QueryState<Data>>((subscriber) => {
+      this.subscribers++;
+      const stateSubscription = this.state$.subscribe(subscriber);
+      return () => {
+        this.subscribers--;
+        stateSubscription.unsubscribe();
+        if (this.subscribers <= 0) {
+          if (this.options?.keepAlive === Infinity) return;
+          if (this.pendingCloseTimeout) clearTimeout(this.pendingCloseTimeout);
+          this.pendingCloseTimeout = setTimeout(() => {
+            if (this.subscribers <= 0)
+              this.closeSignal.next(this.options.queryKey);
+          }, this.options?.keepAlive ?? 60 * 1000);
+        }
+      };
+    });
+  };
+
+  /**
+   * Cancels the query, aborting the ongoing fetch operation and reverting the state.
+   * It emits a 'QueryCancelEvent' and updates the state accordingly.
    */
   cancelQuery = () => {
     if (!this.state.isFetching) return;
@@ -228,26 +301,26 @@ export class QueryBloc<Data = unknown> extends Bloc<
     this.add(new QueryFetchEvent(new AbortController(), true));
 
     const cancelEvent = new QueryCancelEvent();
-    Bloc.observer.onEvent(this, cancelEvent);
+    BlocObserver.observer.onEvent(this, cancelEvent);
 
     const previous = this.state;
-    this.emit(this.revertedState);
+    this.emit({ ...this.revertedState, isCanceled: true });
 
-    Bloc.observer.onTransition(
+    BlocObserver.observer.onTransition(
       this,
       new Transition(previous, cancelEvent, this.state)
     );
   };
 
   /**
-   * Revalidates the query, triggering a new fetch operation.
+   * Revalidates the query, triggering a new fetch operation if the query is stale or canceled.
+   * It emits a 'QueryRevalidateEvent' and updates the state to reflect the fetching status.
    */
   revalidateQuery = () => {
-    this.cancelQuery();
     this.revertedState = this.state;
 
     const revalidateEvent = new QueryRevalidateEvent();
-    Bloc.observer.onEvent(this, revalidateEvent);
+    BlocObserver.observer.onEvent(this, revalidateEvent);
 
     const stateToEmit: Fetching<Data> = {
       status: 'isFetching',
@@ -255,6 +328,7 @@ export class QueryBloc<Data = unknown> extends Bloc<
       isInitial: false,
       isLoading: false,
       isFetching: true,
+      isCanceled: false,
       isReady: false,
       isError: false,
       data: this.state.data,
@@ -262,7 +336,7 @@ export class QueryBloc<Data = unknown> extends Bloc<
 
     this.emit(stateToEmit);
 
-    Bloc.observer.onTransition(
+    BlocObserver.observer.onTransition(
       this,
       new Transition(this.revertedState, revalidateEvent, stateToEmit)
     );
@@ -273,6 +347,7 @@ export class QueryBloc<Data = unknown> extends Bloc<
 
 /**
  * Represents an exception thrown when attempting to set query data in an invalid manner.
+ * This exception is thrown when the new data for a query cannot be set due to a missing previous data state or other constraints.
  * @extends {Error}
  */
 export class SetQueryDataException extends Error {
@@ -280,6 +355,8 @@ export class SetQueryDataException extends Error {
    * Creates a new SetQueryDataException instance.
    * @param {string} message - The error message.
    */
+
+  override name = 'SetQueryDataException';
   constructor(message: string) {
     super(message);
     Object.setPrototypeOf(this, SetQueryDataException.prototype);
@@ -288,6 +365,7 @@ export class SetQueryDataException extends Error {
 
 /**
  * Represents an exception thrown when attempting to interact with a closed query.
+ * This exception is thrown when operations are performed on a query that has been closed or is no longer available.
  * @extends {Error}
  */
 export class QueryClosedException extends Error {
@@ -295,6 +373,7 @@ export class QueryClosedException extends Error {
    * Creates a new QueryClosedException instance.
    * @param {string} message - The error message.
    */
+  override name = 'QueryClosedException';
   constructor(message: string) {
     super(message);
     Object.setPrototypeOf(this, QueryClosedException.prototype);

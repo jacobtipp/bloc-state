@@ -1,100 +1,126 @@
-import { AbstractClassType, ClassType } from '@jacobtipp/bloc';
 import {
-  MutableRefObject,
   PropsWithChildren,
   ReactNode,
   createContext,
   createElement,
+  useContext,
   useEffect,
   useMemo,
-  useRef,
-  useState,
 } from 'react';
+import {
+  AnyClassType,
+  ProviderContext,
+  contextMapContext,
+} from './root-provider';
+import { useDisposable } from 'use-disposable';
 
-export type AnyClassType = ClassType<any> | AbstractClassType<any>;
-
-export type Closable = {
-  close?: () => void;
-} & InstanceType<AnyClassType>;
-
-export type ProviderContext = {
-  initialized: boolean;
-  instance: MutableRefObject<Closable | null>;
-};
-
-export type ProviderContextMap = Map<string, React.Context<ProviderContext>>;
-
+/**
+ * Interface defining properties for a Provider component.
+ *
+ * @template Class The class type for the provider.
+ */
 export interface ProviderProps<Class extends AnyClassType> {
+  /** The class definition to be used. */
   classDef: Class;
-  create: () => InstanceType<Class>;
+  /** Function to create an instance or an instance of the class. */
+  create: (() => InstanceType<Class>) | InstanceType<Class>;
+  /** Optional callback executed when the component mounts. */
   onMount?: (instance: InstanceType<Class>) => void;
+  /** Optional callback executed when the component unmounts. */
   onUnmount?: (instance: InstanceType<Class>) => void;
+  /** Time in milliseconds to wait before disposing of a non-mounted instance. */
+  disposeTime?: number;
+  /** Child nodes to be rendered. */
   children: ReactNode;
+  /** Dependencies to trigger re-creation of the instance. */
   dependencies?: any[];
 }
 
-export const providerContextMap: ProviderContextMap = new Map();
+const mounted = new WeakSet<any>();
 
-export type InstanceMap = {
-  lastCreatedTimeStamp: number;
-  instance: Closable;
-};
-
+/**
+ * A Provider component that manages the lifecycle of a provided class instance.
+ *
+ * @param {ProviderProps<Class>} props The properties for the Provider.
+ * @returns The Provider component rendering its children within the provided context.
+ * @template Class Extends from AnyClassType to enforce type checking on class definitions.
+ */
 export const Provider = <Class extends AnyClassType>({
   children,
   classDef,
   dependencies = [],
+  disposeTime = 5 * 1000,
   create,
   onMount,
   onUnmount,
 }: ProviderProps<Class>) => {
-  const [initialized, setInitialized] = useState(false);
-  const instanceRef = useRef<Closable | null>(null);
+  const isDisposable = typeof create === 'function';
 
-  if (instanceRef.current === null) {
-    instanceRef.current = create();
-  }
+  const createInstance = () => {
+    const instance = isDisposable
+      ? (create as () => InstanceType<Class>)()
+      : create;
 
-  const context = useMemo(() => {
-    let context = providerContextMap.get(classDef.name);
-    if (!context) {
-      context = createContext<ProviderContext>({
-        initialized,
-        instance: instanceRef,
-      });
-      providerContextMap.set(classDef.name, context);
-      return context;
-    } else {
-      return context;
+    if (isDisposable) {
+      setTimeout(() => {
+        /* istanbul ignore else */
+        if (!mounted.has(instance)) {
+          onUnmount?.(instance);
+        }
+      }, disposeTime);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+
+    return instance;
+  };
+
+  const instance = useDisposable(() => {
+    const instance = createInstance();
+    return [
+      instance,
+      () => {
+        onUnmount?.(instance);
+      },
+    ];
+  }, dependencies) as InstanceType<Class>;
 
   useEffect(() => {
-    if (instanceRef.current === null) {
-      instanceRef.current = create();
-      setInitialized(!initialized);
-    }
+    const provided = instance;
 
-    if (onMount) {
-      onMount(instanceRef.current);
+    onMount?.(provided);
+
+    /* istanbul ignore else */
+    if (!mounted.has(provided) && isDisposable) {
+      mounted.add(provided);
     }
 
     return () => {
-      if (onUnmount) {
-        onUnmount(instanceRef.current);
-      }
-      instanceRef.current = null;
+      mounted.delete(provided);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, dependencies);
+  }, [instance]);
+
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const contextMap = useContext(contextMapContext)!;
+
+  const context = useMemo(() => {
+    let cachedContext = contextMap.get(classDef.name);
+    if (!cachedContext) {
+      cachedContext = createContext<ProviderContext>({
+        instance,
+      });
+      contextMap.set(classDef.name, cachedContext);
+      return cachedContext;
+    } else {
+      return cachedContext;
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return createElement(
     context.Provider,
     {
       value: {
-        initialized,
-        instance: instanceRef,
+        instance,
       },
     },
     children
@@ -103,14 +129,26 @@ export const Provider = <Class extends AnyClassType>({
 
 type ProviderReturnType = ReturnType<typeof Provider>;
 
+/**
+ * Interface defining properties for the MultiProvider component.
+ */
 export type MultiProviderProps = {
-  providers: Array<({ children }: PropsWithChildren) => ProviderReturnType>;
+  /** Array of provider components to be composed together. */
+  providers: Array<
+    ({ children }: { children: ReactNode }) => ProviderReturnType
+  >;
 };
 
+/**
+ * A component that composes multiple provider components together.
+ *
+ * @param {MultiProviderProps & { children: ReactNode }} props The properties for the MultiProvider, including the providers and children.
+ * @returns The composed providers wrapped around the children.
+ */
 export const MultiProvider = ({
   providers,
   children,
-}: PropsWithChildren<MultiProviderProps>) => {
+}: MultiProviderProps & { children: ReactNode }) => {
   const components = useMemo(() => {
     return providers.map((Provider) => {
       return ({ children }: PropsWithChildren) => (

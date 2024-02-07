@@ -1,6 +1,7 @@
 import { PropsWithChildren } from 'react';
 import {
   BlocProvider,
+  RootProvider,
   MultiRepositoryProvider,
   Provider,
   RepositoryProvider,
@@ -29,7 +30,6 @@ const ArticleRepositoryProvider = ({ children }: PropsWithChildren) => {
     <RepositoryProvider
       repository={ArticleRepository}
       create={() => new ArticleRepository(articleClient)}
-      dependencies={[articleClient]}
       children={children}
     />
   );
@@ -51,7 +51,7 @@ const ArticleBlocProvider = ({ children }: PropsWithChildren) => {
       bloc={ArticleBloc}
       create={() => new ArticleBloc(articleRepository, idRepository)}
       onMount={({ getNewArticle }) => getNewArticle()}
-      dependencies={[articleRepository, idRepository]}
+      hydrate
       children={children}
     />
   );
@@ -68,13 +68,15 @@ export const ArticleConsumer = () => {
 };
 
 export const ArticleFeature = () => (
-  <ArticleClientProvider>
-    <MultiRepositoryProvider
-      providers={[ArticleRepositoryProvider, IdRepositoryProvider]}
-    >
-      <ArticleBlocProvider>
-        <ArticleConsumer />
-      </ArticleBlocProvider>
-    </MultiRepositoryProvider>
-  </ArticleClientProvider>
+  <RootProvider>
+    <ArticleClientProvider>
+      <MultiRepositoryProvider
+        providers={[ArticleRepositoryProvider, IdRepositoryProvider]}
+      >
+        <ArticleBlocProvider>
+          <ArticleConsumer />
+        </ArticleBlocProvider>
+      </MultiRepositoryProvider>
+    </ArticleClientProvider>
+  </RootProvider>
 );

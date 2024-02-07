@@ -1,4 +1,4 @@
-import { Todo } from '../../../packages/todos-client/model/todo';
+import { Todo } from '@/lib/todos-client/model/todo';
 import { TodosOverviewFilter } from '../model/todos-overview-filter';
 
 export abstract class TodosOverviewEvent {}

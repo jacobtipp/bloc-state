@@ -1,4 +1,5 @@
 import {
+  RootProvider,
   MultiProvider,
   Provider,
   RepositoryProvider,
@@ -11,7 +12,7 @@ import { TodosClient } from '../../../packages/todos-client/todos-client';
 import { QueryClient } from '@jacobtipp/bloc-query';
 import { ThemeProvider as MuiThemeProvider, createTheme } from '@mui/material';
 import { AppBlocObserver } from '../../../packages/app-bloc-observer/app-bloc-observer';
-import { Bloc, BlocObserver } from '@jacobtipp/bloc';
+import { BlocObserver } from '@jacobtipp/bloc';
 import {
   HydratedLocalStorage,
   HydratedStorage,
@@ -38,7 +39,7 @@ export const AppBlocObserverProvider = ({ children }: PropsWithChildren) => (
   <Provider
     classDef={BlocObserver}
     create={() => new AppBlocObserver()}
-    onMount={(observer) => (Bloc.observer = observer)}
+    onMount={(observer) => (BlocObserver.observer = observer)}
   >
     {children}
   </Provider>
@@ -52,7 +53,6 @@ export const QueryClientProvider = ({ children }: PropsWithChildren) => (
   <Provider
     classDef={QueryClient}
     create={() => new QueryClient()}
-    onUnmount={(client) => client.clear()}
     children={children}
   />
 );
@@ -63,7 +63,9 @@ export const TodosClientProvider = ({ children }: PropsWithChildren) => {
     <Provider
       classDef={TodosClient}
       create={() => new LocalStorageTodosClient(queryClient)}
-      dependencies={[queryClient]}
+      onMount={(todosClient) => {
+        todosClient.getTodos();
+      }}
     >
       {children}
     </Provider>
@@ -76,7 +78,6 @@ export const TodosRepositoryProvider = ({ children }: PropsWithChildren) => {
     <RepositoryProvider
       repository={TodosRepository}
       create={() => new TodosRepository(todosClient)}
-      dependencies={[todosClient]}
     >
       {children}
     </RepositoryProvider>
@@ -84,16 +85,18 @@ export const TodosRepositoryProvider = ({ children }: PropsWithChildren) => {
 };
 
 export const Providers = ({ children }: PropsWithChildren) => (
-  <MultiProvider
-    providers={[
-      AppBlocObserverProvider,
-      HydratedStorageProvider,
-      ThemeProvider,
-      QueryClientProvider,
-      TodosClientProvider,
-      TodosRepositoryProvider,
-    ]}
-  >
-    {children}
-  </MultiProvider>
+  <RootProvider>
+    <MultiProvider
+      providers={[
+        AppBlocObserverProvider,
+        HydratedStorageProvider,
+        ThemeProvider,
+        QueryClientProvider,
+        TodosClientProvider,
+        TodosRepositoryProvider,
+      ]}
+    >
+      {children}
+    </MultiProvider>
+  </RootProvider>
 );

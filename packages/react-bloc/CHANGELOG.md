@@ -1,3 +1,136 @@
+## [4.0.1](https://github.com/jacobtipp/bloc-state/compare/react-bloc-v4.0.0...react-bloc-v4.0.1) (2024-02-04)
+
+
+### Bug Fixes
+
+* **bloc:** 🐛 BlocBase.listenTo should infer its observable type ([d61187a](https://github.com/jacobtipp/bloc-state/commit/d61187ae2926c8bad95615853ccc77f3709928c5))
+
+## [4.0.0](https://github.com/jacobtipp/bloc-state/compare/react-bloc-v3.6.0...react-bloc-v4.0.0) (2024-02-03)
+
+
+### ⚠ BREAKING CHANGES
+
+* **bloc:** Bloc.observer is removed
+
+### Features
+
+* **bloc:** ✨ abstract class types can be used with on method ([49c1c5b](https://github.com/jacobtipp/bloc-state/commit/49c1c5bf4b748eb463b1973b4a8a0c0097be2646))
+* **bloc:** ✨ add isServer and isClient methods ([0e850dc](https://github.com/jacobtipp/bloc-state/commit/0e850dce97eb28c341e02373facbbfd600bea654))
+* **bloc:** ✨ add static Bloc.ignoreListeners property ([46dc707](https://github.com/jacobtipp/bloc-state/commit/46dc707fc015c1c4d1295b355abc6b43eb103dde))
+* **bloc:** ✨ check for ancestors of event types in add method ([f9d91ad](https://github.com/jacobtipp/bloc-state/commit/f9d91adf7d70434c3726e8163c9501910b0a6d30))
+* **react-bloc:** ✨ add disposeTimer prop for Provider ([c7a096e](https://github.com/jacobtipp/bloc-state/commit/c7a096ed7d3066d1407dc9981361577e3458f8cd))
+* **react-bloc:** ✨ add getServerSnapshot in useBlocValue and useBlocSelector ([afe299a](https://github.com/jacobtipp/bloc-state/commit/afe299a6e127a769b9df93d48053ea7ca95e58b7))
+* **react-bloc:** ✨ add hydration to Provider and add ContextMapProvider ([a396db7](https://github.com/jacobtipp/bloc-state/commit/a396db791a532aa0f3736c6728676c15ae6c7bb3))
+* **react-bloc:** ✨ add isServer and isClient global methods ([5cf35b5](https://github.com/jacobtipp/bloc-state/commit/5cf35b5bc4ade8e7a9704ebc0ebaeb58d7e705bc))
+* **react-bloc:** ✨ add usePropListener hook ([8d0cfab](https://github.com/jacobtipp/bloc-state/commit/8d0cfab2b12c56370d040bfd5465afbbcc1e0f31))
+* **react-bloc:** ✨ Providers optionally accept an instance instead of a create function ([718b2cb](https://github.com/jacobtipp/bloc-state/commit/718b2cb9730cb47572105132fdded89825fee195))
+* **react-bloc:** ✨ useBlocListener now checks if Bloc.ignoreListeners is enabled ([1520f5d](https://github.com/jacobtipp/bloc-state/commit/1520f5d6bb8e5f355880a65bde0ccb6ef522c30c))
+
+
+### Bug Fixes
+
+* **bloc:** 💥 🐛 replace Bloc.observer with BlocObserver.observer static property ([acb5511](https://github.com/jacobtipp/bloc-state/commit/acb5511a31181addb22fa08396c1c076cc42fb3a))
+
+
+### Code Refactoring
+
+* **bloc:** ♻️ check ancestor event hierarchy in on method ([123ef1b](https://github.com/jacobtipp/bloc-state/commit/123ef1b9e83ad1d6bfb57962f5bb6787c88279ba))
+* **bloc:** ♻️ emit now warns instead of throws if a bloc is closed ([5fb68b6](https://github.com/jacobtipp/bloc-state/commit/5fb68b63734097d654830954867c4e748d9a419f))
+* **bloc:** ♻️ onTransition and onChange are called before emitting ([c56918d](https://github.com/jacobtipp/bloc-state/commit/c56918d2eab538749fa37732c9c25d5883dbd42d))
+* **bloc:** ♻️ prevent BlocObserver.observer from being set on the server ([3d93074](https://github.com/jacobtipp/bloc-state/commit/3d93074db5450fd5e6c6d7559fe9c25d85c909de))
+* **react-bloc:** ♻️ add experimental React.use hook for handling suspense ([72b4f18](https://github.com/jacobtipp/bloc-state/commit/72b4f18cb42177df477b645c0eae82261aea97c4))
+* **react-bloc:** ♻️ add useIsomorphicLayoutEffect for SSR ([06bc97c](https://github.com/jacobtipp/bloc-state/commit/06bc97cb53706d9e9846c17260e6fa37370e00d3))
+* **react-bloc:** ♻️ rename ContextMapProvider to RootProvider ([819f84c](https://github.com/jacobtipp/bloc-state/commit/819f84c4262a7eb06a0b2c793c56a5989a48f133))
+* **react-bloc:** ♻️ rename file name from app-provider to root-provider ([bc9ff3f](https://github.com/jacobtipp/bloc-state/commit/bc9ff3fd8668b90b7cf409e63af473ef3accbd39))
+
+
+### Build System Dependencies
+
+* **deps:** 📦️ add @microsoft/use-disposable package and update to [@next](https://github.com/next) v14.1 ([74a35ac](https://github.com/jacobtipp/bloc-state/commit/74a35ac70a9199b0fddf5e7d3785848cbdd53683))
+* **deps:** 📦️ add use-disposable dependency to @jacobtipp/react-bloc ([bb242e5](https://github.com/jacobtipp/bloc-state/commit/bb242e510743f28e11f36f8d98d551f5db77f372))
+* **deps:** 📦️ update rxjs peerDep to support minor and patch releases ([79d58f5](https://github.com/jacobtipp/bloc-state/commit/79d58f594ddc80ed6a4f087f4b06ad6c10da1135))
+
+
+### Documentation
+
+* **readme:** 📚️ update docs for @jacobtipp/react-bloc ([b18d111](https://github.com/jacobtipp/bloc-state/commit/b18d111d62ecf5b0c51fc3c878c1b13a4560f3fa))
+
+## [4.0.0-next.4](https://github.com/jacobtipp/bloc-state/compare/react-bloc-v4.0.0-next.3...react-bloc-v4.0.0-next.4) (2024-02-03)
+
+
+### Features
+
+* **bloc:** ✨ add isServer and isClient methods ([52f74dd](https://github.com/jacobtipp/bloc-state/commit/52f74ddaa14b9b98a1fba30dd94cd76ee9592363))
+* **react-bloc:** ✨ add isServer and isClient global methods ([d5e6937](https://github.com/jacobtipp/bloc-state/commit/d5e6937d709d994d68bc1582e2bacf1b9bcc7814))
+* **react-bloc:** ✨ Providers optionally accept an instance instead of a create function ([ab6f58d](https://github.com/jacobtipp/bloc-state/commit/ab6f58d77c1f673054ed31010b484aece150fd13))
+
+
+### Code Refactoring
+
+* **bloc:** ♻️ check ancestor event hierarchy in on method ([5b19aa5](https://github.com/jacobtipp/bloc-state/commit/5b19aa5f38b1267e3f36b35851e3001ead6e021c))
+
+
+### Build System Dependencies
+
+* **deps:** 📦️ add use-disposable dependency to @jacobtipp/react-bloc ([5695baa](https://github.com/jacobtipp/bloc-state/commit/5695baa78ac429e14e7d5848e6a9e64c69842c1f))
+
+
+### Documentation
+
+* **readme:** 📚️ update docs for @jacobtipp/react-bloc ([90f6e61](https://github.com/jacobtipp/bloc-state/commit/90f6e61401ffea8a714c7b391cc2cebe4d546300))
+
+## [4.0.0-next.3](https://github.com/jacobtipp/bloc-state/compare/react-bloc-v4.0.0-next.2...react-bloc-v4.0.0-next.3) (2024-02-01)
+
+
+### Build System Dependencies
+
+* **deps:** 📦️ update rxjs peerDep to support minor and patch releases ([bf91636](https://github.com/jacobtipp/bloc-state/commit/bf916369ad11007e4a4361113e5ef8e91c13673e))
+
+## [4.0.0-next.2](https://github.com/jacobtipp/bloc-state/compare/react-bloc-v4.0.0-next.1...react-bloc-v4.0.0-next.2) (2024-01-30)
+
+
+### Features
+
+* **bloc:** ✨ abstract class types can be used with on method ([bcf6be3](https://github.com/jacobtipp/bloc-state/commit/bcf6be3fdc1a622afd1393a59df50bd43eddaf58))
+* **bloc:** ✨ check for ancestors of event types in add method ([3cfa364](https://github.com/jacobtipp/bloc-state/commit/3cfa364993f090d232bb77eb5ce3ea3c34ae0366))
+
+## [4.0.0-next.1](https://github.com/jacobtipp/bloc-state/compare/react-bloc-v3.6.0...react-bloc-v4.0.0-next.1) (2024-01-28)
+
+
+### ⚠ BREAKING CHANGES
+
+* **bloc:** Bloc.observer is removed
+
+### Features
+
+* **bloc:** ✨ add static Bloc.ignoreListeners property ([fde8991](https://github.com/jacobtipp/bloc-state/commit/fde89917a5df4c889ebf0a8ac81de8cf581bc830))
+* **react-bloc:** ✨ add disposeTimer prop for Provider ([d514c1e](https://github.com/jacobtipp/bloc-state/commit/d514c1eb778a3de9c726338ecefd757f8a2c69c2))
+* **react-bloc:** ✨ add getServerSnapshot in useBlocValue and useBlocSelector ([4f88272](https://github.com/jacobtipp/bloc-state/commit/4f88272c0082555a321076c78e096c9d80cb2a4a))
+* **react-bloc:** ✨ add hydration to Provider and add ContextMapProvider ([16bacee](https://github.com/jacobtipp/bloc-state/commit/16baceee0078a4430b5bd162168ef80a4ef9dfff))
+* **react-bloc:** ✨ add usePropListener hook ([fafcb43](https://github.com/jacobtipp/bloc-state/commit/fafcb43d0ec77095dbcf2cfa6c96c3654cdea1b8))
+* **react-bloc:** ✨ useBlocListener now checks if Bloc.ignoreListeners is enabled ([a144f37](https://github.com/jacobtipp/bloc-state/commit/a144f378ae3c8ef1dbc3e085d6eec7f7eaf4eee1))
+
+
+### Bug Fixes
+
+* **bloc:** 💥 🐛 replace Bloc.observer with BlocObserver.observer static property ([394d8d5](https://github.com/jacobtipp/bloc-state/commit/394d8d56dde74f03946c1e25016edf8eb0ec8248))
+
+
+### Build System Dependencies
+
+* **deps:** 📦️ add @microsoft/use-disposable package and update to [@next](https://github.com/next) v14.1 ([204cf88](https://github.com/jacobtipp/bloc-state/commit/204cf8814bfa5048f4dcf5a1bf8e9b7fca452278))
+
+
+### Code Refactoring
+
+* **bloc:** ♻️ emit now warns instead of throws if a bloc is closed ([d359cc9](https://github.com/jacobtipp/bloc-state/commit/d359cc9ddd4a84b21e5bc6e053440ee2878d726b))
+* **bloc:** ♻️ onTransition and onChange are called before emitting ([9e857a4](https://github.com/jacobtipp/bloc-state/commit/9e857a4e1b904e2abc2782d5a6cfe11a4306c33a))
+* **bloc:** ♻️ prevent BlocObserver.observer from being set on the server ([1fa05ed](https://github.com/jacobtipp/bloc-state/commit/1fa05ed0f44b977be8b170c677d2d3c4bcefd406))
+* **react-bloc:** ♻️ add experimental React.use hook for handling suspense ([fd22e65](https://github.com/jacobtipp/bloc-state/commit/fd22e6523cb76df6f161ce58e6fae32206fd293b))
+* **react-bloc:** ♻️ add useIsomorphicLayoutEffect for SSR ([85b9618](https://github.com/jacobtipp/bloc-state/commit/85b961801674c5179d84344875dee88ae9ff2682))
+* **react-bloc:** ♻️ rename ContextMapProvider to RootProvider ([cf88a3b](https://github.com/jacobtipp/bloc-state/commit/cf88a3b27addf4588d600504a19880ddfd005e78))
+* **react-bloc:** ♻️ rename file name from app-provider to root-provider ([6e0d5fa](https://github.com/jacobtipp/bloc-state/commit/6e0d5fa776d71c78671ecbffd33bf8929f4273c8))
+
 ## [3.6.0](https://github.com/jacobtipp/bloc-state/compare/react-bloc-v3.5.0...react-bloc-v3.6.0) (2024-01-17)
 
 

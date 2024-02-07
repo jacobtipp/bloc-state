@@ -1,31 +1,26 @@
-import { AppBar, createTheme, ThemeProvider, Toolbar } from '@mui/material';
+import { AppBar, Toolbar } from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
 import { Route, Routes } from 'react-router-dom';
 import { lazy, Suspense } from 'react';
-import CircularLoader from '../../common/components/circular-loader';
-import './app.css';
-import { TodosRepository } from '../../../packages/todos-repository/todos-repository';
-import { RepositoryProvider } from '@jacobtipp/react-bloc';
+import { CircularLoader } from '@/lib/app-ui/components/circular-loader';
 
-const HomePage = lazy(() => import('../../home/view/home'));
-const StatsPage = lazy(() => import('../../stats/view/stats'));
-const EditTodoPage = lazy(() => import('../../edit-todos/view/edit-todos'));
+import './app.css';
+import { Providers } from './providers';
+
+const HomePage = lazy(() => import('@/features/home/view/home'));
+const StatsPage = lazy(() => import('@/features/stats/view/stats'));
+const EditTodoPage = lazy(
+  () => import('@/features/edit-todos/view/edit-todos')
+);
 const TodosOverviewPage = lazy(
   () => import('../../todos-overview/view/todos-overview')
 );
 
-type AppProps = {
-  todosRepository: TodosRepository;
-};
-
-export default function App({ todosRepository }: AppProps) {
+export default function App() {
   return (
-    <RepositoryProvider
-      repository={TodosRepository}
-      create={() => todosRepository}
-    >
+    <Providers>
       <AppView />
-    </RepositoryProvider>
+    </Providers>
   );
 }
 
@@ -35,15 +30,9 @@ const AppBarPlaceHolder = () => (
   </AppBar>
 );
 
-const darkTheme = createTheme({
-  palette: {
-    mode: 'dark',
-  },
-});
-
 function AppView() {
   return (
-    <ThemeProvider theme={darkTheme}>
+    <>
       <CssBaseline />
       <Suspense fallback={<CircularLoader />}>
         <Routes>
@@ -59,6 +48,6 @@ function AppView() {
         </Routes>
         <AppBarPlaceHolder />
       </Suspense>
-    </ThemeProvider>
+    </>
   );
 }

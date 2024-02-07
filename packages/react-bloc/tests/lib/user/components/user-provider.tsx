@@ -14,91 +14,103 @@ import {
   UserBlocListenerConsumerWithListenerComponent,
   UserBlocListenerConsumerWithDefaultListenWhen,
 } from './user-consumer';
-import { BlocErrorBoundary, BlocProvider } from '../../../../src';
+import { BlocErrorBoundary, BlocProvider, RootProvider } from '../../../../src';
 import { UserBloc } from '../user-bloc';
 
 export const UserBlocListenerProvider = () => (
-  <BlocProvider
-    bloc={UserBloc}
-    create={() =>
-      new UserBloc().add(new UserLastNameAsyncChangedEvent('richards'))
-    }
-  >
-    <Suspense fallback={<UserBlocSuspenseFallback />}>
-      <UserBlocListenerConsumer />
-    </Suspense>
-  </BlocProvider>
+  <RootProvider>
+    <BlocProvider
+      bloc={UserBloc}
+      create={() =>
+        new UserBloc().add(new UserLastNameAsyncChangedEvent('richards'))
+      }
+    >
+      <Suspense fallback={<UserBlocSuspenseFallback />}>
+        <UserBlocListenerConsumer />
+      </Suspense>
+    </BlocProvider>
+  </RootProvider>
 );
 
 export const UserBlocListenerProviderWithDefaultListenWhen = () => (
-  <BlocProvider
-    bloc={UserBloc}
-    create={() =>
-      new UserBloc().add(new UserLastNameAsyncChangedEvent('richards'))
-    }
-  >
-    <Suspense fallback={<UserBlocSuspenseFallback />}>
-      <UserBlocListenerConsumerWithDefaultListenWhen />
-    </Suspense>
-  </BlocProvider>
+  <RootProvider>
+    <BlocProvider
+      bloc={UserBloc}
+      create={() =>
+        new UserBloc().add(new UserLastNameAsyncChangedEvent('richards'))
+      }
+    >
+      <Suspense fallback={<UserBlocSuspenseFallback />}>
+        <UserBlocListenerConsumerWithDefaultListenWhen />
+      </Suspense>
+    </BlocProvider>
+  </RootProvider>
 );
 
 export const UserBlocListenerWithComnponentProvider = () => (
-  <BlocProvider
-    bloc={UserBloc}
-    create={() =>
-      new UserBloc().add(new UserLastNameAsyncChangedEvent('richards'))
-    }
-  >
-    <Suspense fallback={<UserBlocSuspenseFallback />}>
-      <UserBlocListenerConsumerWithListenerComponent />
-    </Suspense>
-  </BlocProvider>
+  <RootProvider>
+    <BlocProvider
+      bloc={UserBloc}
+      create={() =>
+        new UserBloc().add(new UserLastNameAsyncChangedEvent('richards'))
+      }
+    >
+      <Suspense fallback={<UserBlocSuspenseFallback />}>
+        <UserBlocListenerConsumerWithListenerComponent />
+      </Suspense>
+    </BlocProvider>
+  </RootProvider>
 );
 
 export const UserBlocValueProvider = () => (
-  <BlocProvider
-    bloc={UserBloc}
-    create={() => {
-      const userBloc = new UserBloc();
-      return userBloc.add(
-        new UserNameChangedEvent({
-          first: 'bob',
-          last: userBloc.state.data.name.last,
-        })
-      );
-    }}
-  >
-    <UserBlocValueConsumer />
-  </BlocProvider>
+  <RootProvider>
+    <BlocProvider
+      bloc={UserBloc}
+      create={() => new UserBloc()}
+      onMount={(bloc) => {
+        bloc.add(
+          new UserNameChangedEvent({
+            first: 'bob',
+            last: bloc.state.data.name.last,
+          })
+        );
+      }}
+    >
+      <UserBlocValueConsumer />
+    </BlocProvider>
+  </RootProvider>
 );
 
 export const UserBlocErrorProvider = () => (
-  <BlocProvider
-    bloc={UserBloc}
-    create={() => new UserBloc().add(new UserErrorEvent())}
-  >
-    <BlocErrorBoundary
+  <RootProvider>
+    <BlocProvider
       bloc={UserBloc}
-      fallback={UserBlocErrorFallback}
-      onReset={(userBloc) =>
-        userBloc.add(
-          new UserNameChangedEvent({
-            ...userBloc.state.data.name,
-            last: 'error-reset',
-          })
-        )
-      }
+      create={() => new UserBloc().add(new UserErrorEvent())}
     >
-      <UserBlocErrorConsumer />
-    </BlocErrorBoundary>
-  </BlocProvider>
+      <BlocErrorBoundary
+        bloc={UserBloc}
+        fallback={UserBlocErrorFallback}
+        onReset={(userBloc) =>
+          userBloc.add(
+            new UserNameChangedEvent({
+              ...userBloc.state.data.name,
+              last: 'error-reset',
+            })
+          )
+        }
+      >
+        <UserBlocErrorConsumer />
+      </BlocErrorBoundary>
+    </BlocProvider>
+  </RootProvider>
 );
 
 export const UserBlocSuspenseProvider = () => (
-  <BlocProvider bloc={UserBloc} create={() => new UserBloc()}>
-    <Suspense fallback={<UserBlocSuspenseFallback />}>
-      <UserBlocSelectorConsumer />
-    </Suspense>
-  </BlocProvider>
+  <RootProvider>
+    <BlocProvider bloc={UserBloc} create={() => new UserBloc()}>
+      <Suspense fallback={<UserBlocSuspenseFallback />}>
+        <UserBlocSelectorConsumer />
+      </Suspense>
+    </BlocProvider>
+  </RootProvider>
 );

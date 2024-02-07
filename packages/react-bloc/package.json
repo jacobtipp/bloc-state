@@ -1,6 +1,6 @@
 {
   "name": "@jacobtipp/react-bloc",
-  "version": "3.6.0",
+  "version": "4.0.1",
   "main": "./index.js",
   "private": false,
   "sideEffects": false,
@@ -19,7 +19,8 @@
     }
   },
   "dependencies": {
-    "use-sync-external-store": "^1.2.0"
+    "use-sync-external-store": "^1.2.0",
+    "use-disposable": "^1.0.2"
   },
   "devDependencies": {
     "@jacobtipp/state": "workspace:*",
@@ -29,6 +30,6 @@
     "@jacobtipp/bloc": "workspace:*",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "rxjs": "7.8.0"
+    "rxjs": "^7.8.0"
   }
 }

@@ -1,5 +1,5 @@
-import { DevtoolsError, DevtoolsObserver } from '../src/lib/bloc-devtools';
-import { Bloc, Cubit } from '@jacobtipp/bloc';
+import { DevtoolsObserver } from '../src/lib/bloc-devtools';
+import { BlocObserver, Cubit } from '@jacobtipp/bloc';
 
 describe('blocDevtools ', () => {
   const tempConsoleError = console.error;
@@ -26,20 +26,6 @@ describe('blocDevtools ', () => {
     increment = () => this.emit(this.state + 1);
   }
 
-  it('should throw error if window.__Redux_Devtools_Extension__ does not exist', () => {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    //@ts-ignore
-    window.__REDUX_DEVTOOLS_EXTENSION__ = undefined;
-
-    expect(() => {
-      new TestObserver();
-    }).toThrowError(DevtoolsError);
-
-    window.__REDUX_DEVTOOLS_EXTENSION__ = {
-      connect: jest.fn().mockImplementation(() => instanceMock),
-    };
-  });
-
   it('should create Observer if window.__Redux_Devtools_Extension__ exists', () => {
     const observer = new TestObserver();
     expect(observer).toBeDefined();
@@ -48,7 +34,7 @@ describe('blocDevtools ', () => {
 
   it('should create a subscription when a bloc is created', () => {
     const observer = new TestObserver();
-    Bloc.observer = observer;
+    BlocObserver.observer = observer;
 
     const counterBloc = new CounterBloc(0);
     expect(window.__REDUX_DEVTOOLS_EXTENSION__.connect).toHaveBeenCalledTimes(

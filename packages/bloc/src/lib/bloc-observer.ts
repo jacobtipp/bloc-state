@@ -1,12 +1,23 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { Bloc, BlocBase, Transition } from '.';
+import { Bloc, BlocBase, Transition, isServer } from '.';
 import { Change } from './';
 
 /**
  * Defines methods to observe the state changes of a Bloc.
  */
 export class BlocObserver {
+  private static _observer = new BlocObserver();
+
+  static get observer() {
+    return BlocObserver._observer;
+  }
+
+  static set observer(toObserve: BlocObserver) {
+    /* istanbul ignore next */
+    if (isServer()) return;
+    BlocObserver._observer = toObserve;
+  }
   /**
    * Called when a new Bloc is created.
    * @param _bloc The newly created Bloc object.

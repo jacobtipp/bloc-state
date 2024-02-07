@@ -5,6 +5,7 @@ on:
     branches:
       [
         main,
+        next,
         dev-bloc,
         dev-react-bloc,
         dev-bloc-query,
