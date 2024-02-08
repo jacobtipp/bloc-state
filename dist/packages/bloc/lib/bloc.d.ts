@@ -1,9 +1,8 @@
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { BlocBase } from './base';
-import { BlocObserver } from './bloc-observer';
 import { Emitter } from './emitter';
 import { Transition } from './transition';
-import { ClassType } from './types';
+import { AbstractClassType, ClassType } from './types';
 /**
  * EventHandler that takes an event and emits state changes.
  *
@@ -41,7 +40,7 @@ export declare abstract class Bloc<Event, State> extends BlocBase<State> {
      */
     constructor(state: State, options?: BlocOptions<Event>);
     /** An observable stream of BLoC events. */
-    private readonly _eventSubject$;
+    protected readonly _eventSubject$: Subject<Event>;
     /** A mapping of registered events to their corresponding handler. */
     private readonly _eventMap;
     /** A collection of stateMappers with their respective filters for each registerered handler. */
@@ -52,6 +51,8 @@ export declare abstract class Bloc<Event, State> extends BlocBase<State> {
     private readonly _emitters;
     /** Indicates whether this is an instance of Bloc. */
     readonly isBlocInstance = true;
+    /** This should only be used by devtools as signal to prevent BlocListeners from performing side-effects during time travel */
+    static ignoreListeners: boolean;
     /**
      * Returns an event transformer.
      *
@@ -85,9 +86,8 @@ export declare abstract class Bloc<Event, State> extends BlocBase<State> {
      *
      * @throws if there is already an event handler registered for the given event.
      */
-    protected on<T extends Event>(event: ClassType<T>, eventHandler: EventHandler<T, State>, transformer?: EventTransformer<T>): void;
-    /** An instance of the BlocObserver class. */
-    static observer: BlocObserver;
+    protected on<T extends Event>(event: ClassType<T> | AbstractClassType<T>, eventHandler: EventHandler<T, State>, transformer?: EventTransformer<T>): void;
+    private hasAncestor;
     /**
      * Adds an event to the BLoC's stream of events.
      *

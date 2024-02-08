@@ -1,19 +1,19 @@
-var a = Object.defineProperty;
-var u = (r, s, t) => s in r ? a(r, s, { enumerable: !0, configurable: !0, writable: !0, value: t }) : r[s] = t;
-var n = (r, s, t) => (u(r, typeof s != "symbol" ? s + "" : s, t), t);
-import o, { immerable as c } from "immer";
+var o = Object.defineProperty;
+var u = (r, s, t) => s in r ? o(r, s, { enumerable: !0, configurable: !0, writable: !0, value: t }) : r[s] = t;
+var a = (r, s, t) => (u(r, typeof s != "symbol" ? s + "" : s, t), t);
+import n, { immerable as c } from "immer";
 var d;
 class h {
   constructor() {
     /**
      * Property that makes the object compatible with Immer.
      */
-    n(this, d, !0);
+    a(this, d, !0);
     /**
      * The name of the state, which is the same as the name of the
      * constructor function.
      */
-    n(this, "name", this.constructor.name);
+    a(this, "name", this.constructor.name);
   }
   /**
    * Returns a new instance of the state object by applying the specified
@@ -23,7 +23,7 @@ class h {
    * @returns A new instance of the state object with the applied mutations.
    */
   copyWith(s) {
-    return o(this, s);
+    return n(this, s);
   }
 }
 d = c;
@@ -37,13 +37,13 @@ class l extends h {
   constructor(t, i, e) {
     super();
     /** The current status of the state object. */
-    n(this, "status");
+    a(this, "status");
     /** The current error of the state object. */
-    n(this, "error");
+    a(this, "error");
     /** A flag indicating whether the object is an instance of State. */
-    n(this, "isStateInstance", !0);
+    a(this, "isStateInstance", !0);
     /** The data in the state object. */
-    n(this, "data");
+    a(this, "data");
     this.data = t, this.status = i ?? "initial", this.error = e;
   }
   /**
@@ -55,22 +55,23 @@ class l extends h {
    * @returns A new instance of the state object with the applied mutations.
    */
   produceWithData(t, i) {
-    return i == null ? o(this, (e) => {
+    return i == null ? n(this, (e) => {
       e.status = t, e.error = void 0;
-    }) : typeof i == "function" ? o(this, (e) => {
-      e.status = t, e.error = void 0, e.data = o(e.data, i);
-    }) : o(this, (e) => {
-      e.error = void 0, e.status = t, e.data = o(e.data, () => i);
+    }) : typeof i == "function" ? n(this, (e) => {
+      e.status = t, e.error = void 0, e.data = n(e.data, i);
+    }) : n(this, (e) => {
+      e.error = void 0, e.status = t, e.data = n(e.data, () => i);
     });
   }
   /**
    * Produces a new instance of the state object with the status set to "loading".
+   * Optionally allows modification of the state's data.
+   * @param data Optional callback or value to modify the data in the state object.
+   *             Can be a function that produces a draft using Immer, or a new value.
    * @returns A new instance of the state object with the status set to "loading".
    */
-  loading() {
-    return o(this, (t) => {
-      t.status = "loading", t.error = void 0;
-    });
+  loading(t) {
+    return this.produceWithData("loading", t);
   }
   /**
    * Produces a new instance of the state object with the specified mutations
@@ -89,7 +90,7 @@ class l extends h {
    * @returns A new instance of the state object with the specified error and status.
    */
   failed(t) {
-    return o(this, (i) => {
+    return n(this, (i) => {
       i.status = "failed", i.error = t;
     });
   }

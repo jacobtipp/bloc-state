@@ -1,0 +1,30 @@
+{
+  "name": "@jacobtipp/replay-bloc",
+  "version": "3.0.1",
+  "main": "./index.js",
+  "private": false,
+  "sideEffects": false,
+  "license": "MIT",
+  "publishConfig": {
+    "directory": "../../dist/packages/replay-bloc",
+    "linkDirectory": true,
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "types": "./bloc-state/packages/replay-bloc/src/lib/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./index.mjs",
+      "require": "./index.js"
+    }
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@jacobtipp/state": "workspace:*",
+    "@jacobtipp/hydrated-bloc": "workspace:*"
+  },
+  "peerDependencies": {
+    "@jacobtipp/bloc": "workspace:*",
+    "rxjs": "^7.8.0"
+  }
+}

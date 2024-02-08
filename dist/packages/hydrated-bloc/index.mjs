@@ -1,7 +1,7 @@
 var u = Object.defineProperty;
 var d = (n, o, s) => o in n ? u(n, o, { enumerable: !0, configurable: !0, writable: !0, value: s }) : n[o] = s;
 var h = (n, o, s) => (d(n, typeof o != "symbol" ? o + "" : o, s), s);
-const S = (n) => class extends n {
+const y = (n) => class extends n {
   constructor(...t) {
     super(...t);
     h(this, "_cachedState", null);
@@ -54,7 +54,7 @@ const S = (n) => class extends n {
         throw t;
     }
   }
-}, J = (n) => class extends n {
+}, _ = (n) => class extends n {
   constructor(...t) {
     super(...t);
     h(this, "_cachedState", null);
@@ -110,14 +110,14 @@ const S = (n) => class extends n {
 };
 class g {
 }
-const c = class c {
+const f = typeof window > "u", c = class c {
   static get storage() {
     if (c._storage === null)
       throw new l("Storage not found!");
     return c._storage;
   }
   static set storage(o) {
-    c._storage = o;
+    f || (c._storage = o);
   }
 };
 h(c, "_storage", null);
@@ -127,7 +127,7 @@ class l extends Error {
     super(o), Object.setPrototypeOf(this, l.prototype);
   }
 }
-class m extends g {
+class p extends g {
   constructor() {
     super(...arguments);
     h(this, "_closed", !1);
@@ -155,14 +155,14 @@ class m extends g {
     });
   }
   async close() {
-    await this.clear(), this._closed = !0;
+    this._closed = !0;
   }
 }
 export {
-  m as HydratedLocalStorage,
+  p as HydratedLocalStorage,
   i as HydratedStorage,
   g as Storage,
   l as StorageNotFound,
-  S as WithHydratedBloc,
-  J as WithHydratedCubit
+  y as WithHydratedBloc,
+  _ as WithHydratedCubit
 };

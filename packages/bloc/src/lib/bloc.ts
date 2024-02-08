@@ -76,7 +76,7 @@ export abstract class Bloc<Event, State> extends BlocBase<State> {
   }
 
   /** An observable stream of BLoC events. */
-  private readonly _eventSubject$ = new Subject<Event>();
+  protected readonly _eventSubject$ = new Subject<Event>();
 
   /** A mapping of registered events to their corresponding handler. */
   private readonly _eventMap = new WeakSet<

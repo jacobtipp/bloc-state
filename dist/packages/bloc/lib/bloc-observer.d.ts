@@ -4,6 +4,9 @@ import { Change } from './';
  * Defines methods to observe the state changes of a Bloc.
  */
 export declare class BlocObserver {
+    private static _observer;
+    static get observer(): BlocObserver;
+    static set observer(toObserve: BlocObserver);
     /**
      * Called when a new Bloc is created.
      * @param _bloc The newly created Bloc object.

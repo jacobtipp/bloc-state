@@ -1,0 +1,22 @@
+{
+  "name": "bloc-hacker-news-nextjs-app",
+  "version": "0.0.1",
+  "dependencies": {
+    "@react-spring/web": "9.6.1",
+    "axios": "1.6.2",
+    "html-react-parser": "3.0.8",
+    "immer": "9.0.17",
+    "nuqs": "1.15.4",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "rxjs": "7.8.0",
+    "use-disposable": "1.0.2",
+    "use-sync-external-store": "1.2.0",
+    "valibot": "0.24.1",
+    "next": "14.1.0",
+    "typescript": "5.1.6"
+  },
+  "scripts": {
+    "start": "next start"
+  }
+}

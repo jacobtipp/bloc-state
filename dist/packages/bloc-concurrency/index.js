@@ -1,0 +1,1 @@
+"use strict";Object.defineProperty(exports,Symbol.toStringTag,{value:"Module"});const r=require("rxjs"),c=()=>(e,t)=>e.pipe(r.switchMap(t)),n=()=>(e,t)=>e.pipe(r.concatMap(t)),a=()=>(e,t)=>e.pipe(r.mergeMap(t));exports.concurrent=a;exports.restartable=c;exports.sequential=n;

@@ -8,7 +8,7 @@ export interface RepositoryProviderProps<Repository extends ClassType<any>> {
     children: ReactNode;
     dependencies?: any[];
 }
-export declare const RepositoryProvider: <Repository extends ClassType<any>>({ repository, children, dependencies, create, onMount, onUnmount, }: RepositoryProviderProps<Repository>) => import("react").FunctionComponentElement<import("react").ProviderProps<import("./provider").ProviderContext>>;
+export declare const RepositoryProvider: <Repository extends ClassType<any>>({ repository, children, dependencies, create, onMount, onUnmount, }: RepositoryProviderProps<Repository>) => import("react").FunctionComponentElement<import("react").ProviderProps<import("./root-provider").ProviderContext>>;
 type RepositoryProviderReturnType = ReturnType<typeof RepositoryProvider>;
 export type MultiRepositoryProviderProps = {
     providers: Array<({ children }: PropsWithChildren) => RepositoryProviderReturnType>;

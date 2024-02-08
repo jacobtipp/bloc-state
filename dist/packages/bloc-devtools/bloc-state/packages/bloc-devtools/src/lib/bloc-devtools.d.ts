@@ -33,9 +33,25 @@ declare global {
         __REDUX_DEVTOOLS_EXTENSION__: Extension;
     }
 }
+declare class DevtoolConnection {
+    private options;
+    private connectionInstance;
+    private lock;
+    private bloc;
+    private initialState;
+    private connectionUnsubscribe;
+    private isClosed;
+    constructor(options: DevtoolsOptions, connectionInstance: Connection);
+    update: (state: any, action?: string) => void;
+    private send;
+    close(): void;
+    addBloc(bloc: BlocBase<any>, initialState: any): void;
+    private removeBloc;
+}
 export declare class DevtoolsObserver implements BlocObserver {
-    private connections;
+    static connections: WeakMap<BlocBase<any>, DevtoolConnection>;
     private isDev;
+    private isServer;
     private options;
     constructor(options?: DevtoolsOptions);
     onEvent(_bloc: Bloc<any, any>, _event: any): void;

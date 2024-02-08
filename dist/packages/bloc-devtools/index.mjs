@@ -1,50 +1,54 @@
-var h = Object.defineProperty;
-var p = (r, t, n) => t in r ? h(r, t, { enumerable: !0, configurable: !0, writable: !0, value: n }) : r[t] = n;
-var c = (r, t, n) => (p(r, typeof t != "symbol" ? t + "" : t, n), n);
-class u {
+var d = Object.defineProperty;
+var f = (a, t, n) => t in a ? d(a, t, { enumerable: !0, configurable: !0, writable: !0, value: n }) : a[t] = n;
+var s = (a, t, n) => (f(a, typeof t != "symbol" ? t + "" : t, n), n);
+import { Bloc as l } from "@jacobtipp/bloc";
+class _ {
   constructor(t, n) {
-    c(this, "lock", !1);
-    c(this, "bloc");
-    c(this, "initialState");
-    c(this, "connectionUnsubscribe");
-    c(this, "update", (t, n = "onChange") => {
-      var i, s, a;
-      if (this.lock) {
-        this.lock = !1;
-        return;
+    s(this, "lock", !1);
+    s(this, "bloc");
+    s(this, "initialState");
+    s(this, "connectionUnsubscribe");
+    s(this, "isClosed", !1);
+    s(this, "update", (t, n = "onChange") => {
+      var o, e, i;
+      if (this.bloc) {
+        if (this.lock) {
+          this.lock = !1, l.ignoreListeners = !1;
+          return;
+        }
+        const h = `[${this.options.name}] - ${n}`;
+        (o = this.options) != null && o.logTrace && (console.groupCollapsed(h, t), console.trace(), console.groupEnd()), (i = (e = this.options) == null ? void 0 : e.preAction) == null || i.call(e), this.send({ type: h }, t);
       }
-      const e = `[${this.options.name}] - ${n}`;
-      (i = this.options) != null && i.logTrace && (console.groupCollapsed(e, t), console.trace(), console.groupEnd()), (a = (s = this.options) == null ? void 0 : s.preAction) == null || a.call(s), this.send({ type: e }, t);
     });
-    c(this, "send", (t, n) => {
+    s(this, "send", (t, n) => {
       this.connectionInstance.send(t, n);
     });
     this.options = t, this.connectionInstance = n, this.connectionUnsubscribe = this.connectionInstance.subscribe(
       (o) => {
         var e, i;
         if (o.type === "DISPATCH") {
-          const s = o.payload.type;
-          if (s === "COMMIT" && this.bloc) {
+          const c = o.payload.type;
+          if (c === "COMMIT" && this.bloc) {
             this.connectionInstance.init((e = this.bloc) == null ? void 0 : e.state);
             return;
           }
-          if (s === "RESET" && this.bloc) {
-            this.lock = !0, this.bloc.__unsafeEmit__(this.initialState), this.connectionInstance.init((i = this.bloc) == null ? void 0 : i.state);
+          if (c === "RESET" && this.bloc) {
+            this.lock = !0, l.ignoreListeners = !0, this.bloc.__unsafeEmit__(this.initialState), this.connectionInstance.init((i = this.bloc) == null ? void 0 : i.state);
             return;
           }
-          (s === "JUMP_TO_STATE" || s === "JUMP_TO_ACTION") && this.bloc && (this.lock = !0, this.bloc.__unsafeEmit__(this.bloc.fromJson(o.state)));
+          (c === "JUMP_TO_STATE" || c === "JUMP_TO_ACTION") && this.bloc && (this.lock = !0, l.ignoreListeners = !0, this.bloc.__unsafeEmit__(this.bloc.fromJson(o.state)));
         }
       }
     );
   }
   close() {
-    this.connectionInstance.unsubscribe(), this.connectionUnsubscribe();
+    this.isClosed || (this.isClosed = !0, this.removeBloc(), this.connectionInstance.unsubscribe(), this.connectionUnsubscribe());
   }
   addBloc(t, n) {
-    var e, i, s;
+    var e, i, c;
     this.bloc = t, this.initialState = n;
     const o = `[${this.options.name}] - @Init`;
-    (e = this.options) != null && e.logTrace && (console.groupCollapsed(o, n), console.trace(), console.groupEnd()), (s = (i = this.options) == null ? void 0 : i.preAction) == null || s.call(i), this.send({ type: o }, n);
+    (e = this.options) != null && e.logTrace && (console.groupCollapsed(o, n), console.trace(), console.groupEnd()), (c = (i = this.options) == null ? void 0 : i.preAction) == null || c.call(i), this.send({ type: o }, n);
   }
   removeBloc() {
     var n;
@@ -52,29 +56,27 @@ class u {
     this.send({ type: `[${t}] - onClose` }, (n = this.bloc) == null ? void 0 : n.state), this.bloc = void 0;
   }
 }
-class _ {
+const r = class r {
   constructor(t) {
-    c(this, "connections", /* @__PURE__ */ new Map());
-    c(this, "isDev", process.env.NODE_ENV !== "production");
-    c(this, "options");
-    c(this, "addBloc", (t, n) => {
-      const o = t.name, e = this.connections.get(o);
-      if (e)
-        return e.addBloc(t, n);
-      const i = { ...this.options, name: o }, s = window.__REDUX_DEVTOOLS_EXTENSION__.connect(i), a = new u(
-        i,
-        s
+    s(this, "isDev", process.env.NODE_ENV !== "production");
+    s(this, "isServer", typeof window > "u");
+    s(this, "options", {});
+    s(this, "addBloc", (t, n) => {
+      if (this.isServer || r.connections.has(t))
+        return;
+      const o = t.name, e = { ...this.options, name: o }, i = window.__REDUX_DEVTOOLS_EXTENSION__.connect(e), c = new _(
+        e,
+        i
       );
-      a.addBloc(t, n), this.connections.set(o, a);
+      c.addBloc(t, n), r.connections.set(t, c);
     });
+    if (this.isServer)
+      return;
     const n = {
       name: document.title,
       logTrace: !1
     };
-    if (this.options = { ...n, ...t }, this.isDev && !window.__REDUX_DEVTOOLS_EXTENSION__)
-      throw new l(
-        "DevtoolsObserver only works with Redux Devtools Extension installed in your web browser"
-      );
+    this.options = { ...n, ...t }, this.isDev && !window.__REDUX_DEVTOOLS_EXTENSION__ && (this.isDev = !1);
   }
   onEvent(t, n) {
   }
@@ -86,38 +88,38 @@ class _ {
   onTransition(t, n) {
     if (!this.isDev)
       return;
-    const o = this.connections.get(t.name), e = n.event.name ?? n.event.constructor.name;
+    const o = r.connections.get(t), e = n.event.name ?? n.event.constructor.name;
     o == null || o.update(n.nextState, e);
   }
   onChange(t, n) {
     if (!this.isDev || t.isBlocInstance)
       return;
-    const o = this.connections.get(t.name);
+    const o = r.connections.get(t);
     o == null || o.update(n.nextState);
   }
   onClose(t) {
     if (!this.isDev)
       return;
-    const n = t.name, o = this.connections.get(n);
-    o == null || o.removeBloc();
+    const n = r.connections.get(t);
+    n == null || n.close();
   }
+  // @deprecated
   onDestroy() {
-    this.isDev && (this.connections.forEach((t) => {
-      t.close();
-    }), this.connections.clear());
   }
-}
-class l extends Error {
+};
+s(r, "connections", /* @__PURE__ */ new WeakMap());
+let u = r;
+class p extends Error {
   /**
    * Creates an instance of DevtoolsError.
    *
    * @param message The error message.
    */
   constructor(t) {
-    super(t), Object.setPrototypeOf(this, l.prototype);
+    super(t), Object.setPrototypeOf(this, p.prototype);
   }
 }
 export {
-  l as DevtoolsError,
-  _ as DevtoolsObserver
+  p as DevtoolsError,
+  u as DevtoolsObserver
 };

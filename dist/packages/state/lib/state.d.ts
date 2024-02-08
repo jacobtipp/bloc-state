@@ -32,9 +32,12 @@ export declare abstract class State<Data = any> extends BaseState {
     private produceWithData;
     /**
      * Produces a new instance of the state object with the status set to "loading".
+     * Optionally allows modification of the state's data.
+     * @param data Optional callback or value to modify the data in the state object.
+     *             Can be a function that produces a draft using Immer, or a new value.
      * @returns A new instance of the state object with the status set to "loading".
      */
-    loading(): this;
+    loading(data?: Data | ((data: Draft<Data>) => void)): this;
     /**
      * Produces a new instance of the state object with the specified mutations
      * applied to its data and status. The status is set to "ready".

@@ -5,6 +5,7 @@ export type Initial<Data> = {
     isFetching: false;
     isReady: true;
     isError: false;
+    isCanceled: boolean;
     status: 'isInitial';
     data: Data;
 };
@@ -15,6 +16,7 @@ export type Loading<Data> = {
     isFetching: true;
     isReady: false;
     isError: false;
+    isCanceled: boolean;
     status: 'isLoading';
     data?: Data;
 };
@@ -25,6 +27,7 @@ export type Fetching<Data> = {
     isFetching: true;
     isReady: false;
     isError: false;
+    isCanceled: boolean;
     status: 'isFetching';
     data?: Data;
 };
@@ -35,6 +38,7 @@ export type Ready<Data> = {
     isFetching: false;
     isReady: true;
     isError: false;
+    isCanceled: boolean;
     status: 'isReady';
     data: Data;
 };
@@ -45,6 +49,7 @@ export type Failed<Data> = {
     isFetching: false;
     isReady: false;
     isError: true;
+    isCanceled: boolean;
     status: 'isError';
     data?: Data;
     error: Error;
