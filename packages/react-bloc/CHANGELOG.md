@@ -1,3 +1,10 @@
+## [4.0.2](https://github.com/jacobtipp/bloc-state/compare/react-bloc-v4.0.1...react-bloc-v4.0.2) (2024-02-13)
+
+
+### Code Refactoring
+
+* **react-bloc:** ♻️ move context creation to its own file ([495d00a](https://github.com/jacobtipp/bloc-state/commit/495d00a4b4f40de6ba109fd68cd7999d97c1d9bc))
+
 ## [4.0.1](https://github.com/jacobtipp/bloc-state/compare/react-bloc-v4.0.0...react-bloc-v4.0.1) (2024-02-04)
 
 
