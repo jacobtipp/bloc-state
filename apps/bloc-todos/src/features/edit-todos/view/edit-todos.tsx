@@ -14,35 +14,20 @@ import { useNavigate, useParams } from 'react-router-dom';
 import {
   EditTodoDescriptionChanged,
   EditTodoSubmitted,
-  EditTodoSubscribed,
   EditTodoTitleChanged,
 } from '../bloc/edit-todo.event';
 import Icon from '@mui/material/Icon';
-import {
-  BlocProvider,
-  useBloc,
-  useBlocListener,
-  useRepository,
-} from '@jacobtipp/react-bloc';
+import { useBloc, useBlocListener } from '@jacobtipp/react-bloc';
 import { EditTodoBloc } from '../bloc/edit-todo.bloc';
-import { TodosRepository } from '../../../packages/todos-repository/todos-repository';
+import EditTodoProvider from './edit-todo-provider';
 
 export default function EditTodoPage() {
   const { todoId } = useParams();
-  const todosRepository = useRepository(TodosRepository);
 
   return (
-    <BlocProvider
-      bloc={EditTodoBloc}
-      create={() => new EditTodoBloc(todosRepository)}
-      onMount={(editTodoBloc) => {
-        if (todoId) {
-          editTodoBloc.add(new EditTodoSubscribed(todoId));
-        }
-      }}
-    >
+    <EditTodoProvider id={todoId}>
       <EditTodoView isNew={todoId === undefined} />
-    </BlocProvider>
+    </EditTodoProvider>
   );
 }
 
