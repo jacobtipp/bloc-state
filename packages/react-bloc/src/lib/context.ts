@@ -13,7 +13,7 @@ export const rootContext = createContext<ProviderContextMap | undefined>(
  */
 export type ProviderContext = {
   instance: any;
-};
+} | null;
 
 /**
  * Type definition for any class type, including both concrete and abstract classes.
@@ -30,12 +30,9 @@ export type ProviderContextMap = Map<string, React.Context<ProviderContext>>;
  */
 export const createCachedContext = (
   contextMap: ProviderContextMap,
-  classDef: AnyClassType,
-  instance: any
+  classDef: AnyClassType
 ) => {
-  const cachedContext = createContext<ProviderContext>({
-    instance,
-  });
+  const cachedContext = createContext<ProviderContext>(null);
   contextMap.set(classDef.name, cachedContext);
   return cachedContext;
 };

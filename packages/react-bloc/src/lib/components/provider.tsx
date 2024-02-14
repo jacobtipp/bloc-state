@@ -102,8 +102,7 @@ export const Provider = <Class extends AnyClassType>({
 
   const context = useMemo(() => {
     return (
-      contextMap.get(classDef.name) ??
-      createCachedContext(contextMap, classDef, instance)
+      contextMap.get(classDef.name) ?? createCachedContext(contextMap, classDef)
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
