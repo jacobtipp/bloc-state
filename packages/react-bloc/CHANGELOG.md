@@ -1,3 +1,10 @@
+## [4.0.3](https://github.com/jacobtipp/bloc-state/compare/react-bloc-v4.0.2...react-bloc-v4.0.3) (2024-02-14)
+
+
+### Code Refactoring
+
+* **react-bloc:** ♻️ cached context should not be created with a default value ([9319037](https://github.com/jacobtipp/bloc-state/commit/9319037a778b4c97f59f07a745ba3b883d3b19b9))
+
 ## [4.0.2](https://github.com/jacobtipp/bloc-state/compare/react-bloc-v4.0.1...react-bloc-v4.0.2) (2024-02-13)
 
 
