@@ -40,5 +40,5 @@ export const useProvider = <Class extends AnyClassType>(classDef: Class) => {
   const providerContext = useContext(context);
 
   // Return the instance from the provider context, cast to the appropriate type.
-  return providerContext.instance as InstanceType<Class>;
+  return providerContext?.instance as InstanceType<Class>;
 };
