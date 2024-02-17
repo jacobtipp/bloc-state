@@ -51,7 +51,6 @@ const ArticleBlocProvider = ({ children }: PropsWithChildren) => {
       bloc={ArticleBloc}
       create={() => new ArticleBloc(articleRepository, idRepository)}
       onMount={({ getNewArticle }) => getNewArticle()}
-      hydrate
       children={children}
     />
   );

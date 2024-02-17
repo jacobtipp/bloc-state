@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import { AnyClassType, contextMapContext } from '../components';
+import { AnyClassType, rootContext } from '../context';
 
 /**
  * A custom React hook that retrieves an instance of a class from a context map.
@@ -22,7 +22,7 @@ import { AnyClassType, contextMapContext } from '../components';
  */
 export const useProvider = <Class extends AnyClassType>(classDef: Class) => {
   // Retrieve the context map from the nearest provider up in the component tree.
-  const contextMap = useContext(contextMapContext);
+  const contextMap = useContext(rootContext);
 
   // Ensure that the context map exists. If not, throw an error.
   if (!contextMap) {
@@ -40,5 +40,5 @@ export const useProvider = <Class extends AnyClassType>(classDef: Class) => {
   const providerContext = useContext(context);
 
   // Return the instance from the provider context, cast to the appropriate type.
-  return providerContext.instance as InstanceType<Class>;
+  return providerContext?.instance as InstanceType<Class>;
 };

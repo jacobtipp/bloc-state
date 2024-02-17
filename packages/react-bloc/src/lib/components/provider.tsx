@@ -1,18 +1,16 @@
+'use client';
+
 import {
   PropsWithChildren,
   ReactNode,
-  createContext,
   createElement,
   useContext,
   useEffect,
   useMemo,
 } from 'react';
-import {
-  AnyClassType,
-  ProviderContext,
-  contextMapContext,
-} from './root-provider';
+
 import { useDisposable } from 'use-disposable';
+import { AnyClassType, createCachedContext, rootContext } from '../context';
 
 /**
  * Interface defining properties for a Provider component.
@@ -100,19 +98,12 @@ export const Provider = <Class extends AnyClassType>({
   }, [instance]);
 
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const contextMap = useContext(contextMapContext)!;
+  const contextMap = useContext(rootContext)!;
 
   const context = useMemo(() => {
-    let cachedContext = contextMap.get(classDef.name);
-    if (!cachedContext) {
-      cachedContext = createContext<ProviderContext>({
-        instance,
-      });
-      contextMap.set(classDef.name, cachedContext);
-      return cachedContext;
-    } else {
-      return cachedContext;
-    }
+    return (
+      contextMap.get(classDef.name) ?? createCachedContext(contextMap, classDef)
+    );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
