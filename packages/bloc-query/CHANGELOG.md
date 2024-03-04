@@ -1,3 +1,12 @@
+## [3.0.3](https://github.com/jacobtipp/bloc-state/compare/bloc-query-v3.0.2...bloc-query-v3.0.3) (2024-03-04)
+
+
+### Build System Dependencies
+
+* **deps:** 📦️ fix types path for bloc packages ([d02b578](https://github.com/jacobtipp/bloc-state/commit/d02b578b1bb72e728e1dd18c757df871e273d7db))
+* **deps:** 📦️ update @jacobtipp/bloc exports to support moduleResolution bundler ([00b052d](https://github.com/jacobtipp/bloc-state/commit/00b052da2c0db76a28e71c67940593724ef30af3))
+* **deps:** 📦️ update @jacobtipp/bloc-query exports to support moduleResolution bundler ([61e8318](https://github.com/jacobtipp/bloc-state/commit/61e83180656cb1bb1554d841a1f89ed65685e006))
+
 ## [3.0.3-next.3](https://github.com/jacobtipp/bloc-state/compare/bloc-query-v3.0.3-next.2...bloc-query-v3.0.3-next.3) (2024-03-04)
 
 
