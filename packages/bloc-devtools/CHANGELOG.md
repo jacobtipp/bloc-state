@@ -1,3 +1,10 @@
+## [2.0.3-next.2](https://github.com/jacobtipp/bloc-state/compare/bloc-devtools-v2.0.3-next.1...bloc-devtools-v2.0.3-next.2) (2024-03-04)
+
+
+### Build System Dependencies
+
+* **deps:** 📦️ update @jacobtipp/bloc-devtools exports to support moduleResolution bundler ([14d5800](https://github.com/jacobtipp/bloc-state/commit/14d5800c03a5d6ee10e8f22c12f784ccf986f75b))
+
 ## [2.0.3-next.1](https://github.com/jacobtipp/bloc-state/compare/bloc-devtools-v2.0.2...bloc-devtools-v2.0.3-next.1) (2024-03-04)
 
 
