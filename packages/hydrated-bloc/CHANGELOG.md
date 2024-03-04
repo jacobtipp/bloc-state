@@ -1,3 +1,10 @@
+## [4.0.3-next.2](https://github.com/jacobtipp/bloc-state/compare/hydrated-bloc-v4.0.3-next.1...hydrated-bloc-v4.0.3-next.2) (2024-03-04)
+
+
+### Build System Dependencies
+
+* **deps:** 📦️ update @jacobtipp/hydrated-bloc exports to support moduleResolution bundler ([21193ab](https://github.com/jacobtipp/bloc-state/commit/21193ab747a5f513d962adc276291997b0bd1d11))
+
 ## [4.0.3-next.1](https://github.com/jacobtipp/bloc-state/compare/hydrated-bloc-v4.0.2...hydrated-bloc-v4.0.3-next.1) (2024-03-04)
 
 
