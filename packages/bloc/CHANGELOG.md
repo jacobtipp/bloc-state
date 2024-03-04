@@ -1,3 +1,10 @@
+## [4.0.3](https://github.com/jacobtipp/bloc-state/compare/bloc-v4.0.2...bloc-v4.0.3) (2024-03-04)
+
+
+### Build System Dependencies
+
+* **deps:** 📦️ update @jacobtipp/bloc exports to support moduleResolution bundler ([00b052d](https://github.com/jacobtipp/bloc-state/commit/00b052da2c0db76a28e71c67940593724ef30af3))
+
 ## [4.0.3-next.1](https://github.com/jacobtipp/bloc-state/compare/bloc-v4.0.2...bloc-v4.0.3-next.1) (2024-03-04)
 
 
