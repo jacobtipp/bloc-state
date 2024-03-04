@@ -1,3 +1,10 @@
+## [1.1.2](https://github.com/jacobtipp/bloc-state/compare/state-v1.1.1...state-v1.1.2) (2024-03-04)
+
+
+### Build System Dependencies
+
+* **deps:** 📦️ update @jacobtipp/state exports to support moduleResolution bundler ([44a5d22](https://github.com/jacobtipp/bloc-state/commit/44a5d22c8d57054a13ac557a2038b2853b30d117))
+
 ## [1.1.2-next.1](https://github.com/jacobtipp/bloc-state/compare/state-v1.1.1...state-v1.1.2-next.1) (2024-03-04)
 
 
