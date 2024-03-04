@@ -1,3 +1,10 @@
+## [3.0.3-next.2](https://github.com/jacobtipp/bloc-state/compare/bloc-query-v3.0.3-next.1...bloc-query-v3.0.3-next.2) (2024-03-04)
+
+
+### Build System Dependencies
+
+* **deps:** 📦️ update @jacobtipp/bloc-query exports to support moduleResolution bundler ([fd274a5](https://github.com/jacobtipp/bloc-state/commit/fd274a51b0b6f07e1ff99c1faafca523ae3aa3d9))
+
 ## [3.0.3-next.1](https://github.com/jacobtipp/bloc-state/compare/bloc-query-v3.0.2...bloc-query-v3.0.3-next.1) (2024-03-04)
 
 
