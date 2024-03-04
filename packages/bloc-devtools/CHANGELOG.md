@@ -1,3 +1,10 @@
+## [2.0.2](https://github.com/jacobtipp/bloc-state/compare/bloc-devtools-v2.0.1...bloc-devtools-v2.0.2) (2024-03-04)
+
+
+### Documentation
+
+* **readme:** 📚️ add docsify docs ([9f71573](https://github.com/jacobtipp/bloc-state/commit/9f71573d34a54ce74aaf563b9132b71cfdaf5554))
+
 ## [2.0.1](https://github.com/jacobtipp/bloc-state/compare/bloc-devtools-v2.0.0...bloc-devtools-v2.0.1) (2024-02-04)
 
 
