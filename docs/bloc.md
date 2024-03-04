@@ -12,7 +12,7 @@
 npm install @jacobtipp/bloc rxjs
 ```
 
-## Cubit
+# Cubit
 
 A cubit is a class that extends `BlocBase` and is a primitive type of `Bloc` that can be extended to manage any type of state.
 
@@ -84,7 +84,7 @@ export class CounterCubit extends Cubit<number> {
 ```
 
 
-## Bloc
+# Bloc
 
 A Bloc is a more advanced class which relies on events to trigger state changes rather than functions. Bloc also extends `BlocBase` which means it has a similar public API as Cubit. However, rather than calling a function on a Bloc and directly emitting a new state, Blocs receive events and convert the incoming events into outgoing states.
 
@@ -162,7 +162,7 @@ export class CounterBloc extends Bloc<CounterEvent, number> {
 }
 ```
 
-## Error Handling
+# Error Handling
 
 Both `Bloc` and `Cubit` have an `addError` and `onError` method. We can indicate that an error has occurred by calling `addError` from anywhere inside our Bloc. We can then react to all errors by overriding onError just as with Cubit.
 
@@ -198,7 +198,7 @@ export class CounterBloc extends Bloc<CounterEvent, number> {
 }
 ```
 
-## BlocObserver
+# BlocObserver
 
 `BlocObserver` is a class that you can extend to listen to all Blocs/Cubits that exist at runtime. 
 
@@ -245,7 +245,7 @@ BlocObserver.observer = new AppBlocObserver();
 ```
 
 
-## Event Transformations
+# Event Transformations
 
 `bloc` has an event sink that allows us to control and transform the incoming flow of events.
 
@@ -277,9 +277,9 @@ export class CounterBloc extends Bloc<CounterEvent, number> {
 
 ```
 
-> ⚠️ **Please refer to the [bloc-concurrency](https://github.com/jacobtipp/bloc-state/tree/main/packages/bloc-concurrency) package, which has commonly used Event Transformers.**
+> ⚠️ **Please refer to the [bloc-concurrency](/bloc-concurrency) package, which has commonly used Event Transformers.**
 
-## Observable
+# Observable
 Both `Bloc` and `Cubit` extend `BlocBase` which exposes a `state$` property, which is an `rxjs` observable stream. This can be used to directly subscribe to the state stream.
 
 ```ts
