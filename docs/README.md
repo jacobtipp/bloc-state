@@ -2,7 +2,9 @@
 
 A predictable state management library that helps implement the BLoC design pattern. This is a port of the [bloc](https://github.com/felangel/bloc) ecosystem from Dart/Flutter.  
 
-These docs are mostly copied and translated to TypeScript from the official [FlutterBloc](https://bloclibrary.dev/#/) library docs, please refer to them for a more in-depth explanation, as they are very well written.
+Refer to the sidebar for documentation of each package.
+
+## Packages
 
 | Package                                                                                    | NPM                                                                                                                  |
 | ------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------- |
