@@ -1,3 +1,10 @@
+## [4.0.3-next.3](https://github.com/jacobtipp/bloc-state/compare/hydrated-bloc-v4.0.3-next.2...hydrated-bloc-v4.0.3-next.3) (2024-03-04)
+
+
+### Build System Dependencies
+
+* **deps:** 📦️ fix types path for bloc packages ([d9c3120](https://github.com/jacobtipp/bloc-state/commit/d9c312074ec89d63284777a806e57e07abdb754b))
+
 ## [4.0.3-next.2](https://github.com/jacobtipp/bloc-state/compare/hydrated-bloc-v4.0.3-next.1...hydrated-bloc-v4.0.3-next.2) (2024-03-04)
 
 
