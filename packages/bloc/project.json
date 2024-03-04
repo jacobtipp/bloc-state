@@ -26,7 +26,7 @@
       "executor": "nx:run-commands",
       "options": {
         "cwd": "packages/bloc/src",
-        "commands": ["typedoc --out ../../../docs/bloc index.ts"]
+        "commands": ["typedoc --out ../../../typedoc/bloc index.ts"]
       }
     },
     "build": {

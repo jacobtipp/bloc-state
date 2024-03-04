@@ -48,7 +48,7 @@ data: Data;
 
 ## Methods
 
-### getQuery
+## getQuery
 
 Retrieves an observable for a specified query. If the query does not exist, it creates a new one.
 
@@ -112,7 +112,7 @@ class PostBloc extends Cubit<PostState> {
 }
 ```
 
-### getQueryData
+## getQueryData
 
 Retrieves the data for a given query either by its key or an observable. It throws an error if the query returns an error state, is canceled, or times out. It returns a Promise with query data if the query is successful.
 
@@ -163,7 +163,7 @@ class PostBloc extends Cubit<PostState> {
 }
 ```
 
-### clear
+## clear
 
 Clears all registered queries and closes them.
 
@@ -175,7 +175,7 @@ const client = new QueryClient()
 client.clear() // client can safely be garbage collected
 ```
 
-### removeQuery
+## removeQuery
 
 Removes a specified query from the QueryClient.
 
@@ -188,7 +188,7 @@ client.removeQuery("posts") // query subscription is completed and query is clea
 
 ```
 
-### getQueryKeys
+## getQueryKeys
 
 Gets an array of all query keys registered in the QueryClient.
 
@@ -203,7 +203,7 @@ client.getQueryKeys() // ["posts", "users", "users/1"]
 
 ```
 
-### setQueryData
+## setQueryData
 
 Sets new data for a specified query.
 
@@ -237,7 +237,7 @@ class TodoRepository {
   
 ```
 
-### revalidateQueries
+## revalidateQueries
 
 Revalidates all or selected queries based on the provided options. Triggers the queryFunction
 
@@ -264,7 +264,7 @@ client.revalidateQueries({
 
 ```
 
-### cancelQuery
+## cancelQuery
 
 Cancels an ongoing fetch operation for a specified query.
 
@@ -277,7 +277,7 @@ const client = new QueryClient()
 client.cancelQuery('posts')
 ```
 
-### close
+## close
 
 Closes the QueryClient, clearing all queries and completing the close signal.
 

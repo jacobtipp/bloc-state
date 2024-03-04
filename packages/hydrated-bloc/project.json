@@ -26,7 +26,7 @@
       "executor": "nx:run-commands",
       "options": {
         "cwd": "packages/hydrated-bloc/src",
-        "commands": ["typedoc --out ../../../docs/hydrated-bloc index.ts"]
+        "commands": ["typedoc --out ../../../typedoc/hydrated-bloc index.ts"]
       }
     },
     "build": {

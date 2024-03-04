@@ -25,7 +25,7 @@
       "executor": "nx:run-commands",
       "options": {
         "cwd": "packages/state/src",
-        "commands": ["typedoc --out ../../../docs/state index.ts"]
+        "commands": ["typedoc --out ../../../typedoc/state index.ts"]
       }
     },
     "build": {

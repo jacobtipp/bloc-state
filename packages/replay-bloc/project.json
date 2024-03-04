@@ -26,7 +26,7 @@
       "executor": "nx:run-commands",
       "options": {
         "cwd": "packages/replay-bloc/src",
-        "commands": ["typedoc --out ../../../docs/replay-bloc index.ts"]
+        "commands": ["typedoc --out ../../../typedoc/replay-bloc index.ts"]
       }
     },
     "build": {

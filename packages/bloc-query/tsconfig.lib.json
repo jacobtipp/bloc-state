@@ -4,6 +4,6 @@
     "outDir": "../../dist/out-tsc",
     "types": ["node"]
   },
-  "include": ["src/lib/**/*.ts", "tests/query-bloc.spec.ts"],
+  "include": ["src/**/*.ts", "tests/query-bloc.spec.ts"],
   "exclude": ["jest.config.ts", "**/*.spec.ts", "**/*.test.ts"]
 }
