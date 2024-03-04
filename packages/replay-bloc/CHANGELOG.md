@@ -1,3 +1,10 @@
+## [3.0.3-next.2](https://github.com/jacobtipp/bloc-state/compare/replay-bloc-v3.0.3-next.1...replay-bloc-v3.0.3-next.2) (2024-03-04)
+
+
+### Build System Dependencies
+
+* **deps:** 📦️ update @jacobtipp/replay-bloc exports to support moduleResolution bundler ([b6b49c7](https://github.com/jacobtipp/bloc-state/commit/b6b49c7b95f2f0d9c1ea7cd13427900094e3e5b3))
+
 ## [3.0.3-next.1](https://github.com/jacobtipp/bloc-state/compare/replay-bloc-v3.0.2...replay-bloc-v3.0.3-next.1) (2024-03-04)
 
 
