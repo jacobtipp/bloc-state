@@ -1,3 +1,10 @@
+## [4.0.4](https://github.com/jacobtipp/bloc-state/compare/react-bloc-v4.0.3...react-bloc-v4.0.4) (2024-03-04)
+
+
+### Documentation
+
+* **readme:** 📚️ add docsify docs ([9f71573](https://github.com/jacobtipp/bloc-state/commit/9f71573d34a54ce74aaf563b9132b71cfdaf5554))
+
 ## [4.0.3](https://github.com/jacobtipp/bloc-state/compare/react-bloc-v4.0.2...react-bloc-v4.0.3) (2024-02-14)
 
 
