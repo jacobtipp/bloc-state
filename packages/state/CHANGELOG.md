@@ -1,3 +1,10 @@
+## [1.1.1](https://github.com/jacobtipp/bloc-state/compare/state-v1.1.0...state-v1.1.1) (2024-03-04)
+
+
+### Documentation
+
+* **readme:** 📚️ add docsify docs ([9f71573](https://github.com/jacobtipp/bloc-state/commit/9f71573d34a54ce74aaf563b9132b71cfdaf5554))
+
 ## [1.1.0](https://github.com/jacobtipp/bloc-state/compare/state-v1.0.7...state-v1.1.0) (2024-02-03)
 
 
