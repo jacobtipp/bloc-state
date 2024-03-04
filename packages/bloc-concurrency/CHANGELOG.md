@@ -1,3 +1,10 @@
+## [4.0.3-next.1](https://github.com/jacobtipp/bloc-state/compare/bloc-concurrency-v4.0.2...bloc-concurrency-v4.0.3-next.1) (2024-03-04)
+
+
+### Build System Dependencies
+
+* **deps:** 📦️ update @jacobtipp/bloc exports to support moduleResolution bundler ([cab1294](https://github.com/jacobtipp/bloc-state/commit/cab12943e6053e44643fb4a270a869b8b18455e3))
+
 ## [4.0.2](https://github.com/jacobtipp/bloc-state/compare/bloc-concurrency-v4.0.1...bloc-concurrency-v4.0.2) (2024-03-04)
 
 
