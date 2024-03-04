@@ -1,3 +1,12 @@
+## [4.0.3](https://github.com/jacobtipp/bloc-state/compare/bloc-concurrency-v4.0.2...bloc-concurrency-v4.0.3) (2024-03-04)
+
+
+### Build System Dependencies
+
+* **deps:** 📦️ fix types path for bloc packages ([d02b578](https://github.com/jacobtipp/bloc-state/commit/d02b578b1bb72e728e1dd18c757df871e273d7db))
+* **deps:** 📦️ update @jacobtipp/bloc exports to support moduleResolution bundler ([00b052d](https://github.com/jacobtipp/bloc-state/commit/00b052da2c0db76a28e71c67940593724ef30af3))
+* **deps:** 📦️ update @jacobtipp/bloc-concurrency exports to support moduleResolution bundler ([82093c7](https://github.com/jacobtipp/bloc-state/commit/82093c701f1ffa08905005379d398757f67e6773))
+
 ## [4.0.3-next.3](https://github.com/jacobtipp/bloc-state/compare/bloc-concurrency-v4.0.3-next.2...bloc-concurrency-v4.0.3-next.3) (2024-03-04)
 
 

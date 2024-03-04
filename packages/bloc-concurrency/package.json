@@ -1,6 +1,6 @@
 {
   "name": "@jacobtipp/bloc-concurrency",
-  "version": "4.0.3-next.3",
+  "version": "4.0.3",
   "main": "./index.js",
   "private": false,
   "sideEffects": false,
