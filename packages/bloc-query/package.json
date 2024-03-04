@@ -1,6 +1,6 @@
 {
   "name": "@jacobtipp/bloc-query",
-  "version": "3.0.3-next.1",
+  "version": "3.0.3-next.2",
   "main": "./index.js",
   "private": false,
   "sideEffects": false,
