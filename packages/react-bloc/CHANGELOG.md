@@ -1,3 +1,10 @@
+## [4.0.5-next.2](https://github.com/jacobtipp/bloc-state/compare/react-bloc-v4.0.5-next.1...react-bloc-v4.0.5-next.2) (2024-03-04)
+
+
+### Build System Dependencies
+
+* **deps:** 📦️ update @jacobtipp/react-bloc exports to support moduleResolution bundler ([3512fe2](https://github.com/jacobtipp/bloc-state/commit/3512fe2539aa2453e5fccb8826147aabe9ea9329))
+
 ## [4.0.5-next.1](https://github.com/jacobtipp/bloc-state/compare/react-bloc-v4.0.4...react-bloc-v4.0.5-next.1) (2024-03-04)
 
 
