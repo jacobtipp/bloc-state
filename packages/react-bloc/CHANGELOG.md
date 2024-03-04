@@ -1,3 +1,12 @@
+## [4.0.5](https://github.com/jacobtipp/bloc-state/compare/react-bloc-v4.0.4...react-bloc-v4.0.5) (2024-03-04)
+
+
+### Build System Dependencies
+
+* **deps:** 📦️ fix types path for bloc packages ([d02b578](https://github.com/jacobtipp/bloc-state/commit/d02b578b1bb72e728e1dd18c757df871e273d7db))
+* **deps:** 📦️ update @jacobtipp/bloc exports to support moduleResolution bundler ([00b052d](https://github.com/jacobtipp/bloc-state/commit/00b052da2c0db76a28e71c67940593724ef30af3))
+* **deps:** 📦️ update @jacobtipp/react-bloc exports to support moduleResolution bundler ([56490a0](https://github.com/jacobtipp/bloc-state/commit/56490a00b361347858912fedec80bff0327bc73e))
+
 ## [4.0.5-next.3](https://github.com/jacobtipp/bloc-state/compare/react-bloc-v4.0.5-next.2...react-bloc-v4.0.5-next.3) (2024-03-04)
 
 
