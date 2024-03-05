@@ -26,7 +26,6 @@ import {
 } from '@jacobtipp/react-bloc';
 import { EditTodoBloc } from '../bloc/edit-todo.bloc';
 import { TodosRepository } from '@/lib/todos-repository/todos-repository';
-import { useEffect } from 'react';
 
 export default function EditTodoPage() {
   const { todoId } = useParams();
@@ -57,16 +56,12 @@ export function EditTodoView({ isNew }: EditTodoViewProps) {
     selector: (state) => [state.data.title, state.data.description],
   });
 
-  useEffect(() => {
-    navigate('/');
-  }, []);
-
   useBlocListener(EditTodoBloc, {
     listenWhen(_previous, current) {
       return current.submitSuccess;
     },
     listener() {
-      navigate(-1);
+      navigate('/');
     },
   });
 
