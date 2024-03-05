@@ -9,16 +9,21 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@jacobtipp/bloc": "^4.0.0",
-    "@jacobtipp/bloc-concurrency": "^4.0.0",
-    "@jacobtipp/bloc-devtools": "^2.0.0",
-    "@jacobtipp/bloc-query": "^3.0.0",
-    "@jacobtipp/hydrated-bloc": "^4.0.0",
-    "@jacobtipp/react-bloc": "^4.0.0",
-    "@jacobtipp/state": "^1.1.0",
+    "@jacobtipp/bloc": "latest",
+    "@jacobtipp/bloc-concurrency": "latest",
+    "@jacobtipp/bloc-devtools": "latest",
+    "@jacobtipp/bloc-query": "latest",
+    "@jacobtipp/hydrated-bloc": "latest",
+    "@jacobtipp/react-bloc": "latest",
+    "@jacobtipp/state": "latest",
+    "@react-spring/web": "^9.7.3",
+    "axios": "^1.6.7",
+    "html-react-parser": "^5.1.8",
     "next": "14.1.0",
+    "nuqs": "^1.17.1",
     "react": "^18",
-    "react-dom": "^18"
+    "react-dom": "^18",
+    "valibot": "^0.29.0"
   },
   "devDependencies": {
     "@types/node": "^20",
