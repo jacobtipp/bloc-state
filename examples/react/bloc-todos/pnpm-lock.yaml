@@ -15,32 +15,32 @@ importers:
         specifier: 11.11.0
         version: 11.11.0(@emotion/react@11.11.1)(@types/react@18.2.38)(react@18.2.0)
       '@jacobtipp/bloc':
-        specifier: ^4.0.0
-        version: 4.0.0(rxjs@7.8.0)
+        specifier: latest
+        version: 4.0.3(rxjs@7.8.0)
       '@jacobtipp/bloc-concurrency':
-        specifier: ^4.0.0
-        version: 4.0.0(@jacobtipp/bloc@4.0.0)(rxjs@7.8.0)
+        specifier: latest
+        version: 4.0.3(@jacobtipp/bloc@4.0.3)(rxjs@7.8.0)
       '@jacobtipp/bloc-devtools':
-        specifier: ^2.0.0
-        version: 2.0.0(@jacobtipp/bloc@4.0.0)(rxjs@7.8.0)
+        specifier: latest
+        version: 2.0.3(@jacobtipp/bloc@4.0.3)(rxjs@7.8.0)
       '@jacobtipp/bloc-query':
-        specifier: ^3.0.0
-        version: 3.0.0(@jacobtipp/bloc@4.0.0)(rxjs@7.8.0)
+        specifier: latest
+        version: 3.0.3(@jacobtipp/bloc@4.0.3)(rxjs@7.8.0)
       '@jacobtipp/hydrated-bloc':
-        specifier: ^4.0.0
-        version: 4.0.0(@jacobtipp/bloc@4.0.0)(rxjs@7.8.0)
+        specifier: latest
+        version: 4.0.3(@jacobtipp/bloc@4.0.3)(rxjs@7.8.0)
       '@jacobtipp/react-bloc':
-        specifier: ^4.0.0
-        version: 4.0.0(@jacobtipp/bloc@4.0.0)(@types/react-dom@18.2.17)(@types/react@18.2.38)(react-dom@18.2.0)(react@18.2.0)(rxjs@7.8.0)
+        specifier: latest
+        version: 4.0.5(@jacobtipp/bloc@4.0.3)(@types/react-dom@18.2.17)(@types/react@18.2.38)(react-dom@18.2.0)(react@18.2.0)(rxjs@7.8.0)
       '@jacobtipp/state':
-        specifier: ^1.1.0
-        version: 1.1.0(immer@9.0.21)
+        specifier: latest
+        version: 1.1.2(immer@9.0.21)
       '@mui/material':
         specifier: ^5.10.17
         version: 5.10.17(@emotion/react@11.11.1)(@emotion/styled@11.11.0)(@types/react@18.2.38)(react-dom@18.2.0)(react@18.2.0)
       material-ui-popup-state:
-        specifier: ^5.0.4
-        version: 5.0.4(@emotion/react@11.11.1)(@emotion/styled@11.11.0)(@types/react@18.2.38)(react-dom@18.2.0)(react@18.2.0)
+        specifier: ^5.0.10
+        version: 5.0.10(@emotion/react@11.11.1)(@emotion/styled@11.11.0)(@types/react@18.2.38)(react-dom@18.2.0)(react@18.2.0)
       react:
         specifier: ^18.2.0
         version: 18.2.0
@@ -59,6 +59,12 @@ importers:
       rxjs:
         specifier: ^7.8.0
         version: 7.8.0
+      uuid:
+        specifier: ^9.0.1
+        version: 9.0.1
+      valibot:
+        specifier: ^0.29.0
+        version: 0.29.0
     devDependencies:
       '@types/react':
         specifier: ^18.2.38
@@ -522,63 +528,63 @@ packages:
     resolution: {integrity: sha512-dvuCeX5fC9dXgJn9t+X5atfmgQAzUOWqS1254Gh0m6i8wKd10ebXkfNKiRK+1GWi/yTvvLDHpoxLr0xxxeslWw==}
     dev: true
 
-  /@jacobtipp/bloc-concurrency@4.0.0(@jacobtipp/bloc@4.0.0)(rxjs@7.8.0):
-    resolution: {integrity: sha512-IZJk0EiSwVcaV0qWc0QnjNhWAPIwyF48MJaFqsy9YYQh9kaKU2XwNpbutxbCrzMXyM6gP8cnFg7Gb5Laot1/QQ==}
+  /@jacobtipp/bloc-concurrency@4.0.3(@jacobtipp/bloc@4.0.3)(rxjs@7.8.0):
+    resolution: {integrity: sha512-bQ8UCzS+etzD1MSo6iDvj+OQspK7Zc2yCSIHLif6hSV0fn9fBaArsi2w2Pbx5kWQjHXb0VylB4wc03u1vPhbRw==}
     peerDependencies:
-      '@jacobtipp/bloc': 4.0.0
+      '@jacobtipp/bloc': 4.0.3
       rxjs: ^7.8.0
     dependencies:
-      '@jacobtipp/bloc': 4.0.0(rxjs@7.8.0)
+      '@jacobtipp/bloc': 4.0.3(rxjs@7.8.0)
       rxjs: 7.8.0
     dev: false
 
-  /@jacobtipp/bloc-devtools@2.0.0(@jacobtipp/bloc@4.0.0)(rxjs@7.8.0):
-    resolution: {integrity: sha512-8WNNCwOHsfWZVI7mEpRl4Fy5fYBLnIydqjgiRa7GdVDL/vrG2ZdxAGTXJEo4IWA3pG8RhGWHGmg2HA0eFEVsBA==}
+  /@jacobtipp/bloc-devtools@2.0.3(@jacobtipp/bloc@4.0.3)(rxjs@7.8.0):
+    resolution: {integrity: sha512-qWm4/St+VXN5iNf4WCTkj5wKmQwIU0PLXmO3pVTin8n8LpW2TW+DW0dvNJYwdxRTAZm/azkb5VwGXh7fzjTxCA==}
     peerDependencies:
-      '@jacobtipp/bloc': 4.0.0
+      '@jacobtipp/bloc': 4.0.3
       rxjs: ^7.8.0
     dependencies:
-      '@jacobtipp/bloc': 4.0.0(rxjs@7.8.0)
+      '@jacobtipp/bloc': 4.0.3(rxjs@7.8.0)
       rxjs: 7.8.0
     dev: false
 
-  /@jacobtipp/bloc-query@3.0.0(@jacobtipp/bloc@4.0.0)(rxjs@7.8.0):
-    resolution: {integrity: sha512-g5oMmNb4X394YLaPXokBJAH1DMD2DguofB6xlHhLpSb6aZhjCLf5T+R2NH0hPgABaUdaNtMZrjzPcVn54qR2vA==}
+  /@jacobtipp/bloc-query@3.0.3(@jacobtipp/bloc@4.0.3)(rxjs@7.8.0):
+    resolution: {integrity: sha512-AoJjoHhoFDi0Opur7BqURNUvEqSny2Hj6DCyCw5ry65KtP9TAFOtDQFMVxcxHP0xQhYMvKKalhr3uVKA1GyhQQ==}
     peerDependencies:
-      '@jacobtipp/bloc': 4.0.0
+      '@jacobtipp/bloc': 4.0.3
       rxjs: ^7.8.0
     dependencies:
-      '@jacobtipp/bloc': 4.0.0(rxjs@7.8.0)
+      '@jacobtipp/bloc': 4.0.3(rxjs@7.8.0)
       rxjs: 7.8.0
     dev: false
 
-  /@jacobtipp/bloc@4.0.0(rxjs@7.8.0):
-    resolution: {integrity: sha512-oi4yaiYChzGO5ljyjg73vWwCsE7bhEXmw0qUvbowd42VcqotHaNQV3zAv8hXIKOV5R69jk/T+8ASh2Y1jBwMJA==}
+  /@jacobtipp/bloc@4.0.3(rxjs@7.8.0):
+    resolution: {integrity: sha512-ssEvmaXYxjvp5pdDWdS4Pd/Y3eNxcnQg9aIkkj7CiUPEHl3BASCTjCporvFwfEbXDDAg9Xh1+v0WwIOGx0Qnvw==}
     peerDependencies:
       rxjs: ^7.8.0
     dependencies:
       rxjs: 7.8.0
     dev: false
 
-  /@jacobtipp/hydrated-bloc@4.0.0(@jacobtipp/bloc@4.0.0)(rxjs@7.8.0):
-    resolution: {integrity: sha512-bSn8YK4iLy1ff55BWPnmuRu77m5k9XghNRBwkqEJp+AABgOVmd2WctmXVKkUu9GYQlkSbMJV6W/6hj9FsGpVtA==}
+  /@jacobtipp/hydrated-bloc@4.0.3(@jacobtipp/bloc@4.0.3)(rxjs@7.8.0):
+    resolution: {integrity: sha512-74VNFYfqV7dLL93u5Bj8eKzk3R6gk5W7CBRVtE5a8M9TvyblPBp5qBUkkcs8aVejp0YbCeXeZtOO1BJPxNtZFA==}
     peerDependencies:
-      '@jacobtipp/bloc': 4.0.0
+      '@jacobtipp/bloc': 4.0.3
       rxjs: ^7.8.0
     dependencies:
-      '@jacobtipp/bloc': 4.0.0(rxjs@7.8.0)
+      '@jacobtipp/bloc': 4.0.3(rxjs@7.8.0)
       rxjs: 7.8.0
     dev: false
 
-  /@jacobtipp/react-bloc@4.0.0(@jacobtipp/bloc@4.0.0)(@types/react-dom@18.2.17)(@types/react@18.2.38)(react-dom@18.2.0)(react@18.2.0)(rxjs@7.8.0):
-    resolution: {integrity: sha512-RX20+PhhP7LdpDxjE+AOSdB/WRr63DdOqTdWXVit3rSQTF186Xa2MVAyFZnUIb3E5yIS6426v2Wlrl2ELCm4mQ==}
+  /@jacobtipp/react-bloc@4.0.5(@jacobtipp/bloc@4.0.3)(@types/react-dom@18.2.17)(@types/react@18.2.38)(react-dom@18.2.0)(react@18.2.0)(rxjs@7.8.0):
+    resolution: {integrity: sha512-sk7KyGI4xfMm6fVNet12+sZAH2zhv/WfhrPPL9oKLg8R+GG5zQ2KLFoWKaTtciC+HeNxSOECh4Qc2PtigCMlrw==}
     peerDependencies:
-      '@jacobtipp/bloc': 4.0.0
+      '@jacobtipp/bloc': 4.0.3
       react: 18.2.0
       react-dom: 18.2.0
       rxjs: ^7.8.0
     dependencies:
-      '@jacobtipp/bloc': 4.0.0(rxjs@7.8.0)
+      '@jacobtipp/bloc': 4.0.3(rxjs@7.8.0)
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
       rxjs: 7.8.0
@@ -589,8 +595,8 @@ packages:
       - '@types/react-dom'
     dev: false
 
-  /@jacobtipp/state@1.1.0(immer@9.0.21):
-    resolution: {integrity: sha512-UBihWCrmsnm1xWy1DW8vOIyf90BnBMg1UDpoYTB6vmEeVql7OpyG/EPyFvELar0XJpOzJsdQyHtOdBD0mwZrNQ==}
+  /@jacobtipp/state@1.1.2(immer@9.0.21):
+    resolution: {integrity: sha512-UpIDAYR36tqK++CeHCvWr1EhRpulBI06ST7qeiVvAYh9SzVN/UZdzG5UKVD03nE2Ri0bUrywuAqL1P+kDhjO7Q==}
     peerDependencies:
       immer: ^9.0.18
     dependencies:
@@ -2183,8 +2189,8 @@ packages:
       yallist: 4.0.0
     dev: true
 
-  /material-ui-popup-state@5.0.4(@emotion/react@11.11.1)(@emotion/styled@11.11.0)(@types/react@18.2.38)(react-dom@18.2.0)(react@18.2.0):
-    resolution: {integrity: sha512-QdlKHiKv498UNsH3zpQNJ7SN9RYiEjR5MSJIg+a9gqCp43G0A8fo1r0kmX1qFTLGTfYKgXix5RANJkNTujWtxA==}
+  /material-ui-popup-state@5.0.10(@emotion/react@11.11.1)(@emotion/styled@11.11.0)(@types/react@18.2.38)(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-gd0DI8skwCSdth/j/yndoIwNkS2eDusosTe5hyPZ3jbrMzDkbQBs+tBbwapQ9hLfgiVLwICd1mwyerUV9Y5Elw==}
     peerDependencies:
       react: ^16.8.0 || ^17.0.0 || ^18.0.0
     dependencies:
@@ -2836,6 +2842,15 @@ packages:
       react: ^16.8.0 || ^17.0.0 || ^18.0.0
     dependencies:
       react: 18.2.0
+    dev: false
+
+  /uuid@9.0.1:
+    resolution: {integrity: sha512-b+1eJOlsR9K8HJpow9Ok3fiWOWSIcIzXodvv0rQjVoOVNpWMpxf1wZNpt4y9h10odCNrqnYp1OBzRktckBe3sA==}
+    hasBin: true
+    dev: false
+
+  /valibot@0.29.0:
+    resolution: {integrity: sha512-JhZn08lwZPhAamOCfBwBkv/btQt4KeQhekULPH8crH053zUCLSOGEF2zKExu3bFf245tsj6J1dY0ysd/jUiMIQ==}
     dev: false
 
   /vite@4.5.0:
