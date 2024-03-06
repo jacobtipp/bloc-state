@@ -6,8 +6,9 @@
 
 ## Installation
 
+`immer` is a peerDependency
 ```
-npm install @jacobtipp/state
+npm install @jacobtipp/state immer
 ```
 
 ## BaseState
@@ -52,7 +53,7 @@ the `State<Data>` class, we get utility methods and a constructor that makes thi
 Here we will extend `State` using the todo item example above:
 
 ```typescript
-import { BaseState } from '@jacobtipp/state';
+import { State } from '@jacobtipp/state';
 
 type TodoItem = {
   id: number
