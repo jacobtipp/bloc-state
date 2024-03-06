@@ -16,7 +16,7 @@ npm install @jacobtipp/bloc rxjs
 
 A cubit is a class that extends `BlocBase` and is a primitive type of `Bloc` that can be extended to manage any type of state.
 
-![Cubit Architecture](https://bloclibrary.dev/assets/cubit_architecture_full.png "Cubit Architecture")
+![Cubit Architecture](https://bloclibrary.dev/_astro/cubit_architecture_full.CT5Fr9vK_ZU8vQ0.webp "Cubit Architecture")
 
 This is similar to stores like `Zustand`. Your Cubit encapsulates state and you have methods of the Cubit that mutate the state by invoking `this.emit`.
 
@@ -83,12 +83,12 @@ export class CounterCubit extends Cubit<number> {
 }
 ```
 
-
 # Bloc
 
 A Bloc is a more advanced class which relies on events to trigger state changes rather than functions. Bloc also extends `BlocBase` which means it has a similar public API as Cubit. However, rather than calling a function on a Bloc and directly emitting a new state, Blocs receive events and convert the incoming events into outgoing states.
 
-![Bloc Architecture](https://bloclibrary.dev/assets/bloc_architecture_full.png "Bloc Architecture")
+![Bloc Architecture](https://bloclibrary.dev/_astro/bloc_architecture_full.CYn-T9Ox_Z20Hwr9.webp "Bloc Architecture")
+
 
 ## Creating a Bloc
 
