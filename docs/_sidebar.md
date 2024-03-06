@@ -1,4 +1,4 @@
-* [Home](/)
+* [home](/)
 * [bloc](/bloc)
 * [bloc-concurrency](bloc-concurrency.md)
 * [react-bloc](react-bloc.md)
@@ -7,3 +7,4 @@
 * [bloc-query](bloc-query.md)
 * [bloc-devtools](bloc-devtools.md)
 * [state](state.md)
+* [examples](examples.md)

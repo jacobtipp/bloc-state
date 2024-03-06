@@ -11,8 +11,13 @@
     />
     <link
       rel="stylesheet"
-      href="https://cdn.jsdelivr.net/gh/sushantrahate/docsify-darkly-theme/css/darkly.min.css"
+      href="https://cdn.jsdelivr.net/npm/docsify-themeable@0/dist/css/theme-simple-dark.css"
     />
+    <style>
+      :root {
+        --content-max-width: 90rem;
+      }
+    </style>
   </head>
   <body>
     <div id="app"></div>
@@ -22,6 +27,7 @@
         repo: 'https://github.com/jacobtipp/bloc-state',
         loadSidebar: true,
         subMaxLevel: 2,
+        auto2top: true,
       };
     </script>
     <!-- Docsify v4 -->

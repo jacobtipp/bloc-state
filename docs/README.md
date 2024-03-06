@@ -4,8 +4,6 @@ A predictable state management library that helps implement the BLoC design patt
 
 Refer to the sidebar for documentation of each package.
 
-## Packages
-
 | Package                                                                                    | NPM                                                                                                                  |
 | ------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------- |
 | [bloc](https://github.com/jacobtipp/bloc-state/tree/main/packages/bloc)                         | [![npm package](https://img.shields.io/npm/v/%40jacobtipp/bloc)](https://www.npmjs.com/package/@jacobtipp/bloc)                               |
